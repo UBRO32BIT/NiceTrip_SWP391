@@ -48,11 +48,10 @@ export default function OrderList() {
         }
     }, [user])
     return (
-        <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 6 }, mt: 2, }}>
-            <Grid container spacing={2} sx={{ gap: 2 }}>
+        <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 5 }, mt: 2, }}>
                 {myReservations.length > 0 && myReservations.map((item: any) => {
-                    return (<>
-                        <Card variant="outlined" sx={{ width: { xs: 1, md: 0.3 }, minWidth: '320px' }}>
+                    return (<Grid xs={12} md={6} lg={4}>
+                        <Card variant="outlined" sx={{}}>
                             <CardOverflow>
                                 <AspectRatio ratio="2">
                                     <img
@@ -109,10 +108,9 @@ export default function OrderList() {
                                 </CardContent>
                             </CardOverflow>
                         </Card>
-                    </>)
+                    </Grid>)
                 })}
 
-            </Grid>
         </Grid>
 
     )

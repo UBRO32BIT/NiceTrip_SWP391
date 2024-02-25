@@ -33,6 +33,10 @@ import { ChangeEvent } from 'react';
 import { styled } from '@mui/joy';
 import { useSelector } from 'react-redux';
 import { UpdateUser } from '../../services/auth.service';
+import {NavLink, Route, Routes} from "react-router-dom";
+import OrderList from "../Order/OrderList";
+import UserSetting from "./UserSetting";
+import MyBilling from "./MyBilling";
 
 interface RootState {
   auth: {
@@ -166,157 +170,25 @@ export default function MyProfile() {
               },
             }}
           >
+            <NavLink to="/me/my-profile/" style={{ textDecoration: 'none' }}>
             <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={0}>
               Settings
             </Tab>
-            <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={3}>
-              Billing
-            </Tab>
+            </NavLink>
+            <NavLink to="/me/my-profile/billing" style={{ textDecoration: 'none' }}>
+              <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={3}>
+                Billing
+              </Tab>
+            </NavLink>
           </TabList>
         </Tabs>
       </Box>
-      <Stack
-        spacing={4}
-        sx={{
-          display: 'flex',
-          maxWidth: '800px',
-          // mx: 'auto',
-          px: { xs: 2, md: 6 },
-          py: { xs: 2, md: 3 },
-        }}
-      >
-        {isLoaded && (<><Card>
-          <Box sx={{ mb: 1 }}>
-            <Typography level="title-md">Personal info</Typography>
-            <Typography level="body-sm">
-              Customize how your profile information will apper to the networks.
-            </Typography>
-          </Box>
-          <Divider />
-          <Stack
-            direction="row"
-            spacing={3}
-            sx={{ display: { xs: '12', md: 'flex' }, my: 1 }}
-          >
-            <Stack direction="column" spacing={1}>
-              <AspectRatio
-                ratio="1"
-                maxHeight={200}
-                sx={{ flex: 1, minWidth: 120, borderRadius: '100%' }}
-              >
-                {selectedImage && (
-                  <img
-                    src={typeof selectedImage === 'string' ? selectedImage : URL.createObjectURL(selectedImage)}
-                    loading="lazy"
-                    alt=""
-                  />
-                )}
-                {!selectedImage && <img
-                  src=''
-                  loading="lazy"
-                  alt=""
-                />}
-              </AspectRatio>
-              <IconButton
-                component="label"
-                aria-label="upload new picture"
-                size="sm"
-                variant="outlined"
-                color="neutral"
-                sx={{
-                  bgcolor: 'background.body',
-                  position: 'absolute',
-                  zIndex: 2,
-                  borderRadius: '50%',
-                  left: 100,
-                  top: 170,
-                  boxShadow: 'sm',
-                }}
-              ><VisuallyHiddenInput type="file" onChange={(e) => {
-                if (e?.target?.files) {
-                  console.log(e.target.files[0])
-                  setSelectedImage(e?.target?.files[0]);
-                }
-
-              }} />
-                <EditRoundedIcon />
-              </IconButton>
-            </Stack>
-            <Stack spacing={2} sx={{ flexGrow: 1 }}>
-              <Stack spacing={1}>
-                <FormControl
-                  sx={{ display: { sm: 'flex-column', md: 'flex-row' }, gap: 1 }}
-                >
-                  <form onSubmit={handleUpdateUser}>
-                    <FormLabel>First name</FormLabel>
-                    <Input
-                      size="sm"
-                      placeholder="First name"
-                      name="firstname"
-                      defaultValue={formData.firstname}
-                      value={formData.firstname}
-                      onChange={handleInputChange}
-                    />
-                    <FormLabel sx={{ mt: 2 }}>Last name</FormLabel>
-                    <Input
-                      size="sm"
-                      placeholder="Last name"
-                      name="lastname"
-                      value={formData.lastname}
-                      onChange={handleInputChange}
-                      sx={{ flexGrow: 1 }}
-                    />
-                    <FormLabel sx={{ mt: 2 }}>Email</FormLabel>
-                    <Input
-                      size="sm"
-                      type="email"
-                      startDecorator={<EmailRoundedIcon />}
-                      placeholder="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      sx={{ flexGrow: 1 }}
-                    />
-                    <FormLabel sx={{ mt: 2 }}>Phone</FormLabel>
-                    <Input
-                      size="sm"
-                      placeholder="Phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      sx={{ flexGrow: 1 }}
-                    />
-                    {/* Add more form fields as needed */}
-                    {/* <CountrySelector 
-                    value={formData.country}
-                    onChange={handleInputChange} /> */}
-                    <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 2 }}>
-                      <CardActions sx={{ alignSelf: 'flex-end', pt: 2 }}>
-                        <Button size="sm" variant="outlined" color="neutral">
-                          Cancel
-                        </Button>
-                        {uploading ? (<Button loading size="sm" variant="solid" type='submit'>
-                          Save
-                        </Button>) : <Button size="sm" variant="solid" type='submit'>
-                          Save
-                        </Button>}
-                      </CardActions>
-                    </CardOverflow>
-                  </form>
-
-
-                </FormControl>
-
-              </Stack>
-
-            </Stack>
-
-          </Stack>
-
-        </Card></>)}
-
-
-      </Stack>
+      <Routes>
+        <Route>
+          <Route path="/" element={<UserSetting />} />
+          <Route path="/billing" element={<MyBilling />} />
+        </Route>
+      </Routes>
     </Box>
   );
 }
