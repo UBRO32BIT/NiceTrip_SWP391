@@ -55,11 +55,10 @@ export default function TripList() {
         }
     }, [user])
     return (
-        <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 6 }, mt: 2, }}>
-            <Grid container spacing={2} sx={{ gap: 2 }}>
+        <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 5 }, mt: 2, }}>
                 {myTrips.length > 0 && myTrips.map((item: any) => {
-                    return (<>
-                        <Card orientation="horizontal" variant="outlined" sx={{ width: 360 }}>
+                    return (<Grid xs={12} md={6} lg={4} >
+                        <Card orientation="horizontal" variant="outlined" sx={{}}>
                             <CardOverflow>
                                 <AspectRatio ratio="0.6" sx={{ width: 120, height: 1 }}>
                                     <img
@@ -97,10 +96,8 @@ export default function TripList() {
                                 Ticket
                             </CardOverflow>
                         </Card>
-                    </>)
+                    </Grid>)
                 })}
-
-            </Grid>
         </Grid>
 
     )
