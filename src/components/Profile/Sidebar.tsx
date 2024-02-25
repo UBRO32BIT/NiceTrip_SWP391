@@ -10,6 +10,7 @@ import IconButton from '@mui/joy/IconButton';
 import Input from '@mui/joy/Input';
 import LinearProgress from '@mui/joy/LinearProgress';
 import List from '@mui/joy/List';
+import HomeIcon from '@mui/icons-material/Home';
 import ListItem from '@mui/joy/ListItem';
 import ListItemButton, { listItemButtonClasses } from '@mui/joy/ListItemButton';
 import ListItemContent from '@mui/joy/ListItemContent';
@@ -144,8 +145,8 @@ export default function Sidebar() {
         onClick={() => closeSidebar()}
       />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }} >
-        <IconButton variant="soft" color="primary" size="sm" onClick={()=>{navigate('/rental')}}>
-          <BrightnessAutoRoundedIcon />
+        <IconButton variant="soft" color="primary" size="sm" onClick={()=>{navigate('/home')}}>
+          <HomeIcon />
         </IconButton>
         <Typography level="title-lg">Nice trip</Typography>
         <ColorSchemeToggle sx={{ ml: 'auto' }} />
