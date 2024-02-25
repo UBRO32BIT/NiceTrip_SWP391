@@ -6,6 +6,7 @@ import CircularProgress from '@mui/joy/CircularProgress';
 import { GetResort, GetResortById } from '../../services/resort.service';
 import Input from '@mui/joy/Input';
 
+
 function sleep(duration: number): Promise<void> {
     return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -14,13 +15,16 @@ function sleep(duration: number): Promise<void> {
     });
 }
 
-export default function ResortInput() {
+export default function ResortInput(props: any) {
     const [resort, setResort] = React.useState<any>({});
     const [unit, setUnit] = React.useState<any>({});
     const [open, setOpen] = React.useState(false);
     const [options, setOptions] = React.useState<any>([]);
     const loading = open && options.length === 0;
-
+    const resortProp = props?.post?.resortId;
+    const unitProp = props?.post?.unitId;
+    
+    
     React.useEffect(() => {
         let active = true;
         if (!loading) {
@@ -79,6 +83,7 @@ export default function ResortInput() {
                 getOptionLabel={(option: any) => option?.name}
                 options={options}
                 loading={loading}
+                value={resortProp}
                 endDecorator={
                     loading ? (
                         <CircularProgress size="sm" sx={{ bgcolor: 'background.surface' }} />
@@ -96,6 +101,7 @@ export default function ResortInput() {
                         setUnit(value)
                     }
                 }}
+                // value={unitProp}
                 options={resort?.units}
                 getOptionLabel={(option: any) => option?.name}
             />

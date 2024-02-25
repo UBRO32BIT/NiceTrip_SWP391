@@ -23,6 +23,7 @@ import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom"
 import AddNewPost from './AddNewPost'
 import ResortInput from './ResortInput';
 import ManagePost from './ManagePost';
+import UpdatePost from './UpdatePost';
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -120,6 +121,7 @@ export default function MyPostings() {
                         <Route path="/post-list/:postId" element={<ManagePost />} />
                         <Route path="/post-list" element={<PostList />} />
                         <Route path="/" element={<PostList />} />
+                        <Route path="/update/:postId" element={<UpdatePost />} />
                         <Route path="/upload-new-post" element={<AddNewPost />} />
                     </Route>
                 </Routes>
