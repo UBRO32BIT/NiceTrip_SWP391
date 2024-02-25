@@ -5,6 +5,12 @@ import PostDetail from "../pages/PostDetail";
 import Booking from "../pages/Booking";
 import ReviewOrder from "../pages/ReviewOrder";
 import ThankYou from "../pages/ThankYou";
+import Home from "../pages/Home/Home";
+import TimeShare from "../pages/TimeShare";
+import TimeShareDetails from "../pages/TimeShareDetails";
+import PostTimeshare from "../pages/PostTimeshare";
+import About from "../pages/About";
+import SignUp from "../pages/Signup";
 
 interface Route {
     path: string;
@@ -43,7 +49,31 @@ const publicRoutes: Route[] = [
     {
         path: '/thank-you',
         page: ThankYou
-    }
+    },
+    {
+        path: '/home',
+        page: Home,
+    },
+    {
+        path: '/timeshare',
+        page: TimeShare
+    },
+    {
+        path: '/timesharedetails/:id',
+        page: TimeShareDetails
+    },
+    {
+        path: '/yourtimeshare',
+        page: PostTimeshare
+    },
+    {
+        path: '/about',
+        page: About
+    },
+    {
+        path: '/signup',
+        page: SignUp
+    },
 ];
 
 export {
