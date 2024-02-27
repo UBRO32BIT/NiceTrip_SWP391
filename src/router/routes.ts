@@ -21,6 +21,9 @@ const privateRoutes: Route[] = [
    
 ];
 
+const adminRoutes: Route[] = [
+
+]
 const publicRoutes: Route[] = [
     {
         path: '/rental',
@@ -71,7 +74,7 @@ const publicRoutes: Route[] = [
         page: About
     },
     {
-        path: '/signup',
+        path: '/register',
         page: SignUp
     },
 ];

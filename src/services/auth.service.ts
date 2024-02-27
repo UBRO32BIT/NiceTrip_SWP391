@@ -6,9 +6,34 @@ import {
     removeSessionCookies
 } from '../utils/tokenCookies'
 
-interface LoginData {
+export interface LoginData {
     username: String;
     password: String;
+}
+export interface RegisterData {
+    firstName: String;
+    lastName: String;
+    username: String;
+    password: String;
+    repeatPassword: String;
+    email: String
+}
+
+const RegisterWithCredentials = (data: RegisterData) => {
+    return api.post('/auth/register', data)
+        .then((res) => {
+            if (res) {
+                const token = res.data.tokens.access.token;
+                const refreshToken = res.data.tokens.refresh.token;
+                createSessionCookies({token, refreshToken});
+                console.log(res.data);
+                return res.data;
+            }
+        })
+        .catch((error) => {
+            console.log(`Register failed at services: ${error}`)
+        })
+        
 }
 const LoginWithUsernameAndPassword = (data: LoginData) => {
     return api.post('/auth/login', data)
@@ -35,6 +60,7 @@ const UpdateUser = (id: string, data: any) => {
         })
 }
 export {
+    RegisterWithCredentials,
     LoginWithUsernameAndPassword,
-    UpdateUser
+    UpdateUser,
 }
