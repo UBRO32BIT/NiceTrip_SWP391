@@ -23,9 +23,14 @@ export default function ResortInput(props: any) {
     const loading = open && options.length === 0;
     const resortProp = props?.post?.resortId;
     const unitProp = props?.post?.unitId;
-    
-    
+
     React.useEffect(() => {
+        if(props?.post?.resortId){
+            setResort(props?.post?.resortId)
+        }
+        if(props?.post?.unitId){
+            setUnit(props?.post?.unitId)
+        }
         let active = true;
         if (!loading) {
             return undefined;
@@ -40,7 +45,7 @@ export default function ResortInput(props: any) {
         return () => {
             active = false;
         };
-    }, [loading]);
+    }, [loading, props?.post?.resortId, props?.post?.unitId, resortProp, unitProp]);
 
     React.useEffect(() => {
         if (!open) {
@@ -93,7 +98,7 @@ export default function ResortInput(props: any) {
             <FormLabel sx={{ mt: 2 }}>Units</FormLabel>
             <Autocomplete
                 size="sm"
-                disabled = {!resort.units ? true : false}
+                disabled = {!resort.units}
                 noOptionsText="No options"
                 placeholder="Select unit"
                 onChange={async (event, value) => {
@@ -101,8 +106,10 @@ export default function ResortInput(props: any) {
                         setUnit(value)
                     }
                 }}
-                // value={unitProp}
-                options={resort?.units}
+                value={unitProp}
+                options={resort?.units || []}
+                loading={loading}
+                isOptionEqualToValue={(option: any, value: any) => option?.name === value.name}
                 getOptionLabel={(option: any) => option?.name}
             />
         </>
