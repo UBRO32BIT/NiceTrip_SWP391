@@ -25,26 +25,26 @@ function App() {
   const [isLoading, setIsLoading] = React.useState<boolean | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    const isAuth = async () => {
-      try {
-        if (getToken()) {
-          const response = await api.patch('/auth/isAuth');
-          if (response.data) {
-            const loginData = response.data.data;
-            dispatch(LoginSuccess(loginData));
-          } else {
-            navigate('/login');
-          }
+  const isAuth = async () => {
+    try {
+      if (getToken()) {
+        const response = await api.patch('/auth/isAuth');
+        if (response.data) {
+          const loginData = response.data.data;
+          dispatch(LoginSuccess(loginData));
         } else {
           navigate('/login');
         }
-      } catch (err) {
-        // Handle errors
+      } else {
+        navigate('/login');
       }
-    };
-    isAuth();
+    } catch (err) {
+      // Handle errors
+    }
+  };
+
+  React.useEffect(() => {
+    
   }, []);
 
   React.useEffect(() => {

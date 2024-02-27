@@ -15,8 +15,22 @@ import ServiceList from '../../components/services/ServiceList';
 import FeaturedTourList from '../../components/Featured-tours/FeaturedTourList';
 import experienceImg from '../../assets/images/experienceImg.jpg';
 import Testimonial from '../../components/Testimonial/Testimonial';
-
+import { GetPost } from '../../services/post.service';
 const Home = () => {
+  const [posts, setPosts] = React.useState([]);
+  React.useEffect(() => {
+    GetPost()
+      .then((data) => {
+        console.log(data);
+        setPosts(data);
+      })
+      .catch((err) => {
+        if (err.response) {
+          console.log(err.response.status)
+        }
+        else console.error("Cannot get data from server!")
+      });
+  }, []);
   return (
     <>
     <Header />
@@ -74,7 +88,7 @@ const Home = () => {
           <Subtitle subtitle={'Explore'}/>
           <h2 className='featured__tour-title'> Our featured tours</h2>
         </Col>
-        <FeaturedTourList />
+        {posts.length > 0 && <FeaturedTourList posts={posts} />}
       </Row>
     </Container>
   </section>

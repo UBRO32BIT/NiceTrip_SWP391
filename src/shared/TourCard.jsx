@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardBody } from "reactstrap";
 import { Link } from 'react-router-dom';
 import './tour-card.css'
@@ -7,47 +7,68 @@ import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/joy/Stack";
+import Chip from '@mui/material/Chip';
+import convertDate from '../utils/dateConverter';
+import stringToArray from '../utils/stringToArray';
 
-const TourCard = ({ tour }) => {
+const TourCard = ({props}) => {
+    useEffect(() => {
+        console.log(props);
+    }, [])
+    const post = {
+        id: props._id,
+        title: props.resortId.name,
+        location: props.resortId.location,
+        image: props.images[0],
+        price: props.price,
+        pricePerNight: props.pricePerNight,
+        numberOfNights: props.numberOfNights,
+        unit: stringToArray(props.unitId.details),
+        startDate: convertDate(props.start_date),
+        endDate: convertDate(props.end_date),
+        type: props.type,
+        reviews: [3, 4, 5],
+    };
+    //const { _id, title, city, photo, price, price2, time, newrental, reviews } = tour;
 
-    const { id, title, city, photo, price, price2, time, newrental, reviews } = tour;
-
-    const {totalRating, avgRating} = calculateAvgRating(reviews)
+    const {totalRating, avgRating} = calculateAvgRating(post.reviews)
 
     return <div className='tour__card'>
         <Card>
             <div className="tour__img">
-                <img src={photo} alt="tour-img" />
+                <img src={post.image} alt="tour-img" />
                 <span>NewRental</span>
             </div>
 
             <CardBody>
                 <div className='card__top d-flex align-items-center justify-content-between'>
                     <span className='tour__location d-flex align-items-center gap-1'>
-                        <i class="ri-map-pin-line"></i> {city}
+                        <i class="ri-map-pin-line"></i> {post.location}
                     </span>
                     <span className='tour__rating d-flex align-items-center gap-1'>
                         <i class="ri-star-fill"></i> {avgRating === 0 ? null : avgRating}
-                        {totalRating === 0 ? 'Not rated' : <span>({reviews.length})</span>
+                        {totalRating === 0 ? 'Not rated' : <span>({post.reviews.length})</span>
                     }
                     </span>
                 </div>
-                <h5 className='tour__title'><Link to={`/timesharedetails/${id}`}>{title}</Link></h5>
+                <h5 className='tour__title'><Link to={`/timesharedetails/${post.id}`}>{post.title}</Link></h5>
                 <Stack sx={{ width: 1, display: 'flex', justifyContent: 'center' }} direction="column" spacing={0} justifyContent="center">
-                    <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                    <Box>
                         <Typography fontWeight={500} fontSize={14}>
                             Unit:
                         </Typography>
-                        <Typography fontWeight={400} fontSize={14}>
-                            {title}
-                        </Typography>
+                        <Stack direction="row">
+                                {post.unit.map(u => (
+                                    <Chip color="success" label={u} size="small" variant="outlined"/>
+                                ))}
+                        </Stack>
                     </Box>
                     <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography fontWeight={500} fontSize={14}>
                             Stay:
                         </Typography>
                         <Typography fontWeight={400} fontSize={14}>
-                            {time} night
+                            {post.numberOfNights} night
                         </Typography>
                     </Box>
                     <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between', }}>
@@ -55,7 +76,7 @@ const TourCard = ({ tour }) => {
                             Check-in:
                         </Typography>
                         <Typography fontWeight={400} fontSize={14}>
-                            23/34/23
+                            {post.startDate}
                         </Typography>
                     </Box>
                     <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
@@ -63,7 +84,7 @@ const TourCard = ({ tour }) => {
                             Check-out:
                         </Typography>
                         <Typography fontWeight={400} fontSize={14}>
-                            awdawd
+                            {post.endDate}
                         </Typography>
                     </Box>
                     <Divider sx={{ mt: 1, mb: 1 }} />
@@ -72,7 +93,7 @@ const TourCard = ({ tour }) => {
                             Price/night:
                         </Typography>
                         <Typography fontWeight={400} fontSize={18}>
-                           200$
+                           {post.pricePerNight}$
                         </Typography>
                     </Box>
                     <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
@@ -80,7 +101,7 @@ const TourCard = ({ tour }) => {
                             Total:
                         </Typography>
                         <Typography fontWeight={600} fontSize={18}>
-                            2300$
+                            {post.price}$
                         </Typography>
                     </Box>
                 </Stack>
