@@ -83,7 +83,6 @@ export default function MyProfile() {
     }
     setIsLoaded(true);
   }, [user, isAuthenticated === true])
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
