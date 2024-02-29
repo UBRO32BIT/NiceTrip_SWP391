@@ -59,7 +59,6 @@ export default function UpdatePost() {
                 setStartDate(postData?.start_date);
                 setEndDate(postData?.end_date);
                 setPrice(postData?.price);
-            
                 setImageFiles(postData?.images);
             }
         }

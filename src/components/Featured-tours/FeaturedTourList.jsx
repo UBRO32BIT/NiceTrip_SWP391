@@ -3,13 +3,14 @@ import TourCard from '../../shared/TourCard'
 import tourData from '../../assets/data/tours'
 import { Col } from 'reactstrap'
 
-const FeaturedTourList = () => {
+const FeaturedTourList = ({posts}) => {
+  console.log(posts);
   return (
     <>
     {
-        tourData?.map(tour=>(
+        posts?.map(post => (
             <Col lg='3' className='mb-4'>
-                <TourCard tour={tour}/>
+                <TourCard props={post}/>
             </Col>
         ))
     }

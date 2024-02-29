@@ -9,7 +9,7 @@ import MyPosting from '../../components/Post/MyPosting';
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import MyOrder from '../../components/Order/MyOrder';
 import MyTrip from '../../components/Trip';
-
+import MyMessage from '../../components/Messenger/MyMessages';
 export default function JoyOrderDashboardTemplate() {
   return (
 
@@ -40,6 +40,7 @@ export default function JoyOrderDashboardTemplate() {
               <Route path="/my-posting/*" element={<MyPosting />} />
               <Route path="/my-trip/*" element={<MyTrip />} />
               <Route path="/my-order/*" element={<MyOrder />} />
+                <Route path="/my-messages/*" element={<MyMessage />} />
             </Route>
           </Routes>
         </Box>
