@@ -56,6 +56,7 @@ const VisuallyHiddenInput = styled('input')`
   width: 1px;
 `;
 
+
 export default function MyProfile() {
   const user = useSelector((state: RootState) => state?.auth?.user);
   const isAuthenticated = useSelector((state: RootState) => state?.auth?.isAuthenticated);
@@ -83,6 +84,7 @@ export default function MyProfile() {
     }
     setIsLoaded(true);
   }, [user, isAuthenticated === true])
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
