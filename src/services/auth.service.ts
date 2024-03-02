@@ -56,7 +56,28 @@ const UpdateUser = (id: string, data: any) => {
             return res.data;
         })
         .catch((err)=>{
-            return err
+            console.log(err);
+            throw err;
+        })
+}
+const sendEmailVerification = () => {
+    return api.get(`/email/send-verification-email`)
+        .then((res) => {
+            return res.data;
+        })
+        .catch((err)=> {
+            console.log(err);
+            throw err;
+        })
+}
+const checkEmailToken = (token: string) => {
+    return api.get(`/email/verify-email/?token=${token}`)
+        .then((res) => {
+            return res.data;
+        })
+        .catch((err)=> {
+            console.log(err);
+            throw err;
         })
 }
 
@@ -83,6 +104,11 @@ export {
     RegisterWithCredentials,
     LoginWithUsernameAndPassword,
     UpdateUser,
+
+    sendEmailVerification,
+    checkEmailToken,
+
     CreateVNPay,
     VNPayReturn,
+
 }

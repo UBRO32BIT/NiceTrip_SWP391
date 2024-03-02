@@ -5,6 +5,13 @@ interface LoginUser {
     username: string,
     password: string
 }
+export interface RootState {
+    auth: {
+      isAuthenticated: boolean;
+      user: any;
+    };
+}
+
 export const authSlice = createSlice({
     name: 'auth',
     initialState: {
