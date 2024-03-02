@@ -5,8 +5,9 @@ import RentalDashboard from './pages/RentalDashboard';
 import Router from './router/router';
 import { LoginSuccess } from './features/auth/auth.slice';
 import { useSelector, useDispatch } from 'react-redux'
+import { api } from './api';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { api } from "./api";
+import { RootState } from './features/auth/auth.slice';
 import {
   createSessionCookies,
   getRefreshToken,
@@ -14,44 +15,23 @@ import {
   removeSessionCookies
 } from './utils/tokenCookies'
 
-interface RootState {
-  auth: {
-    isAuthenticated: boolean;
-    user: any;
-  };
-}
 function App() {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [isLoading, setIsLoading] = React.useState<boolean | null>(null);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const isAuth = async () => {
-    try {
-      if (getToken()) {
-        const response = await api.patch('/auth/isAuth');
-        if (response.data) {
-          const loginData = response.data.data;
-          dispatch(LoginSuccess(loginData));
-        } else {
-          navigate('/login');
-        }
-      } else {
-        navigate('/login');
+  const dispatch = useDispatch()
+  const checkAuth = async () => {
+    if (getToken()) {
+      const response = await api.patch('/auth/isAuth');
+      if (response.data) {
+        const loginData = response.data.data;
+        dispatch(LoginSuccess(loginData));
       }
-    } catch (err) {
-      // Handle errors
     }
-  };
-
+  }
   React.useEffect(() => {
-    
+    console.log("hello");
+    checkAuth();
   }, []);
-
-  React.useEffect(() => {
-    if (isAuthenticated === true) {
-      // navigate(-1)
-    }
-  }, [isAuthenticated]);
   return (
     <div className="App">
       <Router />
