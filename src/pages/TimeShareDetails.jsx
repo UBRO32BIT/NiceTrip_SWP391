@@ -61,7 +61,13 @@ const TimeShareDetails = () => {
                         <div className="tour__content">
                             <Row>
                                 <Col lg='6'>
-                                {post && <ImageGallery items={convertImageArray([...post.images, ...post.resortId.image_urls])} showPlayButton={false} />}
+                                {post && 
+                                <ImageGallery 
+                                    items={convertImageArray([...post.images, ...post.resortId.image_urls])} 
+                                    showPlayButton={false}
+                                    lazyLoad={true} 
+                                />
+                                }
                                 </Col>
                                 <Col lg='6'>
                                     <div className='tour__info'>

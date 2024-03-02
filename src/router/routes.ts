@@ -12,6 +12,7 @@ import PostTimeshare from "../pages/PostTimeshare";
 import About from "../pages/About";
 import SignUp from "../pages/Signup";
 import Messenger from "../pages/Messenger"
+import Email from "../pages/Email";
 interface Route {
     path: string;
     page: React.ComponentType<any>;
@@ -77,7 +78,10 @@ const publicRoutes: Route[] = [
         path: '/register',
         page: SignUp
     },
-
+    {
+        path: '/email/*',
+        page: Email
+    },
 ];
 
 export {
