@@ -12,7 +12,11 @@ import PostTimeshare from "../pages/PostTimeshare";
 import About from "../pages/About";
 import SignUp from "../pages/Signup";
 import Messenger from "../pages/Messenger"
+
 import Email from "../pages/Email";
+
+import VNPay from "../pages/Payment/VNPay";
+
 interface Route {
     path: string;
     page: React.ComponentType<any>;
@@ -49,6 +53,10 @@ const publicRoutes: Route[] = [
     {
         path: '/post/:postId/book/review-order/:reservationId',
         page: ReviewOrder
+    },
+    {
+        path: '/payment/vnpay_return',
+        page: VNPay
     },
     {
         path: '/thank-you',

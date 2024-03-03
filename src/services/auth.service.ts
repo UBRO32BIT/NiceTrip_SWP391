@@ -89,6 +89,7 @@ const CheckEmailToken = async (token: string) => {
             throw err;
         })
 }
+
 const ChangePassword = async (data: any) => {
     return api.post(`/user/change-password`, data)
         .then((res) => {
@@ -106,11 +107,43 @@ const ChangePassword = async (data: any) => {
             throw error;
         })
 }
+
+
+const CreateVNPay = (data: any) => {
+    return api.post(`/payment/create-payment-vnpay`, data)
+        .then((res)=>{
+            return res.data.data;
+        })
+        .catch((err)=>{
+            return err
+        })
+}
+
+const VNPayReturn = (data: any) => {
+    return api.get(`/payment/vnpay_return`, { params: data }) // Use `params` to pass data as query parameters
+        .then((res)=>{
+            return res.data; // Response data doesn't need to be accessed via `data.data`
+        })
+        .catch((err)=>{
+            throw err; // Rethrow the error to handle it in the component
+        });
+};
+
 export {
     RegisterWithCredentials,
     LoginWithUsernameAndPassword,
     UpdateUser,
+
     SendEmailVerification,
     CheckEmailToken,
     ChangePassword,
+
+
+    sendEmailVerification,
+    checkEmailToken,
+
+    CreateVNPay,
+    VNPayReturn,
+
+
 }
