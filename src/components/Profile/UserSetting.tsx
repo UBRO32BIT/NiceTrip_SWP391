@@ -16,7 +16,7 @@ import Button from "@mui/joy/Button";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import { ChangeEvent } from "react";
-import { UpdateUser, sendEmailVerification } from "../../services/auth.service";
+import { ChangePassword, UpdateUser, SendEmailVerification } from "../../services/auth.service";
 import { DialogContent, DialogTitle, FormHelperText, Grid, Modal, ModalClose, ModalDialog, styled } from "@mui/joy";
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import * as yup from "yup";
@@ -79,36 +79,18 @@ export default function UserSetting() {
     };
     const { enqueueSnackbar } = useSnackbar();
     const verifyEmail = () => {
-        sendEmailVerification();
+        SendEmailVerification();
         setEmailVerifyOpen(true);
     }
     const handleUpdateUser = async (e: any) => {
         try {
             setUploading(true);
-            console.log(e);
-            //e.preventDefault()
-            let data = {
-
-            };
+            const formData = new FormData(e.currentTarget);
             if (selectedImage instanceof File) {
-                data = {
-                    firstname: e.firstname,
-                    lastname: e.lastname,
-                    email: e.email,
-                    phone: e?.phone,
-                    profilePicture: selectedImage,
-                }
+                formData.append('profilePicture', selectedImage);
             }
-            else {
-                data = {
-                    firstname: e.firstname,
-                    lastname: e.lastname,
-                    email: e.email,
-                    phone: e?.phone,
-                }
-            }
-            console.log(data);
-            const result = await UpdateUser(user._id, data)
+            console.log(formData);
+            const result = await UpdateUser(user._id, formData);
             if (result) {
                 setUploading(false)
                 enqueueSnackbar("Updated successully", { variant: "success" });
@@ -129,6 +111,21 @@ export default function UserSetting() {
     }
     const handlePasswordChange = async (e: any) => {
         console.log(e);
+        const data = {
+            oldPassword: e.currentPassword,
+            newPassword: e.newPassword,
+            repeatPassword: e.repeatPassword,
+        }
+        try {
+            const result = await ChangePassword(data);
+            //Close the input tab
+            setOpen(false);
+            //Print success message
+            enqueueSnackbar(`${result.message}`, { variant: "success" });
+        }
+        catch (error) {
+            enqueueSnackbar(`Error while changing password: ${error}`, { variant: "error" });
+        }
     }
     const schema = yup.object().shape({
         firstname: yup.string()
@@ -146,13 +143,13 @@ export default function UserSetting() {
         currentPassword: yup.string()
             .required("Current password is required!"),
         newPassword: yup.string()
-        .required("Password is required!")
-        .min(8, 'Password must be at least 8 characters long')
-        .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
-        .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
+            .required("Password is required!")
+            .min(8, 'Password must be at least 8 characters long')
+            .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
+            .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
         repeatPassword: yup.string()
-        .required("Repeat password is required!")
-        .oneOf([yup.ref('newPassword'), ''], 'Passwords must match'),
+            .required("Repeat password is required!")
+            .oneOf([yup.ref('newPassword'), ''], 'Passwords must match'),
     })
     const {
         register,
@@ -164,14 +161,14 @@ export default function UserSetting() {
     const {
         register: registerChangePassword,
         handleSubmit: handlePasswordChangeSubmit,
-        formState: {errors: passwordChangeErrors}
-    } = useForm ({
+        formState: { errors: passwordChangeErrors }
+    } = useForm({
         resolver: yupResolver(passwordSchema),
     })
-    
+
     return (
         <Grid container>
-            <Grid xs={8}>
+            <Grid lg={8} >
                 <Stack
                     sx={{
                         display: 'flex',
@@ -229,8 +226,9 @@ export default function UserSetting() {
                                             boxShadow: 'sm',
                                         }}
                                     ><VisuallyHiddenInput type="file" onChange={(e) => {
+                                        //console.log('update image');
                                         if (e?.target?.files) {
-                                            console.log(e.target.files[0])
+                                            //console.log(e.target.files[0])
                                             setSelectedImage(e?.target?.files[0]);
                                         }
 
@@ -305,8 +303,11 @@ export default function UserSetting() {
                     )}
                 </Stack>
             </Grid>
-            <Grid xs={3}>
-                <Stack>
+            <Grid xs={8} lg={3}>
+                <Stack sx={{
+                    py: { xs: 2, md: 3 },
+                    px: { md: 3 }
+                }}>
                     <Card>
                         <Box sx={{ mb: 1 }}>
                             <Grid container spacing={3}>
@@ -314,81 +315,89 @@ export default function UserSetting() {
                                     <Typography level="title-md">Your email</Typography>
                                     <Typography level="body-md">{user?.email}</Typography>
                                     {user.emailVerified ?
-                                    <Typography level="body-sm"
-                                                sx={{display: 'inline-flex', gap: 1}}>
-                                        Verified
-                                        <VerifiedOutlinedIcon color='success'/>
-                                    </Typography>
-                                     :
-                                    <>
-                                        <Typography level="body-sm">
-                                            Your email is not verified
+                                        <Typography level="body-sm"
+                                            sx={{ display: 'inline-flex', gap: 1 }}>
+                                            Verified
+                                            <VerifiedOutlinedIcon color='success' />
                                         </Typography>
-                                        <Button size="sm" color='success' onClick={verifyEmail}>Verify</Button>
-                                        <Modal open={emailVerifyOpen} onClose={() => setEmailVerifyOpen(false)}>
-                                            <ModalDialog>
-                                                <ModalClose />
-                                                <DialogTitle>Email sent</DialogTitle>
-                                                <Typography>Please check your mailbox and follow the instruction!</Typography>
-                                            </ModalDialog>
-                                        </Modal>
-                                    </>
+                                        :
+                                        <>
+                                            <Typography level="body-sm">
+                                                Your email is not verified
+                                            </Typography>
+                                            <Button size="sm" color='success' onClick={verifyEmail}>Verify</Button>
+                                            <Modal open={emailVerifyOpen} onClose={() => setEmailVerifyOpen(false)}>
+                                                <ModalDialog>
+                                                    <ModalClose />
+                                                    <DialogTitle>Email sent</DialogTitle>
+                                                    <Typography>Please check your mailbox and follow the instruction!</Typography>
+                                                </ModalDialog>
+                                            </Modal>
+                                        </>
                                     }
                                 </Grid>
-                                <Grid xs={12}>
-                                    <Typography level="title-md">Authentication</Typography>
-                                    <Button size="md" variant={'solid'} color="primary" onClick={() => setOpen(true)}>
-                                        Change password
-                                    </Button>
-                                </Grid>
                             </Grid>
-                            
-                            
-                            <Modal open={open} onClose={() => setOpen(false)}>
-                                <ModalDialog>
-                                    <ModalClose />
-                                    <DialogTitle>Change my password</DialogTitle>
-                                    <DialogContent>Fill in the information to change password.</DialogContent>
-                                    <form onSubmit={handlePasswordChangeSubmit(handlePasswordChange)}>
-                                        <Stack spacing={2}>
-                                        <FormControl error={!!passwordChangeErrors.currentPassword}>
-                                            <FormLabel>Current password</FormLabel>
-                                            <Input type='password' {...registerChangePassword('currentPassword')}/>
-                                            {passwordChangeErrors.currentPassword &&
-                                                <FormHelperText>
-                                                    <InfoOutlined />
-                                                    {passwordChangeErrors.currentPassword.message}
-                                                </FormHelperText> 
-                                            }
-                                        </FormControl>
-                                        <FormControl error={!!passwordChangeErrors.newPassword}>
-                                            <FormLabel>New password</FormLabel>
-                                            <Input type='password' {...registerChangePassword('newPassword')}/>
-                                            {passwordChangeErrors.newPassword &&
-                                                <FormHelperText>
-                                                    <InfoOutlined />
-                                                    {passwordChangeErrors.newPassword.message}
-                                                </FormHelperText> 
-                                            }
-                                        </FormControl>
-                                        <FormControl error={!!passwordChangeErrors.repeatPassword}>
-                                            <FormLabel>Repeat password</FormLabel>
-                                            <Input type='password' {...registerChangePassword('repeatPassword')}/>
-                                            {passwordChangeErrors.repeatPassword &&
-                                                <FormHelperText>
-                                                    <InfoOutlined />
-                                                    {passwordChangeErrors.repeatPassword.message}
-                                                </FormHelperText> 
-                                            }
-                                        </FormControl>
-                                        <Button type="submit">Submit</Button>
-                                        </Stack>
-                                    </form>
-                                </ModalDialog>
-                            </Modal>
                         </Box>
-                        <Divider />
                     </Card>
+                    <Stack sx={{
+                        py: { xs: 2, md: 3 },
+                    }}>
+                        <Card>
+                            <Box>
+                                <Grid container spacing={3}>
+                                    <Grid xs={12}>
+                                        <Typography level="title-md">Authentication</Typography>
+                                        <Divider orientation="horizontal" />
+                                        <Button sx={{mt:{xs: 1}}} size="md" variant={'solid'} color="primary" onClick={() => setOpen(true)}>
+                                            Change password
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Card>
+                    </Stack>
+                    <Modal open={open} onClose={() => setOpen(false)}>
+                        <ModalDialog>
+                            <ModalClose />
+                            <DialogTitle>Change my password</DialogTitle>
+                            <DialogContent>Fill in the information to change password.</DialogContent>
+                            <form onSubmit={handlePasswordChangeSubmit(handlePasswordChange)}>
+                                <Stack spacing={2}>
+                                    <FormControl error={!!passwordChangeErrors.currentPassword}>
+                                        <FormLabel>Current password</FormLabel>
+                                        <Input type='password' {...registerChangePassword('currentPassword')} />
+                                        {passwordChangeErrors.currentPassword &&
+                                            <FormHelperText>
+                                                <InfoOutlined />
+                                                {passwordChangeErrors.currentPassword.message}
+                                            </FormHelperText>
+                                        }
+                                    </FormControl>
+                                    <FormControl error={!!passwordChangeErrors.newPassword}>
+                                        <FormLabel>New password</FormLabel>
+                                        <Input type='password' {...registerChangePassword('newPassword')} />
+                                        {passwordChangeErrors.newPassword &&
+                                            <FormHelperText>
+                                                <InfoOutlined />
+                                                {passwordChangeErrors.newPassword.message}
+                                            </FormHelperText>
+                                        }
+                                    </FormControl>
+                                    <FormControl error={!!passwordChangeErrors.repeatPassword}>
+                                        <FormLabel>Repeat password</FormLabel>
+                                        <Input type='password' {...registerChangePassword('repeatPassword')} />
+                                        {passwordChangeErrors.repeatPassword &&
+                                            <FormHelperText>
+                                                <InfoOutlined />
+                                                {passwordChangeErrors.repeatPassword.message}
+                                            </FormHelperText>
+                                        }
+                                    </FormControl>
+                                    <Button type="submit">Submit</Button>
+                                </Stack>
+                            </form>
+                        </ModalDialog>
+                    </Modal>
                 </Stack>
             </Grid>
         </Grid>

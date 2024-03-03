@@ -14,6 +14,7 @@ import {
   getToken,
   removeSessionCookies
 } from './utils/tokenCookies'
+import { SnackbarOrigin, SnackbarProvider } from 'notistack';
 
 function App() {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -28,13 +29,20 @@ function App() {
       }
     }
   }
+  type AnchorOrigin = SnackbarOrigin;
+  const customAnchorOrigin: AnchorOrigin = {
+    vertical: 'bottom',
+    horizontal: 'right',
+  };
   React.useEffect(() => {
     console.log("hello");
     checkAuth();
   }, []);
   return (
     <div className="App">
-      <Router />
+      <SnackbarProvider maxSnack={3} anchorOrigin={customAnchorOrigin}>
+        <Router />
+      </SnackbarProvider>
     </div>
   );
 }

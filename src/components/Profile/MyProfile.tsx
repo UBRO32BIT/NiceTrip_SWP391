@@ -9,15 +9,11 @@ import Link from '@mui/joy/Link';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import { ChangeEvent } from 'react';
 import { Grid, styled } from '@mui/joy';
 import { useSelector } from 'react-redux';
-import { UpdateUser } from '../../services/auth.service';
 import { NavLink, Route, Routes } from "react-router-dom";
-import OrderList from "../Order/OrderList";
 import UserSetting from "./UserSetting";
 import MyBilling from "./MyBilling";
-import { SnackbarProvider, SnackbarOrigin } from 'notistack';
 
 interface RootState {
   auth: {
@@ -64,13 +60,7 @@ export default function MyProfile() {
     }
     setIsLoaded(true);
   }, [user, isAuthenticated === true])
-  type AnchorOrigin = SnackbarOrigin;
-  const customAnchorOrigin: AnchorOrigin = {
-    vertical: 'bottom',
-    horizontal: 'right',
-  };
   return (
-    <SnackbarProvider maxSnack={3} anchorOrigin={customAnchorOrigin}>
       <Grid container>
         <Grid xs={12}>
           <Box sx={{ flex: 1, width: '100%' }}>
@@ -163,6 +153,5 @@ export default function MyProfile() {
           </Routes>
         </Grid>
       </Grid>
-    </SnackbarProvider>
   );
 }

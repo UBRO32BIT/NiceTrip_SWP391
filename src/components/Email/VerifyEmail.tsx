@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { checkEmailToken } from "../../services/auth.service";
+import { CheckEmailToken } from "../../services/auth.service";
 
 export default function VerifyEmailToken() {
     const [isVerified, setVerified] = useState<boolean>(false);
     const location = useLocation();
     const checkToken = async (token: string) => {
-        const data = await checkEmailToken(token);
+        const data = await CheckEmailToken(token);
         console.log(data);
         if (data) {
             return true;

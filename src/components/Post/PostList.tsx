@@ -83,12 +83,10 @@ export default function PostList() {
                     </Select>
                 </FormControl>
                 <FormControl size="sm">
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>Type</FormLabel>
                     <Select size="sm" placeholder="All">
-                        <Option value="all">All</Option>
-                        <Option value="refund">Refund</Option>
-                        <Option value="purchase">Purchase</Option>
-                        <Option value="debit">Debit</Option>
+                        <Option value="all">Exchange</Option>
+                        <Option value="refund">Rental</Option>
                     </Select>
                 </FormControl>
                 <FormControl size="sm">

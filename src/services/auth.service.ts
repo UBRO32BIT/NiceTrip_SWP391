@@ -47,7 +47,16 @@ const LoginWithUsernameAndPassword = (data: LoginData) => {
             }
         })
         .catch((error) => {
-
+            if (error.response) {
+                if (error.response.status === 401) {
+                    throw Error("Wrong username or password!")
+                }
+                else if (error.response.status > 500) {
+                    throw Error("Server Error");
+                }
+            }
+            
+            throw error;
         })
 }
 const UpdateUser = (id: string, data: any) => {
@@ -60,7 +69,7 @@ const UpdateUser = (id: string, data: any) => {
             throw err;
         })
 }
-const sendEmailVerification = () => {
+const SendEmailVerification = async () => {
     return api.get(`/email/send-verification-email`)
         .then((res) => {
             return res.data;
@@ -70,7 +79,7 @@ const sendEmailVerification = () => {
             throw err;
         })
 }
-const checkEmailToken = (token: string) => {
+const CheckEmailToken = async (token: string) => {
     return api.get(`/email/verify-email/?token=${token}`)
         .then((res) => {
             return res.data;
@@ -80,10 +89,28 @@ const checkEmailToken = (token: string) => {
             throw err;
         })
 }
+const ChangePassword = async (data: any) => {
+    return api.post(`/user/change-password`, data)
+        .then((res) => {
+            return res.data;
+        })
+        .catch((error) => {
+            if (error.response) {
+                if (error.response.status === 401) {
+                    throw Error("Wrong password!")
+                }
+                else if (error.response.status > 500) {
+                    throw Error("Server Error");
+                }
+            }
+            throw error;
+        })
+}
 export {
     RegisterWithCredentials,
     LoginWithUsernameAndPassword,
     UpdateUser,
-    sendEmailVerification,
-    checkEmailToken,
+    SendEmailVerification,
+    CheckEmailToken,
+    ChangePassword,
 }

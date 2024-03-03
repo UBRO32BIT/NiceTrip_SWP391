@@ -21,6 +21,8 @@ import ResortInput from './ResortInput'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { UploadPost } from '../../services/post.service';
 import CardContent from '@mui/joy/CardContent';
+import { isValidDateRange } from '../../utils/date';
+import { useSnackbar } from 'notistack';
 
 interface RootState {
     auth: {
@@ -42,17 +44,38 @@ export default function MyProfile() {
     const [endDate, setEndDate] = React.useState<string>('');
     const [price, setPrice] = React.useState<string>('');
     const [uploading, setUploading] = React.useState<boolean>();
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStartDate(e.target.value);
+        let isValid = true;
+        if (endDate !== '') {
+            isValid = isValidDateRange(e.target.value, endDate)
+        }
+        if (isValid) {
+            setStartDate(e.target.value);
+        }
+        else enqueueSnackbar("Invalid date range", { variant: "error" });
     };
 
     const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEndDate(e.target.value);
+        let isValid = true;
+        if (startDate !== '') {
+            isValid = isValidDateRange(startDate, e.target.value)
+        }
+        if (isValid) {
+            setEndDate(e.target.value);
+        }
+        else enqueueSnackbar("Invalid date range", { variant: "error" });
     };
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPrice(e.target.value);
+        if (e.target.value) {
+            if (parseInt(e.target.value) > 0) {
+                setPrice(e.target.value);
+            }
+            else enqueueSnackbar("Price must be a positive number!", { variant: "error" });
+        }
+        else setPrice('');
     };
 
     async function handleSubmit(e: any) {
@@ -105,9 +128,9 @@ export default function MyProfile() {
             >
                 <Card>
                     <Box sx={{ mb: 1 }}>
-                        <Typography level="title-md">Your timeshare info</Typography>
+                        <Typography level="title-md">Post a timeshare</Typography>
                         <Typography level="body-sm">
-                            Customize how your profile information will apper to the networks.
+                            Let people enjoy at your resort and more.
                         </Typography>
                     </Box>
                     <Divider />
@@ -132,13 +155,6 @@ export default function MyProfile() {
                                             <Option value="exchange">Exchange</Option>
                                         </Select>
                                         <input type='hidden' name='current_owner' value={user?._id}></input>
-                                        <FormLabel sx={{ mt: 2 }}>Owner name</FormLabel>
-                                        <Input
-                                            size="sm"
-                                            placeholder="First name"
-                                            name="firstname"
-                                        />
-
                                         <Stack direction="row" spacing={4} sx={{ width: '100%', mt: 2 }}>
                                             <FormControl sx={{ display: 'inline', gap: 1 }}>
                                                 <FormLabel>Start date</FormLabel>
@@ -147,6 +163,7 @@ export default function MyProfile() {
                                                     size="sm"
                                                     placeholder="Start date"
                                                     name="start_date"
+                                                    value={startDate}
                                                     sx={{}}
                                                     onChange={handleStartDateChange}
                                                 />
@@ -158,6 +175,7 @@ export default function MyProfile() {
                                                     size="sm"
                                                     placeholder="End date"
                                                     name="end_date"
+                                                    value={endDate}
                                                     sx={{}}
                                                     onChange={handleEndDateChange}
                                                 />
@@ -171,7 +189,10 @@ export default function MyProfile() {
                                             onChange={(e) => {
                                                 const files = e?.target?.files;
                                                 if (files) {
-                                                    setImageFiles((prev) => [...prev, ...Array.from(files)]);
+                                                    if (imageFiles.length < 5) {
+                                                        setImageFiles((prev) => [...prev, ...Array.from(files)]);
+                                                    }
+                                                    else enqueueSnackbar(`You can only upload up to five images!`, { variant: "error" });
                                                 }
                                             }}
                                         />
@@ -200,9 +221,11 @@ export default function MyProfile() {
                                             </Box>)}
                                         <FormLabel sx={{ mt: 2 }}>Price</FormLabel>
                                         <Input
+                                            type="number"
                                             size="sm"
                                             placeholder="Total cost"
                                             name="price"
+                                            value={price}
                                             onChange={handlePriceChange}
                                         />
 
