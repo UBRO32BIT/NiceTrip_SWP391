@@ -64,14 +64,21 @@ export default function OrderList() {
                             </CardOverflow>
                             <CardContent>
                                 <Typography sx={{ display: 'inline-flex', gap: 1 }}>
-                                    <Chip
-                                        variant="soft"
-                                        color="success"
-                                        size="sm"
+                                    {item?.isPaid === true ? <Chip
+                                            variant="soft"
+                                            color="success"
+                                            size="sm"
+                                        >
+                                            Is paid
+                                        </Chip> :
+                                        <Chip
+                                            variant="soft"
+                                            color="danger"
+                                            size="sm"
 
-                                    >
-                                        Is paid
-                                    </Chip>
+                                        >
+                                            Isn't paid
+                                        </Chip>}
                                     {item?.status === 'confirmed' ? <Chip
                                         variant="soft"
                                         color="success"

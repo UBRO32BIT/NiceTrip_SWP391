@@ -1,7 +1,7 @@
 import { api } from '../api';
 
 const UploadPost = (data: any) => {
-    return api.post('/post/upload', data)
+    return api.post('/timeshare/upload', data)
         .then((res) => {
             return res.data.data
         })
@@ -12,7 +12,7 @@ const UploadPost = (data: any) => {
         })
 }
 const GetPost = () => {
-    return api.get('/post')
+    return api.get('/timeshare')
         .then((res) => {
             return res.data.data.results
         })
@@ -23,7 +23,7 @@ const GetPost = () => {
         })
 }
 const GetPostById = (postId: string) => {
-    return api.get(`/post/${postId}`)
+    return api.get(`/timeshare/${postId}`)
         .then((res) => {
             return res.data.data
         })
@@ -34,7 +34,7 @@ const GetPostById = (postId: string) => {
         })
 }
 const GetPostBelongToOwner = (userId: string) => {
-    return api.get(`/post/current-owner/${userId}`)
+    return api.get(`/timeshare/current-owner/${userId}`)
         .then((res) => {
             return res.data.data
         })

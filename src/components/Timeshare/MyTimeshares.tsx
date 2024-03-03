@@ -13,24 +13,25 @@ import Link from '@mui/joy/Link';
 import Card from '@mui/joy/Card';
 import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
-import PostList from './PostList';
+import TimeshareList from './TimeshareList';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { styled, Grid } from '@mui/joy';
 import { useSelector } from 'react-redux';
 import { UpdateUser } from '../../services/auth.service';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
-import AddNewPost from './AddNewPost'
+import AddNewPost from './UploadTimeshare'
 import ResortInput from './ResortInput';
-import ManagePost from './ManagePost';
-import UpdatePost from './UpdatePost';
+import ManageTimeshares from './ManageTimeshares';
+import UpdateTimeshare from './UpdateTimeshare';
+import UploadTimeshare from './UploadTimeshare';
 interface RootState {
     auth: {
         isAuthenticated: boolean;
         user: any;
     };
 }
-export default function MyPostings() {
+export default function MyTimeshares() {
     const [imageFiles, setImageFiles] = React.useState([]);
     const [imagePreview, setImagePreview] = React.useState([]);
     return (
@@ -68,14 +69,12 @@ export default function MyPostings() {
                             Users
                         </Link>
                         <Typography color="primary" fontWeight={500} fontSize={12}>
-                            My postings
+                            My timeshares
                         </Typography>
                     </Breadcrumbs>
-
                     <Typography level="h2" component="h1" sx={{ mt: 1, mb: 2 }}>
-                        My postings
+                        My timeshares
                     </Typography>
-
                 </Box>
                 <Tabs
                     defaultValue={0}
@@ -104,25 +103,25 @@ export default function MyPostings() {
                             },
                         }}
                     >
-                        <NavLink to="/me/my-posting/post-list" style={{ textDecoration: 'none' }}>
+                        <NavLink to="/me/my-timeshares/timeshares-list" style={{ textDecoration: 'none' }}>
                             <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={0}>
-                                My posts
+                                My timeshares
                             </Tab>
                         </NavLink>
-                        <NavLink to="/me/my-posting/upload-new-post" style={{ textDecoration: 'none' }}>
+                        <NavLink to="/me/my-timeshares/upload-new-timeshare" style={{ textDecoration: 'none' }}>
                         <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={1}>
-                            Upload new post
+                            Upload new timeshare
                         </Tab>
                         </NavLink>
                     </TabList>
                 </Tabs>
                 <Routes>
                     <Route>
-                        <Route path="/post-list/:postId" element={<ManagePost />} />
-                        <Route path="/post-list" element={<PostList />} />
-                        <Route path="/" element={<PostList />} />
-                        <Route path="/update/:postId" element={<UpdatePost />} />
-                        <Route path="/upload-new-post" element={<AddNewPost />} />
+                        <Route path="/timeshares-list/:timeshareId" element={<ManageTimeshares />} />
+                        <Route path="/timeshares-list" element={<TimeshareList />} />
+                        <Route path="/" element={<TimeshareList />} />
+                        <Route path="/update/:timeshareId" element={<UpdateTimeshare />} />
+                        <Route path="/upload-new-timeshare" element={<UploadTimeshare />} />
                     </Route>
                 </Routes>
             </Box>

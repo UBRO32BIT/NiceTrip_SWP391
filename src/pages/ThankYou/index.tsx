@@ -60,7 +60,6 @@ export default function ThankYou() {
     let [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
     const paymentData = useLocation();
-    console.log(paymentData)
     let { postId, reservationId } = useParams();
     let paymentId = searchParams.get('paymentId');
     let PayerID = searchParams.get('PayerID');
@@ -69,7 +68,6 @@ export default function ThankYou() {
         setUploading(true)
         e.preventDefault();
         const reservationData = await GetReservationById(reservationId);
-        console.log(reservationData)
         const totalAmount = reservationData?.amount
         const data = {
             reservationId,

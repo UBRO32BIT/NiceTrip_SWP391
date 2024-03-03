@@ -15,7 +15,7 @@ const quick_link = [
   },
   {
     path: '/yourtimeshare',
-    display: 'Post Your Timeshare'
+    display: 'Timeshare Your Timeshare'
   },
   {
     path: '/tours',

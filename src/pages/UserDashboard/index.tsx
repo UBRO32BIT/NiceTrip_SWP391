@@ -5,11 +5,11 @@ import Box from '@mui/joy/Box';
 import Sidebar from '../../components/Profile/Sidebar';
 import Header from '../../components/Profile/Header';
 import MyProfile from '../../components/Profile/MyProfile';
-import MyPosting from '../../components/Post/MyPosting';
+import MyTimeshares from '../../components/Timeshare/MyTimeshares';
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import MyOrder from '../../components/Order/MyOrder';
-import MyTrip from '../../components/Trip';
-import MyMessage from '../../components/Messenger/MyMessages';
+import MyOrders from '../../components/Order/MyOrder';
+import MyTrips from '../../components/Trip';
+import MyMessages from '../../components/Messenger/MyMessages';
 export default function JoyOrderDashboardTemplate() {
   return (
 
@@ -37,10 +37,10 @@ export default function JoyOrderDashboardTemplate() {
             <Route>
             <Route path="/" element={<MyProfile />} />
               <Route path="/my-profile/*" element={<MyProfile />} />
-              <Route path="/my-posting/*" element={<MyPosting />} />
-              <Route path="/my-trip/*" element={<MyTrip />} />
-              <Route path="/my-order/*" element={<MyOrder />} />
-                <Route path="/my-messages/*" element={<MyMessage />} />
+              <Route path="/my-timeshares/*" element={<MyTimeshares />} />
+              <Route path="/my-trips/*" element={<MyTrips />} />
+              <Route path="/my-orders/*" element={<MyOrders />} />
+                <Route path="/my-messages/*" element={<MyMessages />} />
             </Route>
           </Routes>
         </Box>

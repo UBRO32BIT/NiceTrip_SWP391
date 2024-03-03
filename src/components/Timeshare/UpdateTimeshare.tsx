@@ -38,7 +38,7 @@ function sleep(duration: number): Promise<void> {
         }, duration);
     });
 }
-export default function UpdatePost() {
+export default function UpdateTimeshare() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [imageFiles, setImageFiles] = React.useState<any[]>([]);
     const [startDate, setStartDate] = React.useState<string>('');

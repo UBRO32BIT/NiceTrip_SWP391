@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { CssVarsProvider } from '@mui/joy/styles';
+import {CssVarsProvider} from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
 import NavBar from '../../components/Rental/NavBar';
-import { GetPostById } from '../../services/post.service';
+import {GetPostById} from '../../services/post.service';
 import Grid from '@mui/joy/Grid';
-import { Button, Typography } from '@mui/joy';
-import { Routes, Route, useParams } from 'react-router-dom';
+import {Button, Typography} from '@mui/joy';
+import {Routes, Route, useParams} from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Card from '@mui/joy/Card';
-import { shadows } from '@mui/system';
+import {shadows} from '@mui/system';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
@@ -21,9 +21,9 @@ import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import CountrySelector from '../../components/Profile/CountrySelector';
 import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
-import { useSelector } from 'react-redux';
-import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
-import { MakeReservation, ExecutePayment, GetReservationById } from '../../services/booking.service';
+import {useSelector} from 'react-redux';
+import {NavLink, useNavigate, useSearchParams} from 'react-router-dom';
+import {MakeReservation, ExecutePayment, GetReservationById} from '../../services/booking.service';
 
 interface RootState {
     auth: {
@@ -59,18 +59,18 @@ export default function ReviewOrder() {
     const [post, setPost] = React.useState<any>([]);
     let [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
-    let { postId, reservationId } = useParams();
+    let {postId, reservationId} = useParams();
     let paymentId = searchParams.get('paymentId');
     let PayerID = searchParams.get('PayerID');
     const [uploading, setUploading] = React.useState<boolean>(false);
+
     async function handleAccept(e: any) {
         setUploading(true)
         e.preventDefault();
         const reservationData = await GetReservationById(reservationId);
-        const totalAmount= reservationData?.amount
+        const totalAmount = reservationData?.amount
         const postId = reservationData?.postId?._id
-        console.log(postId)
-        const data ={
+        const data = {
             postId,
             reservationId,
             paymentId,
@@ -80,12 +80,14 @@ export default function ReviewOrder() {
         const executed = await ExecutePayment(data);
         if (executed) {
             setUploading(false)
-            if(executed?.state === "approved") navigate('/thank-you', executed)
+            if (executed?.state === "approved") navigate('/thank-you', executed)
         }
     }
+
     React.useEffect(() => {
         Load()
     }, [])
+
     async function Load() {
         if (postId) {
             const postData = await GetPostById(postId);
@@ -94,6 +96,7 @@ export default function ReviewOrder() {
             }
         }
     }
+
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
         const options: Intl.DateTimeFormatOptions = {
@@ -103,13 +106,23 @@ export default function ReviewOrder() {
         };
         return new Date(dateString).toLocaleDateString('en-US', options);
     }
+
     return (
         <CssVarsProvider disableTransitionOnChange>
-            <CssBaseline />
-            <NavBar />
-            <Grid container spacing={0} sx={{ flexGrow: 1, width: 1, pr: 4, pl: 4, mt: 2, gap: 1, flexWrap: { xs: 'wrap', md: 'nowrap', } }}>
-                <Box sx={{ width: 0.5, display: 'flex', justifyContent: 'space-between', mt: 2, p: 1, boxShadow: '0 0 4px gray', }}>
-                    <Stack sx={{ width: 1, display: 'flex', justifyContent: 'center' }} direction="column" spacing={0} justifyContent="center">
+            <CssBaseline/>
+            <NavBar/>
+            <Grid container spacing={0}
+                  sx={{flexGrow: 1, width: 1, pr: 4, pl: 4, mt: 2, gap: 1, flexWrap: {xs: 'wrap', md: 'nowrap',}}}>
+                <Box sx={{
+                    width: 0.5,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    mt: 2,
+                    p: 1,
+                    boxShadow: '0 0 4px gray',
+                }}>
+                    <Stack sx={{width: 1, display: 'flex', justifyContent: 'center'}} direction="column" spacing={0}
+                           justifyContent="center">
                         {/* <img src={post?.resortId?.image_urls} /> */}
                         <Typography fontWeight={600} fontSize={28}>
                             {post?.resortId?.name}
@@ -120,7 +133,7 @@ export default function ReviewOrder() {
                         <Typography fontWeight={400} fontSize={18}>
                             Owner: {post?.current_owner?.username}
                         </Typography>
-                        <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                        <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
                             <Typography fontWeight={500} fontSize={20}>
                                 Unit:
                             </Typography>
@@ -128,7 +141,7 @@ export default function ReviewOrder() {
                                 {post?.unitId?.name}
                             </Typography>
                         </Box>
-                        <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                        <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
                             <Typography fontWeight={500} fontSize={20}>
                                 Stay:
                             </Typography>
@@ -136,7 +149,7 @@ export default function ReviewOrder() {
                                 {post?.numberOfNights} night
                             </Typography>
                         </Box>
-                        <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between', }}>
+                        <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
                             <Typography fontWeight={500} fontSize={20}>
                                 Check-in:
                             </Typography>
@@ -144,7 +157,7 @@ export default function ReviewOrder() {
                                 {formatDate(post?.start_date)}
                             </Typography>
                         </Box>
-                        <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                        <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
                             <Typography fontWeight={500} fontSize={20}>
                                 Check-out:
                             </Typography>
@@ -152,8 +165,8 @@ export default function ReviewOrder() {
                                 {formatDate(post?.end_date)}
                             </Typography>
                         </Box>
-                        <Divider sx={{ mt: 1, mb: 1 }} />
-                        <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                        <Divider sx={{mt: 1, mb: 1}}/>
+                        <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
                             <Typography fontWeight={500} fontSize={20}>
                                 Price/night:
                             </Typography>
@@ -161,7 +174,7 @@ export default function ReviewOrder() {
                                 ${post?.pricePerNight}
                             </Typography>
                         </Box>
-                        <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                        <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
                             <Typography fontWeight={500} fontSize={20}>
                                 Total:
                             </Typography>
@@ -169,8 +182,15 @@ export default function ReviewOrder() {
                                 ${post?.price}
                             </Typography>
                         </Box>
-                        <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 2, width: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                            <CardActions sx={{ alignSelf: 'flex-end', pt: 2, gap: 2 }}>
+                        <CardOverflow sx={{
+                            borderTop: '1px solid',
+                            borderColor: 'divider',
+                            mt: 2,
+                            width: 1,
+                            display: 'flex',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <CardActions sx={{alignSelf: 'flex-end', pt: 2, gap: 2}}>
                                 <Button size="sm" variant="outlined" color="neutral">
                                     Cancel
                                 </Button>

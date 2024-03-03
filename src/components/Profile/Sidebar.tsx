@@ -145,7 +145,7 @@ export default function Sidebar() {
         onClick={() => closeSidebar()}
       />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }} >
-        <IconButton variant="soft" color="primary" size="sm" onClick={()=>{navigate('/home')}}>
+        <IconButton variant="soft" color="primary" size="sm" onClick={()=>{navigate('/home')}} sx={{color: '#ff6f03'}}>
           <HomeIcon />
         </IconButton>
         <Typography level="title-lg">Nice trip</Typography>
@@ -192,16 +192,16 @@ export default function Sidebar() {
             </ListItemButton>
           </NavLink>
 
-          <NavLink to="/me/my-posting" style={{ textDecoration: 'none' }}>
+          <NavLink to="/me/my-timeshares" style={{ textDecoration: 'none' }}>
             <ListItemButton>
               <PostAddIcon />
               <ListItemContent>
-                <Typography level="title-sm">My postings</Typography>
+                <Typography level="title-sm">My timeshares</Typography>
               </ListItemContent>
             </ListItemButton>
           </NavLink>
 
-          <NavLink to="/me/my-order" style={{ textDecoration: 'none' }} >
+          <NavLink to="/me/my-orders" style={{ textDecoration: 'none' }} >
             <ListItemButton>
               <ShoppingCartRoundedIcon />
               <ListItemContent>
@@ -210,7 +210,7 @@ export default function Sidebar() {
             </ListItemButton>
           </NavLink>
 
-          <NavLink to="/me/my-trip" style={{ textDecoration: 'none' }}>
+          <NavLink to="/me/my-trips" style={{ textDecoration: 'none' }}>
             <ListItemButton>
               <LuggageIcon />
               <ListItemContent>

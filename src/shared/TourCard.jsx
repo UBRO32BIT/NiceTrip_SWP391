@@ -36,7 +36,7 @@ const TourCard = ({props}) => {
     return <div className='tour__card'>
         <Card>
             <div className="tour__img">
-                <img src={post.image} alt="tour-img" />
+                <img src={post.image} alt="tour-img"/>
                 <span>NewRental</span>
             </div>
 
@@ -51,7 +51,7 @@ const TourCard = ({props}) => {
                     }
                     </span>
                 </div>
-                <h5 className='tour__title'><Link to={`/timesharedetails/${post.id}`}>{post.title}</Link></h5>
+                <h5 className='tour__title'><Link to={`/timeshare-details/${post.id}`}>{post.title}</Link></h5>
                 <Stack sx={{ width: 1, display: 'flex', justifyContent: 'center' }} direction="column" spacing={0} justifyContent="center">
                     <Box>
                         <Typography fontWeight={500} fontSize={14}>

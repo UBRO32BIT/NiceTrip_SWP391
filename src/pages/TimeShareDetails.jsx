@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import '../styles/timeshare-details.css'
 import { GetPostById } from '../services/post.service'
 import { Container, Row, Col, Form, ListGroup } from 'reactstrap'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import tourData from '../assets/data/tours'
 import calculateAvgRating from '../utils/avgRating'
 import { Money } from '@mui/icons-material'
@@ -19,6 +19,7 @@ import convertImageArray from '../utils/convertImageArray'
 
 const TimeShareDetails = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const reviewMsgRef = useRef('')
     const [tourRating, setTourRating] = useState(null)
     const [post, setPost] = React.useState(null);
@@ -47,7 +48,7 @@ const TimeShareDetails = () => {
     //submit request to server
     const submitHandler = e => {
         e.preventDefault()
-        const reviewText = reviewMsgRef.current.value
+        const reviewText = reviewMsgRef.current.value;
         alert(`${reviewText}, ${tourRating}`);
         //later will call API
     }
@@ -98,9 +99,12 @@ const TimeShareDetails = () => {
                                             <h5>Description</h5>
                                             <p>{post?.resortId.description}</p>
                                         </div>
-                                        <div className="text-center">
-                                            <Button variant="contained" color="success" size="large">
+                                        <div className="text-center" style={{ display: "flex", gap: '5px'}}>
+                                            <Button variant="contained" color="success" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}>
                                                 Rent Now
+                                            </Button>
+                                            <Button variant="contained" color="error" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/exchange`) }}>
+                                                Request to exchange
                                             </Button>
                                         </div>
                                     </div>

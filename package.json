@@ -68,6 +68,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-date-range": "^1.4.9"
+    "@types/react-date-range": "^1.4.9",
+    "@types/react-image-gallery": "^1.2.4"
   }
 }

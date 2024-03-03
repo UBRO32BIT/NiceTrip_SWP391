@@ -1,13 +1,13 @@
 import { api } from '../api';
 
-const MakeReservation = (data: any) => {
-    return api.post('/reservation/create', data)
+const MakeReservation = (type: string, data: any) => {
+    return api.post(`/reservation/create?type=${type}`, data)
         .then((res) => {
             return res.data.data
         })
         .catch((error) => {
             // Handle errors here, you might want to log or show a user-friendly message
-            console.error('Error fetching resort by ID:', error);
+            console.error('Error making reservation:', error);
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
@@ -74,6 +74,18 @@ const GetTripOfUser = (userId : any) =>{
             throw error; 
         })
 }
+
+const ConfirmReservationByToken = (reservationId: any, token : any) =>{
+    return api.patch(`/reservation/${reservationId}/confirm?token=${token}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+
 export {
     MakeReservation,
     GetReservationById,
@@ -81,5 +93,6 @@ export {
     GetReservationOfUser,
     GetReservationOfPost,
     ConfirmReservation,
-    GetTripOfUser
+    GetTripOfUser,
+    ConfirmReservationByToken
 }

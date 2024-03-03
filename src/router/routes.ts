@@ -11,6 +11,8 @@ import TimeShareDetails from "../pages/TimeShareDetails";
 import PostTimeshare from "../pages/PostTimeshare";
 import About from "../pages/About";
 import SignUp from "../pages/Signup";
+import Exchange from "../pages/Exchange";
+import ConfirmReservation from "../pages/ConfirmReservation";
 import Messenger from "../pages/Messenger"
 interface Route {
     path: string;
@@ -42,11 +44,19 @@ const publicRoutes: Route[] = [
         page: PostDetail
     },
     {
-        path: '/post/:postId/book',
+        path: 'timeshare/:timeshareId/book',
         page: Booking
     },
     {
-        path: '/post/:postId/book/review-order/:reservationId',
+        path: '/timeshare/:postId/exchange',
+        page: Exchange
+    },
+    {
+        path: '/timeshare/:timeshareId/reservation/:reservationId/confirm',
+        page: ConfirmReservation
+    },
+    {
+        path: '/timeshare/:postId/book/review-order/:reservationId',
         page: ReviewOrder
     },
     {
@@ -62,7 +72,7 @@ const publicRoutes: Route[] = [
         page: TimeShare
     },
     {
-        path: '/timesharedetails/:id',
+        path: '/timeshare-details/:id',
         page: TimeShareDetails
     },
     {

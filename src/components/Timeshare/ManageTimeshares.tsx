@@ -9,10 +9,8 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import BookmarkAdd from '@mui/icons-material/BookmarkAddOutlined';
 import { styled, Grid } from '@mui/joy';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
+import Modal from '@mui/joy/Modal';
+import ModalClose from '@mui/joy/ModalClose';
 import { GetPostBelongToOwner, GetPostById } from '../../services/post.service';
 import { useSelector } from 'react-redux';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
@@ -20,6 +18,7 @@ import Stack from '@mui/joy/Stack';
 import Chip from '@mui/joy/Chip';
 import { GetReservationOfPost, ConfirmReservation } from '../../services/booking.service';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import Sheet from "@mui/joy/Sheet";
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -27,11 +26,13 @@ interface RootState {
     };
 }
 
-export default function ManagePost() {
+export default function ManageTimeshares() {
     const user = useSelector((state: RootState) => state?.auth?.user);
+    const [open, setOpen] = React.useState<boolean>(false);
+
     const [post, setPost] = React.useState<any>([]);
     const [reservationList, setReservationList] = React.useState<any>([]);
-    let { postId } = useParams();
+    let { timeshareId } = useParams();
     const navigate = useNavigate()
 
     React.useEffect(() => {
@@ -39,9 +40,9 @@ export default function ManagePost() {
     }, [])
 
     async function Load() {
-        if (postId) {
-            const postData = await GetPostById(postId);
-            const reservationData = await GetReservationOfPost(postId);
+        if (timeshareId) {
+            const postData = await GetPostById(timeshareId);
+            const reservationData = await GetReservationOfPost(timeshareId);
             if (postData) {
                 setPost(postData)
             }
@@ -184,9 +185,10 @@ export default function ManagePost() {
                         <Card
                             variant="outlined"
                             orientation="horizontal"
+                            onClick={() => setOpen(true)}
                             sx={{
                                 width: 1,
-                                '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' },
+                                '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder', cursor: 'pointer'},
                             }}
                         >
                             <AspectRatio ratio="1" sx={{ width: 50, borderRadius: '50%' }}>
@@ -230,12 +232,45 @@ export default function ManagePost() {
                                     </>}
 
                             </Box>
+
                         </Card>
                     ))}
 
                 </Stack>
             </Grid>
-
+            <Modal
+                aria-labelledby="modal-title"
+                aria-describedby="modal-desc"
+                open={open}
+                onClose={() => setOpen(false)}
+                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            >
+                <Sheet
+                    variant="outlined"
+                    sx={{
+                        maxWidth: 500,
+                        borderRadius: 'md',
+                        p: 3,
+                        boxShadow: 'lg',
+                    }}
+                >
+                    <ModalClose variant="plain" sx={{ m: 1 }} />
+                    <Typography
+                        component="h2"
+                        id="modal-title"
+                        level="h4"
+                        textColor="inherit"
+                        fontWeight="lg"
+                        mb={1}
+                    >
+                        This is the modal title
+                    </Typography>
+                    <Typography id="modal-desc" textColor="text.tertiary">
+                        Make sure to use <code>aria-labelledby</code> on the modal dialog with an
+                        optional <code>aria-describedby</code> attribute.
+                    </Typography>
+                </Sheet>
+            </Modal>
         </Grid>
 
     );

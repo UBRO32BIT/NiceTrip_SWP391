@@ -26,6 +26,9 @@ import {NavLink, useNavigate} from 'react-router-dom';
 import {MakeReservation} from '../../services/booking.service';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ImageGallery from "react-image-gallery";
+import convertImageArray from "../../utils/convertImageArray";
 
 interface RootState {
     auth: {
@@ -56,11 +59,11 @@ interface Resort {
     pricePerNight: string;
 }
 
-export default function Booking() {
+export default function Exchange() {
     const user = useSelector((state: RootState) => state?.auth?.user);
-    const [timeshare, setTimeshare] = React.useState<any>([]);
+    const [post, setPost] = React.useState<any>([]);
     const navigate = useNavigate();
-    let {timeshareId} = useParams();
+    let {postId} = useParams();
     const [uploading, setUploading] = React.useState<boolean>(false);
 
     async function handleSubmit(e: any) {
@@ -75,10 +78,10 @@ export default function Booking() {
             postalCode: formJson?.zipCode,
             country: formJson?.country,
         };
-        const reservation = await MakeReservation('rent',formData);
+        const reservation = await MakeReservation('exchange', formData);
         if (reservation) {
             // console.log(reservation)
-            navigate(`/timeshare/${timeshareId}/reservation/${reservation?._id}/confirm`)
+            navigate(`/timeshare/${postId}/reservation/${reservation?._id}/confirm`)
             setUploading(false)
         }
         console.log(formJson)
@@ -89,10 +92,10 @@ export default function Booking() {
     }, [])
 
     async function Load() {
-        if (timeshareId) {
-            const timeshareData = await GetPostById(timeshareId);
-            if (timeshareData) {
-                setTimeshare(timeshareData)
+        if (postId) {
+            const postData = await GetPostById(postId);
+            if (postData) {
+                setPost(postData)
             }
         }
     }
@@ -114,10 +117,173 @@ export default function Booking() {
                 <CssBaseline/>
                 {/*<NavBar />*/}
                 <Grid container spacing={0}
-                      sx={{flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1, flexWrap: {xs: 'wrap', md: 'nowrap',}}}>
+                      sx={{flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1,}}>
+                    <Grid container sx={{p: 1, height: 'fit-content'}}>
+                        <Grid xs={12} md={4} lg={4}>
+                            <Stack sx={{
+                                width: 1,
+                                p: 1,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                boxShadow: '0 0 4px gray'
+                            }} direction="column" spacing={0}
+                                   justifyContent="center">
+                                {/*{post && <ImageGallery items={convertImageArray([...post?.images, ...post?.resortId?.image_urls])} showPlayButton={false} />}*/}
+                                {/*<ImageGallery items={post?.resortId?.image_urls} />;*/}
+                                <img src={post?.resortId?.image_urls}/>
+                                <Typography fontWeight={600} fontSize={28}>
+                                    {post?.resortId?.name}
+                                </Typography>
+                                <Typography fontWeight={400} fontSize={18}>
+                                    Owner: {post?.current_owner?.username}
+                                </Typography>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Unit:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {post?.unitId?.name}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Stay:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {post?.numberOfNights} night
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Check-in:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {formatDate(post?.start_date)}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Check-out:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {formatDate(post?.end_date)}
+                                    </Typography>
+                                </Box>
+                                <Divider sx={{mt: 1, mb: 1}}/>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Price/night:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        ${post?.pricePerNight}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Total:
+                                    </Typography>
+                                    <Typography fontWeight={600} fontSize={20}>
+                                        ${post?.price}
+                                    </Typography>
+                                </Box>
+                            </Stack>
+                        </Grid>
+                        <Grid xs={12} md={4} lg={4} sx={{
+                            width: 1,
+                            p: 1,
+                            fontSize: '100',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <Stack sx={{
+                                p: 1,
+                                fontSize: 'large',
+                                color: '#e87014',
+                                textAlign: 'center',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                height: 'fit-content',
+                                flexDirection: 'column'
+                            }} direction="column">
+                                <Typography fontSize={20} fontWeight={600}>
+                                    Exchange
+                                </Typography>
+                                <SwapHorizIcon sx={{fontSize: 120, color: '#e87014'}}/>
+                            </Stack>
+
+                        </Grid>
+                        <Grid xs={12} md={4} lg={4}>
+                            <Stack sx={{
+                                width: 1,
+                                p: 1,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                boxShadow: '0 0 4px gray'
+                            }} direction="column" spacing={0}
+                                   justifyContent="center">
+                                <img src={post?.resortId?.image_urls}/>
+                                <Typography fontWeight={600} fontSize={28}>
+                                    {post?.resortId?.name}
+                                </Typography>
+                                <Typography fontWeight={400} fontSize={18}>
+                                    Owner: {post?.current_owner?.username}
+                                </Typography>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Unit:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {post?.unitId?.name}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Stay:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {post?.numberOfNights} night
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Check-in:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {formatDate(post?.start_date)}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Check-out:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        {formatDate(post?.end_date)}
+                                    </Typography>
+                                </Box>
+                                <Divider sx={{mt: 1, mb: 1}}/>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Price/night:
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={20}>
+                                        ${post?.pricePerNight}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                    <Typography fontWeight={500} fontSize={20}>
+                                        Total:
+                                    </Typography>
+                                    <Typography fontWeight={600} fontSize={20}>
+                                        ${post?.price}
+                                    </Typography>
+                                </Box>
+                            </Stack>
+                        </Grid>
+                    </Grid>
                     <Grid xs={12} md={8} sx={{p: 1, boxShadow: '0 0 0px gray'}}>
                         <Typography fontWeight={700} fontSize={26}>
-                            Booking request
+                            Request to exchange
                         </Typography>
                         <form onSubmit={handleSubmit}>
                             <Box sx={{
@@ -217,13 +383,13 @@ export default function Booking() {
                                         </Grid>
 
                                         <FormControl sx={{display: 'none'}}>
-                                            <Input type="hidden" name="amount" value={timeshare?.price}/>
+                                            <Input type="hidden" name="amount" value={post?.price}/>
                                         </FormControl>
                                         <FormControl sx={{display: 'none'}}>
                                             <Input type="hidden" name="userId" value={user?._id}/>
                                         </FormControl>
                                         <FormControl sx={{display: 'none'}}>
-                                            <Input type="hidden" name="timeshareId" value={timeshareId}/>
+                                            <Input type="hidden" name="postId" value={postId}/>
                                         </FormControl>
                                         <FormControl sx={{display: 'none'}}>
                                             <Input type="hidden" name="reservationDate"
@@ -248,76 +414,13 @@ export default function Booking() {
                                     {uploading ? (<Button loading size="sm" variant="solid" type='submit'>
                                         Save
                                     </Button>) : <Button size="sm" variant="solid" type='submit'>
-                                        Booking request
+                                        Exchange request
                                     </Button>}
                                 </CardActions>
                             </CardOverflow>
                         </form>
                     </Grid>
-                    <Grid xs={12} md={4} sx={{p: 1, boxShadow: '0 0 4px gray', height: 'fit-content',}}>
-                        <Stack sx={{width: 1, display: 'flex', justifyContent: 'center'}} direction="column" spacing={0}
-                               justifyContent="center">
-                            <img src={timeshare?.resortId?.image_urls}/>
-                            <Typography fontWeight={600} fontSize={28}>
-                                {timeshare?.resortId?.name}
-                            </Typography>
-                            <Typography fontWeight={400} fontSize={18}>
-                                Post: #{timeshare?._id}
-                            </Typography>
-                            <Typography fontWeight={400} fontSize={18}>
-                                Owner: {timeshare?.current_owner?.username}
-                            </Typography>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Unit:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {timeshare?.unitId?.name}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Stay:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {timeshare?.numberOfNights} night
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Check-in:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {formatDate(timeshare?.start_date)}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Check-out:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {formatDate(timeshare?.end_date)}
-                                </Typography>
-                            </Box>
-                            <Divider sx={{mt: 1, mb: 1}}/>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Price/night:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    ${timeshare?.pricePerNight}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Total:
-                                </Typography>
-                                <Typography fontWeight={600} fontSize={20}>
-                                    ${timeshare?.price}
-                                </Typography>
-                            </Box>
-                        </Stack>
-                    </Grid>
+
                 </Grid>
             </CssVarsProvider>
             <Footer/>

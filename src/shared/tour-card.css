@@ -12,7 +12,11 @@
 .tour__img {
     position: relative;
 }
-
+.tour__img img{
+    height: 200px;
+    object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+    object-position: center;
+}
 .tour__img span {
     position: absolute;
     top: 0;

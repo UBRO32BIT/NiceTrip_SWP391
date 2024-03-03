@@ -30,7 +30,7 @@ interface RootState {
     };
 }
 
-export default function PostList() {
+export default function TimeshareList() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [myPosts, setMyPosts] = React.useState([]);
     const navigate = useNavigate();
@@ -190,7 +190,7 @@ export default function PostList() {
                                 </div> */}
                             <Button color="success" variant='outlined' sx={{width: '20px'}}
                                     onClick={() => {
-                                        navigate(`/me/my-posting/update/${post?._id}`)
+                                        navigate(`/me/my-timeshares/update/${post?._id}`)
                                     }}>
                                 <EditIcon/>
                             </Button>
@@ -220,7 +220,7 @@ export default function PostList() {
                                 aria-label="Explore Bahamas Islands"
                                 sx={{ml: 'auto', alignSelf: 'center', fontWeight: 600}}
                                 onClick={() => {
-                                    navigate(`/me/my-posting/post-list/${post?._id}`)
+                                    navigate(`/me/my-timeshares/timeshares-list/${post?._id}`)
                                 }}
                             >
                                 Manage
