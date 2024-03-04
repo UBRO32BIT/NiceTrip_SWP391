@@ -12,7 +12,7 @@ import Renting from '../components/Renting/Renting'
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import convertDate from '../utils/dateConverter'
+import {convertDate} from '../utils/date'
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css"
 import convertImageArray from '../utils/convertImageArray'
