@@ -22,6 +22,7 @@ import { LoginSuccess } from '../../features/auth/auth.slice';
 import { useSelector, useDispatch } from 'react-redux'
 import { createSlice, Dispatch } from '@reduxjs/toolkit'
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from 'notistack';
 
 interface FormElements extends HTMLFormControlsCollection {
   username: HTMLInputElement;
@@ -82,12 +83,18 @@ export default function JoySignInSideTemplate() {
   const isAuthenticated = useSelector((state: RootState) => state?.auth?.isAuthenticated);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   const Login = async (data: LoginData) => {
-    const login = await LoginWithUsernameAndPassword(data);
-    if (login?.data) {
-      const loginData = login.data;
-      dispatch(LoginSuccess(loginData));
+    try {
+      const login = await LoginWithUsernameAndPassword(data);
+      if (login?.data) {
+        const loginData = login.data;
+        dispatch(LoginSuccess(loginData));
+      }
+    }
+    catch (err) {
+      enqueueSnackbar(`${err}`, { variant: "error" });
     }
   }
   React.useEffect(() => {
@@ -180,8 +187,8 @@ export default function JoySignInSideTemplate() {
               <Stack gap={1}>
                 <Typography level="h3">Sign in</Typography>
                 <Typography level="body-sm">
-                  New to company?{' '}
-                  <Link href="#replace-with-a-link" level="title-sm">
+                  New one here?{' '}
+                  <Link href="/register" level="title-sm">
                     Sign up!
                   </Link>
                 </Typography>
@@ -219,7 +226,6 @@ export default function JoySignInSideTemplate() {
                     // persistent: formElements.persistent.checked,
                   };
                   Login(data);
-                  alert(JSON.stringify(data, null, 2));
                 }}
               >
                 <FormControl required>
@@ -252,7 +258,7 @@ export default function JoySignInSideTemplate() {
           </Box>
           <Box component="footer" sx={{ py: 3 }}>
             <Typography level="body-xs" textAlign="center">
-              © Your company {new Date().getFullYear()}
+              © NiceTrip {new Date().getFullYear()}
             </Typography>
           </Box>
         </Box>

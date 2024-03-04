@@ -8,7 +8,7 @@ import Typography from "@mui/joy/Typography";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/joy/Stack";
 import Chip from '@mui/material/Chip';
-import convertDate from '../utils/dateConverter';
+import {convertDate} from '../utils/date';
 import stringToArray from '../utils/stringToArray';
 
 const TourCard = ({props}) => {

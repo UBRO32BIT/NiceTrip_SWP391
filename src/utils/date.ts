@@ -1,4 +1,4 @@
-export default function convertDate(dateString: string) {
+export function convertDate(dateString: string) {
     const date = new Date(dateString);
     // Extracting day, month, and year from the date object
     const day = date.getDate();
@@ -12,4 +12,10 @@ export default function convertDate(dateString: string) {
     // Formatted date in dd/mm/yyyy format
     const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
     return formattedDate;
+}
+
+export function isValidDateRange(startDateString: string, endDateString: string) {
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+    return startDate < endDate;
 }
