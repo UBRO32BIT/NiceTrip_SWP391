@@ -1,28 +1,28 @@
 import React, {useRef, useState} from 'react'
 import './search-bar.css';
 import { Col, Button, Form, FormGroup } from 'reactstrap';
-
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const SearchBar = () => {
-
+    const navigate = useNavigate()
+    const { enqueueSnackbar } = useSnackbar();
     const locationRef = useRef('')
     const maxGroupSizeRef = useRef(0)
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
-    const searchHandler = () => {
-
+    const searchHandler = (e) => {
+        e.preventDefault();
         const location = locationRef.current.value
         const maxGroupSize = maxGroupSizeRef.current.value
 
-
-        if (location === '' || maxGroupSize === '' || !startDate || !endDate) {
-            return alert('All fields are required, including date range!');
+        if (location === '' && (startDate === '' || endDate === '')) {
+            enqueueSnackbar("At least one field is required!", { variant: "error" });
         }
+        else navigate(`/timeshare?query=${location}&startDate=${startDate}&endDate=${endDate}`)
     }
 
 
@@ -67,7 +67,7 @@ const SearchBar = () => {
                         </div>
                     </span>
                 </FormGroup>
-                <Button className='search__btn' type='submit' onClick={searchHandler}><Link to='/tours/search'>Search</Link></Button>
+                <Button className='search__btn' type='submit' onClick={searchHandler}>Search</Button>
             </Form>
         </div>
     </Col>

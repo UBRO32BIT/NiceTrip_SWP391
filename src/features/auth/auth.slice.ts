@@ -7,6 +7,7 @@ interface LoginUser {
 }
 export interface RootState {
     auth: {
+      isLoaded: boolean;
       isAuthenticated: boolean;
       user: any;
     };
@@ -15,10 +16,14 @@ export interface RootState {
 export const authSlice = createSlice({
     name: 'auth',
     initialState: {
+        isLoaded: false,
         isAuthenticated: false,
         user: undefined,
     },
     reducers: {
+        Loaded: (state) => {
+            state.isLoaded = true;
+        },
         RegisterSuccess: (state, action) => {
             const loginData = action.payload;
             state.isAuthenticated = true;
@@ -37,6 +42,6 @@ export const authSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { RegisterSuccess, LoginSuccess, Logout } = authSlice.actions
+export const { Loaded, RegisterSuccess, LoginSuccess, Logout } = authSlice.actions
 
 export default authSlice.reducer

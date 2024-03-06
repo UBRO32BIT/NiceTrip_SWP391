@@ -15,11 +15,12 @@ import MyTimeshares from '../../components/Timeshare/MyTimeshares';
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthLoaded = useSelector((state: RootState) => state.auth.isLoaded);
   React.useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && isAuthLoaded) {
       navigate('/login');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAuthLoaded]);
   return (
     <>
       {isAuthenticated &&
@@ -47,9 +48,9 @@ export default function JoyOrderDashboardTemplate() {
                 <Route>
                   <Route path="/" element={<MyProfile />} />
                   <Route path="/my-profile/*" element={<MyProfile />} />
-                  <Route path="/my-posting/*" element={<MyTimeshares />} />
-                  <Route path="/my-trip/*" element={<MyTrip />} />
-                  <Route path="/my-order/*" element={<MyOrder />} />
+                  <Route path="/my-timeshares/*" element={<MyTimeshares />} />
+                  <Route path="/my-trips/*" element={<MyTrip />} />
+                  <Route path="/my-orders/*" element={<MyOrder />} />
                   <Route path="/my-messages/*" element={<MyMessage />} />
                 </Route>
               </Routes>

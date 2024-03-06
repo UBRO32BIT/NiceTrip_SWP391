@@ -87,7 +87,7 @@ const Home = () => {
                     <Row>
                         <Col lg='12' className='mb-5'>
                             <Subtitle subtitle={'Explore'}/>
-                            <h2 className='featured__tour-title'> Our featured tours</h2>
+                            <h2 className='featured__tour-title'> Our featured timeshares</h2>
                         </Col>
                         {posts.length > 0 && <FeaturedTourList posts={posts}/>}
                     </Row>

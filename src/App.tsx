@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import RentalDashboard from './pages/RentalDashboard';
 import Router from './router/router';
-import { LoginSuccess } from './features/auth/auth.slice';
+import { Loaded, LoginSuccess } from './features/auth/auth.slice';
 import { useSelector, useDispatch } from 'react-redux'
 import { api } from './api';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
@@ -28,6 +28,7 @@ function App() {
         dispatch(LoginSuccess(loginData));
       }
     }
+    dispatch(Loaded());
   }
   type AnchorOrigin = SnackbarOrigin;
   const customAnchorOrigin: AnchorOrigin = {
