@@ -12,8 +12,8 @@ const MakeReservation = (type: string, data: any) => {
         })
 }
 
-const ExecutePayment = (data: any) => {
-    return api.post('/payment/execute-payment', data)
+const ExecutePayPalPayment = (data: any) => {
+    return api.post('/payment/execute-paypal-payment', data)
         .then((res) => {
             return res.data.data
         })
@@ -115,11 +115,31 @@ const AcceptReservationByOwner = (reservationId: any) => {
             throw error;
         })
 }
+const CreatePayPalPayment = (reservation: any) => {
+    return api.post(`/payment/create-paypal-payment`, reservation)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
+    return api.get(`/payment/${userId}/${reservationId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
 
 export {
     MakeReservation,
     GetReservationById,
-    ExecutePayment,
+    ExecutePayPalPayment,
     GetReservationOfUser,
     GetReservationOfPost,
     GetExchangeRequestOfTimeshare,
@@ -127,5 +147,7 @@ export {
     ConfirmReservation,
     GetTripOfUser,
     ConfirmReservationByToken,
-    AcceptReservationByOwner
+    AcceptReservationByOwner,
+    CreatePayPalPayment,
+    GetOrderPaymentInfo
 }

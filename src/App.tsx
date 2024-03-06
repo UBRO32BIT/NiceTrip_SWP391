@@ -16,6 +16,7 @@ import {
 } from './utils/tokenCookies'
 import { SnackbarOrigin, SnackbarProvider } from 'notistack';
 
+
 function App() {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [isLoading, setIsLoading] = React.useState<boolean | null>(null);

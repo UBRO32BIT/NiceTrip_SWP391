@@ -15,6 +15,7 @@ import Exchange from "../pages/Exchange";
 import ConfirmReservation from "../pages/ConfirmReservation";
 import Messenger from "../pages/Messenger"
 import Email from "../pages/Email";
+import PaymentPage from "../pages/Payment";
 interface Route {
     path: string;
     page: React.ComponentType<any>;
@@ -59,6 +60,10 @@ const publicRoutes: Route[] = [
     {
         path: '/timeshare/:postId/book/review-order/:reservationId',
         page: ReviewOrder
+    },
+    {
+        path: '/payment/:reservationId',
+        page: PaymentPage
     },
     {
         path: '/thank-you',
