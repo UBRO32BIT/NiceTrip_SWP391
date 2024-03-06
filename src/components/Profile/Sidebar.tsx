@@ -44,6 +44,25 @@ import {
   removeSessionCookies
 } from '../../utils/tokenCookies'
 import { useSelector, useDispatch } from 'react-redux'
+import {
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/joy';
+import { Link } from 'react-router-dom';
+
+function getRoleColor(role: any) {
+  switch (role) {
+    case 'member-basic':
+      return '#A9A9A9';
+    case 'member-protected':
+      return '#2F4F4F';
+    case 'member-fullservice':
+      return '#FF4500';
+    default:
+      return 'inherit';
+  }
+}
 
 function Toggler({
   defaultExpanded = false,
@@ -265,27 +284,38 @@ export default function Sidebar() {
             </ListItemButton>
           </NavLink>
         </List>
+        
         <Card
-          invertedColors
-          variant="soft"
-          color="warning"
-          size="sm"
-          sx={{ boxShadow: 'none' }}
-        >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography level="title-sm">User permission</Typography>
-            <IconButton size="sm">
-              <CloseRoundedIcon />
-            </IconButton>
-          </Stack>
-          <Typography level="body-xs">
-            Bạn muốn đăng timeshare để cho thuê hoặc trao đổi ?
-          </Typography>
-          <LinearProgress variant="outlined" value={80} determinate sx={{ my: 1 }} />
-          <Button size="sm" variant="solid">
-            Trở thành member
-          </Button>
-        </Card>
+  invertedColors
+  variant="soft"
+  color="warning"
+  size="sm"
+  sx={{ boxShadow: 'none' }}
+>
+  <Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Typography level="title-sm">User permission</Typography>
+  </Stack>
+  {user?.servicePack?.role ? (
+    <Typography level="body-xs" style={{ color: getRoleColor(user.servicePack.role) }}>
+      ROLE: {user?.servicePack?.name}
+    </Typography>
+  ) : (
+    <>
+      <Typography level="body-xs">
+        Bạn muốn đăng timeshare để cho thuê hoặc trao đổi ?
+      </Typography>
+      <LinearProgress variant="outlined" value={80} determinate sx={{ my: 1 }} />
+      <Link to="/me/my-profile/billing">
+      <Button size="sm" variant="solid">
+        Trở thành member
+      </Button>
+    </Link>
+    </>
+  )}
+</Card>
+
+
+
       </Box>
       <Divider />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>

@@ -16,8 +16,11 @@ import {convertDate} from '../utils/date'
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css"
 import convertImageArray from '../utils/convertImageArray'
+import { Box } from '@mui/material';
+import { useSelector } from "react-redux";
 
 const TimeShareDetails = () => {
+    const user = useSelector((state) => state?.auth?.user);
     const { id } = useParams();
     const navigate = useNavigate();
     const reviewMsgRef = useRef('')
@@ -99,11 +102,17 @@ const TimeShareDetails = () => {
                                             <h5>Description</h5>
                                             <p>{post?.resortId.description}</p>
                                         </div>
+                                        {(user?._id === post?.current_owner?._id) && <>
+                                        <Box sx={{ backgroundColor:'red' }}>
+                                            Cút ngay
+                                        </Box>
+                                        </>}
                                         <div className="text-center" style={{ display: "flex", gap: '5px'}}>
-                                            <Button variant="contained" color="success" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}>
+                                            
+                                            <Button disabled={user?._id === post?.current_owner?._id} variant="contained" color="success" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}>
                                                 Rent Now
                                             </Button>
-                                            <Button variant="contained" color="error" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/exchange`) }}>
+                                            <Button disabled={user?._id === post?.current_owner?._id} variant="contained" color="error" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/exchange`) }}>
                                                 Request to exchange
                                             </Button>
                                         </div>

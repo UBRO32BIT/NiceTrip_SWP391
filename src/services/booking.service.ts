@@ -115,6 +115,19 @@ const AcceptReservationByOwner = (reservationId: any) => {
             throw error;
         })
 }
+const MakeExchange = (timeshareId: any, exchangeData: any) => {
+    return api.post(`/reservation/exchange/${timeshareId}`, exchangeData)
+        .then((res) => {
+            return res.data.data
+
+        })
+        
+        .catch((error) => {
+            // Handle errors here, you might want to log or show a user-friendly message
+            console.error('Error making reservation:', error);
+            throw error; // Re-throw the error to let the caller handle it if needed
+        })
+}
 
 export {
     MakeReservation,
@@ -127,5 +140,6 @@ export {
     ConfirmReservation,
     GetTripOfUser,
     ConfirmReservationByToken,
-    AcceptReservationByOwner
+    AcceptReservationByOwner,
+    MakeExchange,
 }
