@@ -22,8 +22,8 @@ const GetPost = () => {
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
-const GetPostById = (postId: string) => {
-    return api.get(`/timeshare/${postId}`)
+const GetPostById = (timeshareId: string) => {
+    return api.get(`/timeshare/${timeshareId}`)
         .then((res) => {
             return res.data.data
         })

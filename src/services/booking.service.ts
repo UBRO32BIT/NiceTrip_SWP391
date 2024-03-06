@@ -1,4 +1,4 @@
-import { api } from '../api';
+import {api} from '../api';
 
 const MakeReservation = (type: string, data: any) => {
     return api.post(`/reservation/create?type=${type}`, data)
@@ -23,7 +23,7 @@ const ExecutePayment = (data: any) => {
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
-const GetReservationById = (reservationId : any) =>{
+const GetReservationById = (reservationId: any) => {
     return api.get(`/reservation/${reservationId}`)
         .then((res) => {
             return res.data.data
@@ -34,49 +34,79 @@ const GetReservationById = (reservationId : any) =>{
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
-const GetReservationOfUser = (userId : any) =>{
+const GetReservationOfUser = (userId: any) => {
     return api.get(`/reservation/of-user/${userId}`)
         .then((res) => {
             return res.data.data
         })
         .catch((error) => {
             console.error('Error fetching resort by ID:', error);
-            throw error; 
+            throw error;
         })
 }
-const GetReservationOfPost = (postId : any) =>{
+const GetReservationOfPost = (postId: any) => {
     return api.get(`/reservation/of-post/${postId}`)
         .then((res) => {
             return res.data.data
         })
         .catch((error) => {
             console.error('Error fetching resort by ID:', error);
-            throw error; 
+            throw error;
         })
 }
-const ConfirmReservation = (reservationId : any) =>{
+const GetRentRequestOfTimeshare = (timeshareId: any) => {
+    return api.get(`/reservation/of-timeshare/${timeshareId}?type=rent`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const GetExchangeRequestOfTimeshare = (timeshareId: any) => {
+    return api.get(`/reservation/of-post/${timeshareId}?type=exchange`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const ConfirmReservation = (reservationId: any) => {
     return api.patch(`/reservation/${reservationId}/confirm`)
         .then((res) => {
             return res.data.data
         })
         .catch((error) => {
             console.error('Error fetching resort by ID:', error);
-            throw error; 
+            throw error;
         })
 }
-const GetTripOfUser = (userId : any) =>{
+const GetTripOfUser = (userId: any) => {
     return api.get(`/trip/of/${userId}`)
         .then((res) => {
             return res.data.data
         })
         .catch((error) => {
             console.error('Error fetching resort by ID:', error);
-            throw error; 
+            throw error;
         })
 }
 
-const ConfirmReservationByToken = (reservationId: any, token : any) =>{
+const ConfirmReservationByToken = (reservationId: any, token: any) => {
     return api.patch(`/reservation/${reservationId}/confirm?token=${token}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const AcceptReservationByOwner = (reservationId: any) => {
+    return api.patch(`/reservation/${reservationId}/accept`)
         .then((res) => {
             return res.data.data
         })
@@ -92,7 +122,10 @@ export {
     ExecutePayment,
     GetReservationOfUser,
     GetReservationOfPost,
+    GetExchangeRequestOfTimeshare,
+    GetRentRequestOfTimeshare,
     ConfirmReservation,
     GetTripOfUser,
-    ConfirmReservationByToken
+    ConfirmReservationByToken,
+    AcceptReservationByOwner
 }

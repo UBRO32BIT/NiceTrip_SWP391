@@ -157,4 +157,4 @@ export default function MyProfile() {
         </Grid>
       </Grid>
   );
-}
+};

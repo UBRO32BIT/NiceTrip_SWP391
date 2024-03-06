@@ -14,6 +14,10 @@ import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
 import Divider from '@mui/joy/Divider';
 import Chip from '@mui/joy/Chip';
+import FormControl from "@mui/joy/FormControl";
+import FormLabel from "@mui/joy/FormLabel";
+import Select from "@mui/joy/Select";
+import Option from "@mui/joy/Option";
 
 interface RootState {
     auth: {
@@ -49,13 +53,49 @@ export default function OrderList() {
     }, [user])
     return (
         <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 5 }, mt: 2, }}>
+            <Grid
+                md={12} xs={12}
+                sx={{
+                    display: 'flex',
+                    gap: 3,
+                    // p: 0,
+                    mb: 2
+                }}>
+                <FormControl size="sm">
+                    <FormLabel>Status</FormLabel>
+                    <Select
+                        size="sm"
+                        placeholder="Filter by status"
+                        slotProps={{button: {sx: {whiteSpace: 'nowrap'}}}}
+                    >
+                        <Option value="paid">Paid</Option>
+                        <Option value="pending">Pending</Option>
+                        <Option value="refunded">Refunded</Option>
+                        <Option value="cancelled">Cancelled</Option>
+                    </Select>
+                </FormControl>
+                <FormControl size="sm">
+                    <FormLabel>Type</FormLabel>
+                    <Select size="sm" placeholder="All">
+                        <Option value="all">Rent</Option>
+                        <Option value="refund">Exchange</Option>
+                    </Select>
+                </FormControl>
+                <FormControl size="sm">
+                    <FormLabel>Customer</FormLabel>
+                    <Select size="sm" placeholder="All">
+                        <Option value="all">All</Option>
+                        <Option value="olivia">Olivia Rhye</Option>
+                    </Select>
+                </FormControl>
+            </Grid>
                 {myReservations.length > 0 && myReservations.map((item: any) => {
                     return (<Grid xs={12} md={6} lg={4}>
                         <Card variant="outlined" sx={{}}>
                             <CardOverflow>
                                 <AspectRatio ratio="2">
                                     <img
-                                        src={item?.postId?.resortId?.image_urls}
+                                        src={item?.timeshareId?.resortId?.image_urls}
                                         // srcSet="https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318&dpr=2 2x"
                                         loading="lazy"
                                         alt=""
@@ -79,12 +119,12 @@ export default function OrderList() {
                                         >
                                             Isn't paid
                                         </Chip>}
-                                    {item?.status === 'confirmed' ? <Chip
+                                    {item?.is_accepted_by_owner ? <Chip
                                         variant="soft"
                                         color="success"
                                         size="sm"
                                     >
-                                        Owner confirmed, wait for resort confirmation
+                                        Owner confirmed, go to payment
                                     </Chip> : 
                                     <Chip
                                         variant="soft"
@@ -97,9 +137,9 @@ export default function OrderList() {
 
                                 </Typography>
 
-                                <Typography level="title-md" noWrap >{item?.postId?.resortId?.name}</Typography>
-                                <Typography level="body-sm">{item?.postId?.resortId?.location}</Typography>
-                                <Link to={`/post/${item?.postId?._id}`} target="_blank" rel="noopener noreferrer">View original post</Link>
+                                <Typography level="title-md" noWrap >{item?.timeshareId?.resortId?.name}</Typography>
+                                <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
+                                <Link to={`/timeshare-details/${item?.timeshareId?._id}`} target="_blank" rel="noopener noreferrer">View original post</Link>
 
                             </CardContent>
                             <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1' }}>

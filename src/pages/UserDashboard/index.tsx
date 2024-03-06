@@ -16,6 +16,7 @@ export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   React.useEffect(() => {
+    console.log(isAuthenticated)
     if (!isAuthenticated) {
       navigate('/login');
     }
@@ -47,9 +48,9 @@ export default function JoyOrderDashboardTemplate() {
                 <Route>
                   <Route path="/" element={<MyProfile />} />
                   <Route path="/my-profile/*" element={<MyProfile />} />
-                  <Route path="/my-posting/*" element={<MyTimeshares />} />
-                  <Route path="/my-trip/*" element={<MyTrip />} />
-                  <Route path="/my-order/*" element={<MyOrder />} />
+                  <Route path="/my-timeshares/*" element={<MyTimeshares />} />
+                  <Route path="/my-trips/*" element={<MyTrip />} />
+                  <Route path="/my-orders/*" element={<MyOrder />} />
                   <Route path="/my-messages/*" element={<MyMessage />} />
                 </Route>
               </Routes>
