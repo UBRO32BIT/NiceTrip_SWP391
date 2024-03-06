@@ -155,7 +155,7 @@ function RowMenu(props: any) {
                                     {reservationData?.address?.zipCode}, {reservationData?.address?.country}
                                 </div>
                                 <div>
-                                    <strong>Amount:</strong> {reservationData?.amount}
+                                    <strong>Amount:</strong> ${reservationData?.amount}
                                 </div>
                                 <div>
                                     <strong>Email:</strong> {reservationData?.email}
