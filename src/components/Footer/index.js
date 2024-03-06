@@ -34,7 +34,8 @@ const Footer = () => {
         <Col lg='3'>
           <div className="logo">
             <img src={logo} alt="" />
-            <p>DUma no met vaicaloz thuc toi sang</p>
+            <p></p>
+            <p>NiceTrip ASIA Luxury Resort Services Joint Stock Company</p>
             <div className='social__links d-flex align-items-center gap-4'>
               <span>
                 <Link to='#'><i class="ri-youtube-line"></i></Link>
@@ -70,7 +71,7 @@ const Footer = () => {
                   <i class="ri-map-pin-line"></i>
                   Address:
                 </span>
-                <p className='mb-0'> Nha` Van Hoa Thanh Nien </p>
+                <p className='mb-0'>Thành phố Hồ Chí Minh, Việt Nam </p>
               </h6>
             </ListGroupItem>
             <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
@@ -79,7 +80,7 @@ const Footer = () => {
                   <i class="ri-mail-line"></i>
                   Email:
                 </span>
-                <p className='mb-0'> Bomaylaptrinh@gmail.com </p>
+                <p className='mb-0'> nicetrip@gmail.com </p>
               </h6>
             </ListGroupItem>
             <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
@@ -94,7 +95,7 @@ const Footer = () => {
           </ListGroup>
         </Col>
         <Col lg='12' className='text-center pt-5'>
-          <p className='copyright'>Copyright {year}, design and developer HackerXuanTinh. All rights reserved</p>
+          <p className='copyright'>Copyright By NiceTrip-{year}. All rights reserved</p>
         </Col>
       </Row>
     </Container>
