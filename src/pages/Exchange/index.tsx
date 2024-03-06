@@ -23,12 +23,23 @@ import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
 import {useSelector} from 'react-redux';
 import {NavLink, useNavigate} from 'react-router-dom';
-import {MakeReservation} from '../../services/booking.service';
+import {GetReservationById, MakeReservation} from '../../services/booking.service';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ImageGallery from "react-image-gallery";
 import convertImageArray from "../../utils/convertImageArray";
+import { MenuItem } from '@mui/joy';
+import InputLabel from '@mui/material/InputLabel';
+import Modal from '@mui/joy/Modal';
+import ModalDialog from '@mui/joy/ModalDialog';
+import RadioGroup from '@mui/joy/RadioGroup';
+import Radio from '@mui/joy/Radio';
+import {GetPostBelongToOwner} from '../../services/post.service'
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Alert from '@mui/joy/Alert';
+import {MakeExchange} from '../../services/booking.service'
+import '../../styles/exchange.css';
 
 interface RootState {
     auth: {
@@ -60,36 +71,94 @@ interface Resort {
 }
 
 export default function Exchange() {
+    const isAuthenticated = useSelector((state: RootState) => state?.auth?.isAuthenticated);
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [post, setPost] = React.useState<any>([]);
+    const [myPosts, setMyPosts] = React.useState<any>([]);
     const navigate = useNavigate();
     let {postId} = useParams();
     const [uploading, setUploading] = React.useState<boolean>(false);
+    const [open, setOpen] = React.useState(false);
 
-    async function handleSubmit(e: any) {
-        setUploading(true)
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget)
-        const formJson = Object.fromEntries((formData as any).entries());
+        setUploading(true);
+    
+        const formData = new FormData(e.currentTarget);
+        const formJson = Object.fromEntries(formData.entries());
+    
         const address = {
+            fullName: formJson?.fullname,
+            email: formJson?.email,
+            phone: formJson?.phone,
             street: formJson?.street,
             city: formJson?.city,
             province: formJson?.province,
             postalCode: formJson?.zipCode,
-            country: formJson?.country,
+            country: formJson?.country,                
         };
-        const reservation = await MakeReservation('exchange', formData);
-        if (reservation) {
-            // console.log(reservation)
-            navigate(`/timeshare/${postId}/reservation/${reservation?._id}/confirm`)
-            setUploading(false)
+    
+        try {
+            const makeExchange = await MakeExchange(postId, formData);
+            if (makeExchange) {
+                navigate(`/timeshare/${postId}/reservation/${makeExchange._id}/confirm`);
+            }
+        } catch (error) {
+            console.error("Error making exchange request:", error);
+            // Handle error appropriately, e.g., show error message to the user
+        } finally {
+            setUploading(false);
         }
-        console.log(formJson)
+    }
+    
+    
+    const handleButtonClick = () => {
+        // Lấy tên của MyTimeshare từ dữ liệu đã có, ví dụ: post.resortId.name
+        // const timeshareName = post?.resortId?.name || '';
+        // Cập nhật state myTimeshareName với tên của MyTimeshare
+        // setPost(timeshareName);
+        setOpen(true)
+    };
+    const [selectedResortIndex, setSelectedResortIndex] = React.useState<any>([]);
+
+    const handleResortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedResortIndex(Number(event.target.value));
+    };
+    const handleButtonSubmit = () => {
+        if (myPosts && myPosts.length > 0) {
+            const selectedResortId = myPosts[selectedResortIndex]?.resortId.name;
+            if (selectedResortId) {
+                console.log("Selected Resort ID:", selectedResortId);
+                setOpen(false);
+            } else {
+                console.error("Resort ID chưa được chọn.");
+            }
+        } else {
+            console.error("Không tìm thấy bài đăng.");
+        }
+    };
+    
+
+    async function GetMyPosts() {
+        const postsData = await GetPostBelongToOwner(user._id);
+        console.log(postsData)
+        if (postsData && postsData.length > 0) {
+            console.log(postsData);
+            setMyPosts(postsData)
+        }
     }
 
     React.useEffect(() => {
-        Load()
-    }, [])
+        if (!isAuthenticated) {
+            
+        }else {
+            GetMyPosts();
+            if (postId) {
+                Load();
+            }
+        }
+    }, [user, isAuthenticated, postId]);
 
     async function Load() {
         if (postId) {
@@ -110,6 +179,8 @@ export default function Exchange() {
         return new Date(dateString).toLocaleDateString('en-US', options);
     }
 
+    
+
     return (
         <>
             <Header/>
@@ -117,32 +188,98 @@ export default function Exchange() {
                 <CssBaseline/>
                 {/*<NavBar />*/}
                 <Grid container spacing={0}
-                      sx={{flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1,}}>
+                    sx={{flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1,}}>
                     <Grid container sx={{p: 1, height: 'fit-content'}}>
                         <Grid xs={12} md={4} lg={4}>
                             <Stack sx={{
+                                borderRadius: '8px',
                                 width: 1,
                                 p: 1,
                                 display: 'flex',
                                 justifyContent: 'center',
                                 boxShadow: '0 0 4px gray'
                             }} direction="column" spacing={0}
-                                   justifyContent="center">
+                                justifyContent="center">
+                            <React.Fragment>
+                            <Button variant="outlined" color="neutral" onClick={handleButtonClick}>
+                            {myPosts[selectedResortIndex]?.resortId.name || 'Select Resort'}
+                            </Button>
+                
+                <Modal open={open} onClose={() => setOpen(false)} >
+                
+                <ModalDialog
+                    aria-labelledby="nested-modal-title"
+                    aria-describedby="nested-modal-description"
+                    sx={(theme) => ({
+                        [theme.breakpoints.only('xs')]: {
+                            top: 'unset',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            borderRadius: 0,
+                            transform: 'none',
+                            maxWidth: 'unset',
+                        },
+                    })}
+                >
+                    <Typography id="nested-modal-title" level="h2">
+                        Are you absolutely sure?
+                    </Typography>
+                    <Typography id="nested-modal-description" textColor="text.tertiary">
+                        This action cannot be undone. This will permanently delete your account
+                        and remove your data from our servers.
+                    </Typography>
+                    <FormControl>
+                        <FormLabel>Sizes</FormLabel>
+
+                        <RadioGroup
+                        defaultValue=""
+                        name="radio-buttons-group"
+                        onChange={handleResortChange}
+                    >
+                        {myPosts.map((post: any, index: number) => (
+                            
+                            <>
+                            <FormControlLabel
+                                key={post.resortId.name}
+                                value={String(index)}
+                                control={<Radio size="sm" />}
+                                label={post.resortId.name}
+                            />
+                            <Typography>Unit: {post.unitId.name}</Typography>
+                            <Typography>Price: {post.price}</Typography>
+
+                            </>
+                        ))}
+                    </RadioGroup>
+                    </FormControl>
+                    <Button variant="solid" color="primary" type='submit' onClick={handleButtonSubmit}>
+                        Continue
+                    </Button>
+                </ModalDialog>
+            </Modal>
+        
+            </React.Fragment>
                                 {/*{post && <ImageGallery items={convertImageArray([...post?.images, ...post?.resortId?.image_urls])} showPlayButton={false} />}*/}
                                 {/*<ImageGallery items={post?.resortId?.image_urls} />;*/}
-                                <img src={post?.resortId?.image_urls}/>
+                                
+                                {
+                        selectedResortIndex !== null && (
+                            <>
+                                <img src={myPosts[selectedResortIndex]?.resortId?.image_urls}/>
                                 <Typography fontWeight={600} fontSize={28}>
-                                    {post?.resortId?.name}
+                                    {myPosts[selectedResortIndex]?.resortId?.name}
                                 </Typography>
+                                
                                 <Typography fontWeight={400} fontSize={18}>
-                                    Owner: {post?.current_owner?.username}
+                                    Owner: {myPosts[selectedResortIndex]?.current_owner?.username}
                                 </Typography>
                                 <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
                                     <Typography fontWeight={500} fontSize={20}>
                                         Unit:
                                     </Typography>
                                     <Typography fontWeight={400} fontSize={20}>
-                                        {post?.unitId?.name}
+                                        {myPosts[selectedResortIndex]?.unitId?.name}
                                     </Typography>
                                 </Box>
                                 <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -150,7 +287,7 @@ export default function Exchange() {
                                         Stay:
                                     </Typography>
                                     <Typography fontWeight={400} fontSize={20}>
-                                        {post?.numberOfNights} night
+                                        {myPosts[selectedResortIndex]?.numberOfNights} night
                                     </Typography>
                                 </Box>
                                 <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
@@ -158,7 +295,7 @@ export default function Exchange() {
                                         Check-in:
                                     </Typography>
                                     <Typography fontWeight={400} fontSize={20}>
-                                        {formatDate(post?.start_date)}
+                                        {formatDate(myPosts[selectedResortIndex]?.start_date)}
                                     </Typography>
                                 </Box>
                                 <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -166,7 +303,7 @@ export default function Exchange() {
                                         Check-out:
                                     </Typography>
                                     <Typography fontWeight={400} fontSize={20}>
-                                        {formatDate(post?.end_date)}
+                                        {formatDate(myPosts[selectedResortIndex]?.end_date)}
                                     </Typography>
                                 </Box>
                                 <Divider sx={{mt: 1, mb: 1}}/>
@@ -175,7 +312,7 @@ export default function Exchange() {
                                         Price/night:
                                     </Typography>
                                     <Typography fontWeight={400} fontSize={20}>
-                                        ${post?.pricePerNight}
+                                        ${myPosts[selectedResortIndex]?.pricePerNight}
                                     </Typography>
                                 </Box>
                                 <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -183,9 +320,13 @@ export default function Exchange() {
                                         Total:
                                     </Typography>
                                     <Typography fontWeight={600} fontSize={20}>
-                                        ${post?.price}
+                                        ${myPosts[selectedResortIndex]?.price}
                                     </Typography>
                                 </Box>
+                            </>
+                        )
+                    }
+
                             </Stack>
                         </Grid>
                         <Grid xs={12} md={4} lg={4} sx={{
@@ -215,13 +356,17 @@ export default function Exchange() {
                         </Grid>
                         <Grid xs={12} md={4} lg={4}>
                             <Stack sx={{
+                                borderRadius: '8px',
                                 width: 1,
                                 p: 1,
                                 display: 'flex',
                                 justifyContent: 'center',
                                 boxShadow: '0 0 4px gray'
                             }} direction="column" spacing={0}
-                                   justifyContent="center">
+                                justifyContent="center">
+                                <Box sx={{ width: '100%' }}>
+                                <Alert variant="outlined">{post?.resortId?.name}</Alert>
+                                </Box>
                                 <img src={post?.resortId?.image_urls}/>
                                 <Typography fontWeight={600} fontSize={28}>
                                     {post?.resortId?.name}
@@ -287,6 +432,7 @@ export default function Exchange() {
                         </Typography>
                         <form onSubmit={handleSubmit}>
                             <Box sx={{
+                                borderRadius: '8px',
                                 width: 1,
                                 display: 'flex',
                                 justifyContent: 'space-between',
@@ -383,6 +529,8 @@ export default function Exchange() {
                                         </Grid>
 
                                         <FormControl sx={{display: 'none'}}>
+                                            <Input type="hidden" name="myTimeshareId" value={myPosts[selectedResortIndex]?._id}/>
+
                                             <Input type="hidden" name="amount" value={post?.price}/>
                                         </FormControl>
                                         <FormControl sx={{display: 'none'}}>
@@ -393,7 +541,7 @@ export default function Exchange() {
                                         </FormControl>
                                         <FormControl sx={{display: 'none'}}>
                                             <Input type="hidden" name="reservationDate"
-                                                   value={new Date().toLocaleString() + ""}/>
+                                                value={new Date().toLocaleString() + ""}/>
                                         </FormControl>
                                     </FormControl>
 
