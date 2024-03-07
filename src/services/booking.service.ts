@@ -12,8 +12,8 @@ const MakeReservation = (type: string, data: any) => {
         })
 }
 
-const ExecutePayment = (data: any) => {
-    return api.post('/payment/execute-payment', data)
+const ExecutePayPalPayment = (data: any) => {
+    return api.post('/payment/execute-paypal-payment', data)
         .then((res) => {
             return res.data.data
         })
@@ -129,10 +129,44 @@ const MakeExchange = (timeshareId: any, exchangeData: any) => {
         })
 }
 
+const CreatePayPalPayment = (reservation: any) => {
+    return api.post(`/payment/create-paypal-payment`, reservation)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
+    return api.get(`/payment/${userId}/${reservationId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const MakeExchange = (timeshareId: any, exchangeData: any) => {
+    return api.post(`/reservation/exchange/${timeshareId}`, exchangeData)
+        .then((res) => {
+            return res.data.data
+
+        })
+        
+        .catch((error) => {
+            // Handle errors here, you might want to log or show a user-friendly message
+            console.error('Error making reservation:', error);
+            throw error; // Re-throw the error to let the caller handle it if needed
+        })
+}
+
 export {
     MakeReservation,
     GetReservationById,
-    ExecutePayment,
+    ExecutePayPalPayment,
     GetReservationOfUser,
     GetReservationOfPost,
     GetExchangeRequestOfTimeshare,
@@ -141,5 +175,7 @@ export {
     GetTripOfUser,
     ConfirmReservationByToken,
     AcceptReservationByOwner,
+    CreatePayPalPayment,
+    GetOrderPaymentInfo,
     MakeExchange,
 }

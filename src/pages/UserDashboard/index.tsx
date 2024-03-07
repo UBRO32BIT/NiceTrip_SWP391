@@ -15,12 +15,12 @@ import MyTimeshares from '../../components/Timeshare/MyTimeshares';
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthLoaded = useSelector((state: RootState) => state.auth.isLoaded);
   React.useEffect(() => {
-    console.log(isAuthenticated)
-    if (!isAuthenticated) {
+    if (!isAuthenticated && isAuthLoaded) {
       navigate('/login');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAuthLoaded]);
   return (
     <>
       {isAuthenticated &&

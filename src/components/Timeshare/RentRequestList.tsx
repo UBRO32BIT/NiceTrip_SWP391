@@ -35,53 +35,11 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import {GetRentRequestOfTimeshare} from "../../services/booking.service";
-import { Transition } from 'react-transition-group';
+import {Transition} from 'react-transition-group';
 import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
 import {AcceptReservationByOwner} from "../../services/booking.service";
-
-const rows = [
-    {
-        id: 'INV-1232',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'C',
-            name: 'Ciaran Murray',
-            email: 'ciaran.murray@email.com',
-        },
-    },
-    {
-        id: 'INV-1231',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'M',
-            name: 'Maria Macdonald',
-            email: 'maria.mc@email.com',
-        },
-    },
-    {
-        id: 'INV-1227',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'S',
-            name: 'Sachin Flynn',
-            email: 's.flyn@email.com',
-        },
-    },
-    {
-        id: 'INV-1226',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'B',
-            name: 'Bradley Rosales',
-            email: 'brad123@email.com',
-        },
-    },
-];
+import {useSnackbar} from 'notistack';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -118,6 +76,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     });
     return stabilizedThis.map((el) => el[0]);
 }
+
 function formatDate(dateString?: string): string {
     if (!dateString) return '';
     const options: Intl.DateTimeFormatOptions = {
@@ -127,6 +86,7 @@ function formatDate(dateString?: string): string {
     };
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
+
 function RowMenu(props: any) {
     const reservationData = props.reservationData; // Assuming you pass the reservation data to the component
     const [open, setOpen] = React.useState<boolean>(false);
@@ -135,15 +95,15 @@ function RowMenu(props: any) {
         <>
             <Dropdown>
                 <MenuButton
-                    slots={{ root: IconButton }}
-                    slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+                    slots={{root: IconButton}}
+                    slotProps={{root: {variant: 'plain', color: 'neutral', size: 'sm'}}}
                 >
-                    <MoreHorizRoundedIcon />
+                    <MoreHorizRoundedIcon/>
                 </MenuButton>
-                <Menu size="sm" sx={{ minWidth: 140 }}>
+                <Menu size="sm" sx={{minWidth: 140}}>
                     <MenuItem onClick={() => setOpen(true)}>View detail</MenuItem>
                     <MenuItem>Edit</MenuItem>
-                    <Divider />
+                    <Divider/>
                     <MenuItem color="danger">Delete</MenuItem>
                 </Menu>
             </Dropdown>
@@ -160,7 +120,7 @@ function RowMenu(props: any) {
                                     backdropFilter: 'none',
                                     transition: `opacity 400ms, backdrop-filter 400ms`,
                                     ...(state === 'entering' || state === 'entered'
-                                        ? { opacity: 1, backdropFilter: 'blur(8px)' }
+                                        ? {opacity: 1, backdropFilter: 'blur(8px)'}
                                         : {}),
                                 },
                             },
@@ -174,15 +134,17 @@ function RowMenu(props: any) {
                                 opacity: 0,
                                 transition: `opacity 300ms`,
                                 ...(state === 'entering' || state === 'entered'
-                                    ? { opacity: 1 }
+                                    ? {opacity: 1}
                                     : {}),
                             }}
                         >
                             <DialogTitle>Reservation Details</DialogTitle>
-                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                                <Avatar size="sm" src={reservationData?.userId?.profilePicture}>{reservationData?.userId?.firstname?.charAt(0)}</Avatar>
+                            <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
+                                <Avatar size="sm"
+                                        src={reservationData?.userId?.profilePicture}>{reservationData?.userId?.firstname?.charAt(0)}</Avatar>
                                 <div>
-                                    <Typography level="body-xs">{reservationData?.userId?.firstname} {reservationData?.userId?.lastname}</Typography>
+                                    <Typography
+                                        level="body-xs">{reservationData?.userId?.firstname} {reservationData?.userId?.lastname}</Typography>
                                     <Typography level="body-xs">{reservationData?.userId?.email}</Typography>
                                 </div>
                             </Box>
@@ -193,7 +155,7 @@ function RowMenu(props: any) {
                                     {reservationData?.address?.zipCode}, {reservationData?.address?.country}
                                 </div>
                                 <div>
-                                    <strong>Amount:</strong> {reservationData?.amount}
+                                    <strong>Amount:</strong> ${reservationData?.amount}
                                 </div>
                                 <div>
                                     <strong>Email:</strong> {reservationData?.email}
@@ -224,6 +186,22 @@ function RowMenu(props: any) {
 export default function RentRequestList(props: any) {
     const timeshareId = props?.timeshareId;
     const [requestList, setRequestList] = React.useState([]);
+    const {enqueueSnackbar} = useSnackbar();
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    async function HandleAcceptReservation(reservationId: string) {
+        try {
+            setIsLoading(true);
+            const data = await AcceptReservationByOwner(reservationId)
+            if (data) {
+                enqueueSnackbar("Accept successfully", {variant: "success"});
+            }
+        } catch (err: any) {
+            enqueueSnackbar("Accept successfully", {variant: "error"});
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     async function Load() {
         try {
@@ -241,7 +219,7 @@ export default function RentRequestList(props: any) {
     React.useEffect(() => {
         // Load rent requests when timeshareId changes
         Load();
-    }, [timeshareId]);
+    }, [timeshareId, isLoading]);
 
     const [order, setOrder] = React.useState<Order>('desc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -253,6 +231,7 @@ export default function RentRequestList(props: any) {
             sx={{
                 display: {xs: 'none', sm: 'initial'},
                 width: '100%',
+                px: 2,
                 borderRadius: 'sm',
                 flexShrink: 1,
                 overflow: 'auto',
@@ -270,6 +249,7 @@ export default function RentRequestList(props: any) {
                     '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
                     '--TableCell-paddingY': '4px',
                     '--TableCell-paddingX': '8px',
+                    tableLayout: 'auto',
                 }}
             >
                 <thead>
@@ -292,7 +272,7 @@ export default function RentRequestList(props: any) {
                             <td>
                                 {/* Display status or Chip based on your logic */}
                                 {row?.isPaid ? (
-                                    <Chip variant="soft" size="sm" startDecorator={<CheckRoundedIcon />} color="success">
+                                    <Chip variant="soft" size="sm" startDecorator={<CheckRoundedIcon/>} color="success">
                                         Paid
                                     </Chip>
                                 ) : (
@@ -302,10 +282,12 @@ export default function RentRequestList(props: any) {
                                 )}
                             </td>
                             <td>
-                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                                    <Avatar size="sm" src={row?.userId?.profilePicture}>{row?.userId?.firstname?.charAt(0)}</Avatar>
+                                <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
+                                    <Avatar size="sm"
+                                            src={row?.userId?.profilePicture}>{row?.userId?.firstname?.charAt(0)}</Avatar>
                                     <div>
-                                        <Typography level="body-xs">{row?.userId?.firstname} {row?.userId?.lastname}</Typography>
+                                        <Typography
+                                            level="body-xs">{row?.userId?.firstname} {row?.userId?.lastname}</Typography>
                                         <Typography level="body-xs">{row?.userId?.email}</Typography>
                                     </div>
                                 </Box>
@@ -315,7 +297,8 @@ export default function RentRequestList(props: any) {
                                     {row?.is_accepted_by_owner ? (
                                         <span>Accepted</span>
                                     ) : (
-                                        <Button variant="solid" color={'success'} onClick={()=> AcceptReservationByOwner(row?._id)} >
+                                        <Button variant="soft" color={'success'}
+                                                onClick={() => HandleAcceptReservation(row?._id)}>
                                             Accept
                                         </Button>
                                     )}
@@ -325,7 +308,7 @@ export default function RentRequestList(props: any) {
                                 <Typography level="body-xs">{row?.status}</Typography>
                             </td>
                             <td>
-                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
                                     <Link level="body-xs" component="button">
                                         Contact
                                     </Link>
