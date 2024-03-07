@@ -25,7 +25,9 @@ export default function VerifyEmailToken() {
     }, [])
     return (
         <>
+            <div className="text-center">
             {isVerified ? <h1>Email Verified</h1> : <h1>Failed to verify email</h1>}
+            </div>
         </>
     );
 }

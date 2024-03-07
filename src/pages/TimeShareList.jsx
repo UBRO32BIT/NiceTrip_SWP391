@@ -53,14 +53,14 @@ const TimeshareList = () => {
         <Header/>
         <Container>
             <Row className="d-flex align-items-center justify-content-center">
-                <SearchBar/>
+                <SearchBar props={query}/>
             </Row>
-            <Row className="text-center">
+            <Row className="text-center my-3">
                 {query ? <h3>Found {filteredPosts.length} posts</h3> : <h3>List of timeshares</h3>}
             </Row>
             <Row>
                 {filteredPosts?.map(post => (
-                    <Col lg='3' className='mb-4'>
+                    <Col lg='3' md='6' className='mb-4 position-relative'>
                         <TourCard props={post}/>
                     </Col>
                 ))}

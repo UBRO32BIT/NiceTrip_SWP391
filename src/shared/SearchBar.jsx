@@ -6,7 +6,8 @@ import { useSnackbar } from 'notistack';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const SearchBar = () => {
+const SearchBar = ({props}) => {
+    console.log(props)
     const navigate = useNavigate()
     const { enqueueSnackbar } = useSnackbar();
     const locationRef = useRef('')
@@ -22,7 +23,12 @@ const SearchBar = () => {
         if (location === '' && (startDate === '' || endDate === '')) {
             enqueueSnackbar("At least one field is required!", { variant: "error" });
         }
-        else navigate(`/timeshare?query=${location}&startDate=${startDate}&endDate=${endDate}`)
+        else {
+            //navigate to the search result
+            navigate(`/timeshare?query=${location}&startDate=${startDate}&endDate=${endDate}`)
+            //refresh the page
+            navigate(0)
+        }
     }
 
 
@@ -35,7 +41,7 @@ const SearchBar = () => {
                         <i class="ri-map-pin-line"></i>
                         <div>
                             <h6>Location</h6>
-                            <input type='text' placeholder='Search For A Destination' ref={locationRef} />
+                            <input type='text' placeholder='Search For A Destination' defaultValue={props} ref={locationRef} />
                         </div>
                     </span>
                 </FormGroup>
