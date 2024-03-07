@@ -202,7 +202,6 @@ export default function RentRequestList(props: any) {
             setIsLoading(false);
         }
     }
-
     async function Load() {
         try {
             // Fetch rent requests based on timeshareId

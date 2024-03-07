@@ -16,6 +16,7 @@ import ConfirmReservation from "../pages/ConfirmReservation";
 import Messenger from "../pages/Messenger"
 import Email from "../pages/Email";
 import VNPay from "../pages/Payment/VNPay"
+import ConfirmExchange from "../pages/ConfirmExchange";
 import PaymentPage from "../pages/Payment";
 interface Route {
     path: string;
@@ -61,6 +62,10 @@ const publicRoutes: Route[] = [
     {
         path: '/timeshare/:timeshareId/reservation/:reservationId/confirm',
         page: ConfirmReservation
+    },
+    {
+        path: '/timeshare/:timeshareId/exchange/:exchangeId/confirm',
+        page: ConfirmExchange
     },
     {
         path: '/timeshare/:postId/book/review-order/:reservationId',

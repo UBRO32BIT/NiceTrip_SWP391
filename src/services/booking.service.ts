@@ -64,16 +64,7 @@ const GetRentRequestOfTimeshare = (timeshareId: any) => {
             throw error;
         })
 }
-const GetExchangeRequestOfTimeshare = (timeshareId: any) => {
-    return api.get(`/reservation/of-post/${timeshareId}?type=exchange`)
-        .then((res) => {
-            return res.data.data
-        })
-        .catch((error) => {
-            console.error('Error fetching resort by ID:', error);
-            throw error;
-        })
-}
+
 const ConfirmReservation = (reservationId: any) => {
     return api.patch(`/reservation/${reservationId}/confirm`)
         .then((res) => {
@@ -116,19 +107,48 @@ const AcceptReservationByOwner = (reservationId: any) => {
         })
 }
 const MakeExchange = (timeshareId: any, exchangeData: any) => {
-    return api.post(`/reservation/exchange/${timeshareId}`, exchangeData)
+    return api.post(`/exchange/${timeshareId}`, exchangeData)
         .then((res) => {
             return res.data.data
-
         })
-        
         .catch((error) => {
             // Handle errors here, you might want to log or show a user-friendly message
             console.error('Error making reservation:', error);
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
+const GetExchangeRequestOfTimeshare = (timeshareId: any) => {
+    return api.get(`/exchange/of-post/${timeshareId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const GetExchangeById = (exchangeId: any) => {
+    return api.get(`/exchange/${exchangeId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            // Handle errors here, you might want to log or show a user-friendly message
+            console.error('Error fetching resort by ID:', error);
+            throw error; // Re-throw the error to let the caller handle it if needed
+        })
+}
 
+const AcceptExchangeByOwner = (exchangeId: any) => {
+    return api.patch(`/exchange/${exchangeId}/accept`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
 const CreatePayPalPayment = (reservation: any) => {
     return api.post(`/payment/create-paypal-payment`, reservation)
         .then((res) => {
@@ -139,6 +159,18 @@ const CreatePayPalPayment = (reservation: any) => {
             throw error;
         })
 }
+
+const CancelExchangeByOwner = (exchangeId: any) => {
+    return api.patch(`/exchange/${exchangeId}/cancel`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+
 const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
     return api.get(`/payment/${userId}/${reservationId}`)
         .then((res) => {
@@ -149,6 +181,7 @@ const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
             throw error;
         })
 }
+
 const MakeExchange = (timeshareId: any, exchangeData: any) => {
     return api.post(`/reservation/exchange/${timeshareId}`, exchangeData)
         .then((res) => {
@@ -178,4 +211,7 @@ export {
     CreatePayPalPayment,
     GetOrderPaymentInfo,
     MakeExchange,
+    GetExchangeById,
+    AcceptExchangeByOwner,
+    CancelExchangeByOwner
 }
