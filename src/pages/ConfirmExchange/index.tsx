@@ -25,6 +25,7 @@ import CardActions from "@mui/joy/CardActions";
 import {CssVarsProvider} from "@mui/joy/styles";
 import Sheet from "@mui/joy/Sheet";
 import {GetReservationById, ConfirmReservationByToken} from "../../services/booking.service";
+import {GetExchangeById} from "../../services/booking.service";
 import {SendConfirmReservationEmail} from "../../services/email.service";
 import FeedIcon from '@mui/icons-material/Feed';
 
@@ -38,17 +39,17 @@ interface RootState {
 const VerificationCard = () => {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [post, setPost] = React.useState<any>([]);
-    const [reservation, setReservation] = React.useState<any>([]);
+    const [exchange, setExchange] = React.useState<any>([]);
     const [sendingEmail, setSendingEmail] = React.useState<boolean>(false);
     const [sendButtonDisabled, setSendButtonDisabled] = React.useState<boolean>(false);
     const navigate = useNavigate();
-    let {timeshareId, reservationId} = useParams();
+    let {timeshareId, exchangeId} = useParams();
     let [searchParams, setSearchParams] = useSearchParams();
     let token = searchParams.get('token');
 
     React.useEffect(() => {
         Load()
-    }, [timeshareId, reservationId, token])
+    }, [timeshareId, exchangeId, token])
 
     async function Load() {
         if (timeshareId) {
@@ -57,30 +58,27 @@ const VerificationCard = () => {
                 setPost(postData)
             }
         }
-        if (reservationId) {
-            const reservationData = await GetReservationById(reservationId);
-            if (reservationData) {
-                setReservation(reservationData)
+        if (exchangeId) {
+            const exchangeData = await GetExchangeById(exchangeId);
+            if (exchangeData) {
+                setExchange(exchangeData)
             }
         }
         if (token) {
-            const data = await ConfirmReservationByToken(reservationId, token);
+            const data = await ConfirmReservationByToken(exchangeId, token);
         }
     }
 
     const SendEmail = async () => {
-        if (reservation) {
+        if (exchange) {
             setSendingEmail(true);
-            const emailSent = await SendConfirmReservationEmail(reservation);
+            const emailSent = await SendConfirmReservationEmail(exchange);
             if (emailSent?.status?.code === 200) {
                 setSendingEmail(false);
                 setSendButtonDisabled(true);
             }
         }
     };
-    console.log('con cac ' + reservationId)
-
-    console.log('tao la bo cua may ' + reservation?.fullName)
 
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
@@ -102,7 +100,7 @@ const VerificationCard = () => {
                       sx={{flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1, flexWrap: {xs: 'wrap', md: 'nowrap',}}}>
                     <Grid xs={12} md={8} sx={{p: 1, boxShadow: '0 0 0px gray'}}>
                         <Typography fontWeight={700} fontSize={26}>
-                            Confirm reservation
+                            Request Exchange
                         </Typography>
                         <Box sx={{width: 1}}>
                             <Card
@@ -148,7 +146,7 @@ const VerificationCard = () => {
                                             Fullname:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={18}>
-                                            {reservation?.fullName}
+                                            {exchange?.fullName}
                                         </Typography>
 
                                     </Box>
@@ -157,7 +155,7 @@ const VerificationCard = () => {
                                             Phone:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={18}>
-                                            {reservation?.phone}
+                                            {exchange?.phone}
                                         </Typography>
                                     </Box>
                                     <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -165,7 +163,7 @@ const VerificationCard = () => {
                                             Email:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={18}>
-                                            {reservation?.email}
+                                            {exchange?.email}
                                         </Typography>
                                     </Box>
                                     <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
@@ -181,7 +179,7 @@ const VerificationCard = () => {
                                             Street:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={16}>
-                                            {reservation?.address?.street}
+                                            {exchange?.address?.street}
                                         </Typography>
                                     </Box>
                                     <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -189,7 +187,7 @@ const VerificationCard = () => {
                                             City:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={16}>
-                                            {reservation?.address?.city}
+                                            {exchange?.address?.city}
                                         </Typography>
                                     </Box>
                                     <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -197,7 +195,7 @@ const VerificationCard = () => {
                                             Province:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={16}>
-                                            {reservation?.address?.province}
+                                            {exchange?.address?.province}
                                         </Typography>
                                     </Box>
                                     <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -205,7 +203,7 @@ const VerificationCard = () => {
                                             Country:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={16}>
-                                            {reservation?.address?.country}
+                                            {exchange?.address?.country}
                                         </Typography>
                                     </Box>
                                     <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
@@ -213,7 +211,7 @@ const VerificationCard = () => {
                                             Zip code:
                                         </Typography>
                                         <Typography fontWeight={400} fontSize={16}>
-                                            {reservation?.address?.zipCode}
+                                            {exchange?.address?.zipCode}
                                         </Typography>
                                     </Box>
                                 </CardOverflow>
@@ -231,7 +229,7 @@ const VerificationCard = () => {
                                     </CardContent>
 
 
-                                    {(reservation?.is_confirmed === true) ?
+                                    {(exchange?.is_confirmed === true) ?
                                         <Typography color={'success'} fontWeight={500} fontSize={20}>Confirm
                                             successfully</Typography> :
                                         <CardContent>

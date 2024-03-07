@@ -224,7 +224,6 @@ function RowMenu(props: any) {
 export default function RentRequestList(props: any) {
     const timeshareId = props?.timeshareId;
     const [requestList, setRequestList] = React.useState([]);
-
     async function Load() {
         try {
             // Fetch rent requests based on timeshareId

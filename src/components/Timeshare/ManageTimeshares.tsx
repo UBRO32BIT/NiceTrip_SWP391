@@ -21,6 +21,8 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import Sheet from "@mui/joy/Sheet";
 import RentRequestList from "./RentRequestList";
 import ExchangeRequestList from "./ExchangeRequestList";
+import {GetExchangeRequestOfTimeshare} from "../../services/booking.service";
+
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -29,6 +31,7 @@ interface RootState {
 }
 
 export default function ManageTimeshares() {
+    const [requestList, setRequestList] = React.useState<any[]>([]);
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [open, setOpen] = React.useState<boolean>(false);
 
@@ -36,20 +39,35 @@ export default function ManageTimeshares() {
     const [reservationList, setReservationList] = React.useState<any>([]);
     let {timeshareId} = useParams();
     const navigate = useNavigate()
-
+    const row = { 
+        _id: "some_id", 
+        myTimeshareId: { 
+            is_bookable: false 
+        } 
+    };
     React.useEffect(() => {
-        Load()
+        Load();
     }, [])
 
     async function Load() {
-        if (timeshareId) {
-            const postData = await GetPostById(timeshareId);
-            if (postData) {
-                setPost(postData)
+        try {
+            if (timeshareId) {
+                // Fetch post data based on timeshareId
+                const postData = await GetPostById(timeshareId);
+                if (postData) {
+                    setPost(postData);
+                }
+                
+                // Fetch rent requests based on timeshareId
+                const response = await GetExchangeRequestOfTimeshare(timeshareId);
+                if (response) {
+                    setRequestList(response);
+                }
             }
+        } catch (error: any) {
+            console.error('Error loading data:', error.message);
         }
     }
-
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
         const options: Intl.DateTimeFormatOptions = {
@@ -65,7 +83,7 @@ export default function ManageTimeshares() {
         console.log(response);
         if (response?.code === 200) window.location.reload();
     }
-
+ 
     return (
         <Grid container spacing={1}
               sx={{flexGrow: 1, mx: {xs: 2, md: 6}, mt: 2, flexWrap: 'wrap', gap: 1}}>
@@ -99,14 +117,17 @@ export default function ManageTimeshares() {
                             {post?.resortId?.location}
                         </Link>
                     </Typography>
-                    <Chip
-                        variant="outlined"
-                        color="primary"
-                        size="sm"
-                        sx={{pointerEvents: 'none'}}
-                    >
-                        Pending
-                    </Chip>
+                    {requestList.length > 0 &&
+                        <Chip
+                            key={requestList[0]._id} // Add a unique key
+                            variant="outlined"
+                            color="primary"
+                            sx={{ pointerEvents: 'none', mr: 1, mb: 1 }} // Adjust styling as needed
+                        >
+                            {requestList[0]?.myTimeshareId?.is_bookable === false ? "Completed" : "Pending"}
+                        </Chip>
+                    }
+
                     <Grid container spacing={2} sx={{flexGrow: 1, mt: 1}}>
                         <Grid xs={12} md={4}>
                             <Typography fontWeight={700} fontSize={16} >
@@ -166,7 +187,7 @@ export default function ManageTimeshares() {
                 <Typography fontWeight={700} fontSize={16} >
                     Exchange request
                 </Typography>
-                <ExchangeRequestList/>
+                <ExchangeRequestList timeshareId={timeshareId}/>
             </Grid>
             {/*<Grid xs={12} md={8} sx={{ p: 1, boxShadow: '0 0 2px gray' }}>*/}
 

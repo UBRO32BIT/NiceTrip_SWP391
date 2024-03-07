@@ -152,6 +152,7 @@ export default function UpdateTimeshare() {
                                             <Option value="exchange">Exchange</Option>
                                         </Select>
                                         <input type='hidden' name='current_owner' value={user?._id}></input>
+                                        <input type='hidden' name='owner_exchange' value={user?._id}></input>
                                         <FormLabel sx={{ mt: 2 }}>Owner name</FormLabel>
                                         <Input
                                             size="sm"

@@ -24,6 +24,8 @@ import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
 import MenuItem from '@mui/joy/MenuItem';
 import Dropdown from '@mui/joy/Dropdown';
+import ImageGallery from "react-image-gallery";
+import {convertDate} from '../../utils/date'
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
@@ -34,49 +36,40 @@ import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
+import {GetExchangeRequestOfTimeshare} from "../../services/booking.service";
+import { Transition } from 'react-transition-group';
+import DialogTitle from '@mui/joy/DialogTitle';
+import DialogContent from '@mui/joy/DialogContent';
+import {AcceptExchangeByOwner} from "../../services/booking.service";
+import {CancelExchangeByOwner} from "../../services/booking.service";
+import { useState } from "react";
+import axios from 'axios';
+import {useEffect } from 'react';
+import convertImageArray from '../../utils/convertImageArray'
+import { Height } from '@mui/icons-material';
 
-const rows = [
-    {
-        id: 'INV-1232',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'C',
-            name: 'Ciaran Murray',
-            email: 'ciaran.murray@email.com',
-        },
-    },
-    {
-        id: 'INV-1231',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'M',
-            name: 'Maria Macdonald',
-            email: 'maria.mc@email.com',
-        },
-    },
-    {
-        id: 'INV-1227',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'S',
-            name: 'Sachin Flynn',
-            email: 's.flyn@email.com',
-        },
-    },
-    {
-        id: 'INV-1226',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'B',
-            name: 'Bradley Rosales',
-            email: 'brad123@email.com',
-        },
-    },
-];
+interface ServicePack {
+    _id: string;
+    name: string;
+    amount: number;
+    numberPosts: number | null;
+  }
+
+interface Timeshare {
+    type: 'rental' | 'exchange';
+    start_date: Date;
+    end_date: Date;
+    current_owner: string;
+    resortId: string;
+    unitId: string;
+    numberOfNights: number;
+    price: string;
+    pricePerNight: string;
+    images: Array<string>; // Assuming the array contains paths to images
+    is_bookable?: boolean;
+    is_verified?: boolean;
+    timestamp?: Date;
+}
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -102,10 +95,6 @@ function getComparator<Key extends keyof any>(
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
     const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
     stabilizedThis.sort((a, b) => {
@@ -117,70 +106,192 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     });
     return stabilizedThis.map((el) => el[0]);
 }
+function formatDate(dateString?: string): string {
+    if (!dateString) return '';
+    const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+}
 
-function RowMenu() {
+
+function RowMenu(props: any) {
+    const reservationData = props.reservationData; // Assuming you pass the reservation data to the component
+    const [open, setOpen] = React.useState<boolean>(false);
+
     return (
-        <Dropdown>
-            <MenuButton
-                slots={{root: IconButton}}
-                slotProps={{root: {variant: 'plain', color: 'neutral', size: 'sm'}}}
-            >
-                <MoreHorizRoundedIcon/>
-            </MenuButton>
-            <Menu size="sm" sx={{minWidth: 140}}>
-                <MenuItem>Edit</MenuItem>
-                <MenuItem>Rename</MenuItem>
-                <MenuItem>Move</MenuItem>
-                <Divider/>
-                <MenuItem color="danger">Delete</MenuItem>
-            </Menu>
-        </Dropdown>
+        <>
+            <Dropdown>
+                <MenuButton
+                    slots={{ root: IconButton }}
+                    slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+                >
+                    <MoreHorizRoundedIcon />
+                </MenuButton>
+                <Menu size="sm" sx={{ minWidth: 140 }}>
+                    <MenuItem onClick={() => setOpen(true)}>View detail</MenuItem>
+                    <MenuItem>Edit</MenuItem>
+                    <Divider />
+                    <MenuItem color="danger">Delete</MenuItem>
+                </Menu>
+            </Dropdown>
+            <Transition in={open} timeout={400}>
+                {(state: string) => (
+                    <Modal
+                        keepMounted
+                        open={!['exited', 'exiting'].includes(state)}
+                        onClose={() => setOpen(false)}
+                        slotProps={{
+                            backdrop: {
+                                sx: {
+                                    opacity: 0,
+                                    backdropFilter: 'none',
+                                    transition: `opacity 400ms, backdrop-filter 400ms`,
+                                    ...(state === 'entering' || state === 'entered'
+                                        ? { opacity: 1, backdropFilter: 'blur(8px)' }
+                                        : {}),
+                                },
+                            },
+                        }}
+                        sx={{
+                            visibility: state === 'exited' ? 'hidden' : 'visible',
+                        }}
+                    >
+                        <ModalDialog
+                            sx={{
+                                opacity: 0,
+                                transition: `opacity 300ms`,
+                                ...(state === 'entering' || state === 'entered'
+                                    ? { opacity: 1 }
+                                    : {}),
+                            }}
+                        >
+                            <DialogTitle>Reservation Details</DialogTitle>
+                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', maxWidth: 600 }}>
+                                <Avatar size="sm" src={reservationData?.userId?.profilePicture} sx={{ width: 32, height: 32 }}>
+                                    {reservationData?.userId?.firstname?.charAt(0)}
+                                </Avatar>
+                                <div>
+                                    <Typography level="body-xs">{reservationData?.userId?.firstname} {reservationData?.userId?.lastname}</Typography>
+                                    <Typography level="body-xs">{reservationData?.userId?.email}</Typography>
+                                </div>
+                            </Box>
+                            <Box sx={{ marginLeft: 2 }}>
+                                <h2>{reservationData?.myTimeshareId?.resortId.name}</h2>
+                                <span>
+                                    <h5>{reservationData?.myTimeshareId?.unitId?.name}</h5>
+                                </span>
+                                <span>
+                                    <h6>Number of Nights: {reservationData?.myTimeshareId?.numberOfNights}</h6>
+                                </span>
+                            </Box>
+                            <DialogContent>
+
+                                <div>
+                                    <strong>Address:</strong> {reservationData?.address?.street},{' '}
+                                    {reservationData?.address?.city}, {reservationData?.address?.province},{' '}
+                                    {reservationData?.address?.zipCode}, {reservationData?.address?.country}
+                                </div>
+                                <div>
+                                    <strong>Amount:</strong> {reservationData?.amount}
+                                </div>
+                                <div>
+                                    <strong>Email:</strong> {reservationData?.email}
+                                </div>
+                                <div>
+                                    <strong>Full Name:</strong> {reservationData?.fullName}
+                                </div>
+                                <div>
+                                    <strong>Phone:</strong> {reservationData?.phone}
+                                </div>
+                                <div>
+                                    <strong>Reservation Date:</strong> {formatDate(reservationData?.request_at)}
+                                </div>
+                                <div>
+                                    <strong>Status:</strong> {reservationData?.status}
+                                </div>
+
+                            </DialogContent>
+                        </ModalDialog>
+                    </Modal>
+                )}
+            </Transition>
+        </>
     );
 }
 
-export default function ExchangeRequestList() {
+
+export default function RentRequestList(props: any) {
+    const reservationData = props.reservationData; // Assuming you pass the reservation data to the component
+    const [requestList, setRequestList] = React.useState<any[]>([]);
+    const [servicePacks, setServicePacks] = useState<ServicePack[]>([]);
+    const [timeshares, setTimeshares] = useState<Timeshare[]>([]);
+    useEffect(() => {
+        const fetchTimeshares = async () => {
+            try {
+                const timesharePromises = requestList.map(async (row) => {
+
+                    const response = await axios.get<Timeshare[]>(`http://localhost:8080/api/v2/timeshare/${row?.myTimeshareId}`);
+
+                    const timeshareData = await Promise.all(timesharePromises);
+                    return response.data;
+                });
+                const timeshareData = await Promise.all(timesharePromises);
+                setTimeshares(timeshareData.flat()); // Flatten the array of arrays
+            
+            } catch (error) {
+                console.error('Error fetching service packs:', error);
+            }
+        };
+        fetchTimeshares();
+    }, []);
+
+    // useEffect(() => {
+    //     const fetchServicePacks = async () => {
+    //         try {
+    //             const response = await axios.get<ServicePack[]>('http://localhost:8080/api/v2/servicePack/getAllServicePack');
+    //             setServicePacks(response.data);
+    //         } catch (error) {
+    //             console.error('Error fetching service packs:', error);
+    //         }
+    //     };
+  
+    //     fetchServicePacks();
+    // }, []);
+    
+    const [openModal, setOpenModal] = React.useState(false);
+    const handleOpenModal = () => {
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
+    const timeshareId = props?.timeshareId;
+    async function Load() {
+        try {
+            // Fetch rent requests based on timeshareId
+            const response = await GetExchangeRequestOfTimeshare(timeshareId);
+            if (response) {
+                setRequestList(response);
+            }
+        } catch (error: any) {
+            console.error('Error fetching rent requests:', error.message);
+        }
+    }
+
+    React.useEffect(() => {
+        // Load rent requests when timeshareId changes
+        Load();
+    }, [timeshareId]);
+
     const [order, setOrder] = React.useState<Order>('desc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [open, setOpen] = React.useState(false);
-    const renderFilters = () => (
-        <React.Fragment>
-            <FormControl size="sm">
-                <FormLabel>Status</FormLabel>
-                <Select
-                    size="sm"
-                    placeholder="Filter by status"
-                    slotProps={{button: {sx: {whiteSpace: 'nowrap'}}}}
-                >
-                    <Option value="paid">Paid</Option>
-                    <Option value="pending">Pending</Option>
-                    <Option value="refunded">Refunded</Option>
-                    <Option value="cancelled">Cancelled</Option>
-                </Select>
-            </FormControl>
-            <FormControl size="sm">
-                <FormLabel>Category</FormLabel>
-                <Select size="sm" placeholder="All">
-                    <Option value="all">All</Option>
-                    <Option value="refund">Refund</Option>
-                    <Option value="purchase">Purchase</Option>
-                    <Option value="debit">Debit</Option>
-                </Select>
-            </FormControl>
-            <FormControl size="sm">
-                <FormLabel>Customer</FormLabel>
-                <Select size="sm" placeholder="All">
-                    <Option value="all">All</Option>
-                    <Option value="olivia">Olivia Rhye</Option>
-                    <Option value="steve">Steve Hampton</Option>
-                    <Option value="ciaran">Ciaran Murray</Option>
-                    <Option value="marina">Marina Macdonald</Option>
-                    <Option value="charles">Charles Fulton</Option>
-                    <Option value="jay">Jay Hoper</Option>
-                </Select>
-            </FormControl>
-        </React.Fragment>
-    );
     return (
+
         <Sheet
             className="OrderTableContainer"
             // variant="outlined"
@@ -190,7 +301,7 @@ export default function ExchangeRequestList() {
                 borderRadius: 'sm',
                 flexShrink: 1,
                 overflow: 'auto',
-                minHeight: 0,
+                minHeight: 1,
             }}
         >
             <Table
@@ -198,6 +309,7 @@ export default function ExchangeRequestList() {
                 stickyHeader
                 hoverRow
                 sx={{
+
                     '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
                     '--Table-headerUnderlineThickness': '1px',
                     '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
@@ -207,119 +319,155 @@ export default function ExchangeRequestList() {
             >
                 <thead>
                 <tr>
-                    <th style={{width: 48, textAlign: 'center', padding: '12px 6px'}}>
-                        <Checkbox
-                            size="sm"
-                            indeterminate={
-                                selected.length > 0 && selected.length !== rows.length
-                            }
-                            checked={selected.length === rows.length}
-                            onChange={(event) => {
-                                setSelected(
-                                    event.target.checked ? rows.map((row) => row.id) : [],
-                                );
-                            }}
-                            color={
-                                selected.length > 0 || selected.length === rows.length
-                                    ? 'primary'
-                                    : undefined
-                            }
-                            sx={{verticalAlign: 'text-bottom'}}
-                        />
-                    </th>
-                    <th style={{width: 120, padding: '12px 6px'}}>
-                        <Link
-                            underline="none"
-                            color="primary"
-                            component="button"
-                            onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
-                            fontWeight="lg"
-                            endDecorator={<ArrowDropDownIcon/>}
-                            sx={{
-                                '& svg': {
-                                    transition: '0.2s',
-                                    transform:
-                                        order === 'desc' ? 'rotate(0deg)' : 'rotate(180deg)',
-                                },
-                            }}
-                        >
-                            Invoice
-                        </Link>
-                    </th>
                     <th style={{width: 140, padding: '12px 6px'}}>Date</th>
-                    <th style={{width: 140, padding: '12px 6px'}}>Status</th>
+                    <th style={{width: 140, padding: '12px 6px'}}>Paid</th>
                     <th style={{width: 240, padding: '12px 6px'}}>Customer</th>
-                    <th style={{width: 140, padding: '12px 6px'}}></th>
+                    <th style={{width: 240, padding: '12px 6px'}}>View detail</th>
+                    <th style={{width: 240, padding: '12px 6px'}}>Status</th>
+                    <th style={{width: 100, padding: '12px 6px'}}></th>
                 </tr>
                 </thead>
                 <tbody>
-                {stableSort(rows, getComparator(order, 'id')).map((row) => (
-                    <tr key={row.id}>
-                        <td style={{textAlign: 'center', width: 120}}>
-                            <Checkbox
-                                size="sm"
-                                checked={selected.includes(row.id)}
-                                color={selected.includes(row.id) ? 'primary' : undefined}
-                                onChange={(event) => {
-                                    setSelected((ids) =>
-                                        event.target.checked
-                                            ? ids.concat(row.id)
-                                            : ids.filter((itemId) => itemId !== row.id),
-                                    );
-                                }}
-                                slotProps={{checkbox: {sx: {textAlign: 'left'}}}}
-                                sx={{verticalAlign: 'text-bottom'}}
-                            />
-                        </td>
-                        <td>
-                            <Typography level="body-xs">{row.id}</Typography>
-                        </td>
-                        <td>
-                            <Typography level="body-xs">{row.date}</Typography>
-                        </td>
-                        <td>
-                            <Chip
-                                variant="soft"
-                                size="sm"
-                                startDecorator={
-                                    {
-                                        Paid: <CheckRoundedIcon/>,
-                                        Refunded: <AutorenewRoundedIcon/>,
-                                        Cancelled: <BlockIcon/>,
-                                    }[row.status]
-                                }
-                                color={
-                                    {
-                                        Paid: 'success',
-                                        Refunded: 'neutral',
-                                        Cancelled: 'danger',
-                                    }[row.status] as ColorPaletteProp
-                                }
+                {requestList?.map((row: any) => {
+                    return (
+                        <tr key={row._id}>
+                            <td>
+                                <Typography level="body-xs">{formatDate(row?.request_at)}</Typography>
+                            </td>
+                            <td>
+                                {/* Display status or Chip based on your logic */}
+                                {row?.isPaid ? (
+                                    <Chip variant="soft" size="sm" startDecorator={<CheckRoundedIcon />} color="success">
+                                        Paid
+                                    </Chip>
+                                ) : (
+                                    <Chip variant="soft" size="sm" color="danger">
+                                        Not paid
+                                    </Chip>
+                                )}
+                            </td>
+                            <td>
+                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                    <Avatar size="sm" src={row?.userId?.profilePicture}>{row?.userId?.firstname?.charAt(0)}</Avatar>
+                                    <div>
+                                        <Typography level="body-xs">{row?.userId?.firstname} {row?.userId?.lastname}</Typography>
+                                        <Typography level="body-xs">{row?.userId?.email}</Typography>
+                                    </div>
+                                </Box>
+                            </td>
+                            <td>
+                            
+                            <React.Fragment>
+                            <Button variant="outlined" color="neutral" onClick={() => setOpen(true)}>
+                                View detail
+                            </Button>
+                            
+                            
+                            <Modal
+                                aria-labelledby="modal-title"
+                                aria-describedby="modal-desc"
+                                open={open}
+                                onClose={() => setOpen(false)}
+                                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                             >
-                                {row.status}
-                            </Chip>
-                        </td>
-                        <td>
-                            <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
-                                <Avatar size="sm">{row.customer.initial}</Avatar>
-                                <div>
-                                    <Typography level="body-xs">{row.customer.name}</Typography>
-                                    <Typography level="body-xs">{row.customer.email}</Typography>
+                                <Sheet
+                                variant="outlined"
+                                sx={{
+                                    maxWidth: 600,
+                                    borderRadius: 'md',
+                                    p: 3,
+                                    boxShadow: 'lg',
+                                }}
+                                >
+                                <ModalClose variant="plain" sx={{ m: -1 }} />
+                                <Typography
+                                    component="h2"
+                                    id="modal-title"
+                                    level="h4"
+                                    textColor="inherit"
+                                    fontWeight="lg"
+                                    mb={1}
+                                >
+
+                                </Typography>
+                            <ImageGallery items={convertImageArray([...row?.myTimeshareId?.images, ...row?.myTimeshareId?.resortId.image_urls])}/>
+                            <h2>{row?.myTimeshareId?.resortId.name}</h2>
+                                    <span>
+                                        <h5>{row?.myTimeshareId?.unitId?.name}</h5>
+                                    </span>
+
+                                <span>
+                                        <h6>Number of Nights: {row?.myTimeshareId?.numberOfNights}</h6>
+                                </span>
+                            <Typography> 
+                                <div className='tour__extra-details'>
+                                    <span>
+                                        <i className="ri-map-pin-range-line"></i>{row?.myTimeshareId?.resortId.location}
+                                    </span>
+                                    <span>
+                                        <i className="ri-money-dollar-circle-line"></i>{row?.myTimeshareId?.price}
+                                    </span>
+                                    <span>
+                                        <i className="ri-time-line"></i> {convertDate(row?.myTimeshareId?.start_date)} - {convertDate(row?.myTimeshareId?.end_date)}
+                                    </span>
                                 </div>
-                            </Box>
-                        </td>
-                        <td>
-                            <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
-                                <Link level="body-xs" component="button">
-                                    Download
-                                </Link>
-                                <RowMenu/>
-                            </Box>
-                        </td>
-                    </tr>
-                ))}
+                            
+                            </Typography>
+
+                            <td> 
+                                <Typography level="body-xs">
+                                    {row?.timeshareId?.is_bookable === false ? (
+                                        <Box sx={{ fontSize:'15px', border: '1px' , backgroundColor:'gray', color:'white', padding:'10px', borderRadius:'5px'}}>
+                                            Accepted
+                                        </Box>                                     
+                                    ) : (
+                                        <>
+                                            <Button variant="solid" color="success" onClick={() => {
+                                                AcceptExchangeByOwner(row?._id);
+                                                setOpen(false);
+                                            }}>
+                                                Accept
+                                            </Button>
+                                            <Button variant="solid" color="danger"  onClick={() => {
+                                                CancelExchangeByOwner(row?._id);
+                                                setOpen(false);
+                                            }}>
+                                                Cancel
+                                            </Button>
+                                        </>
+                                    )}
+                                </Typography>
+                            </td>
+
+
+                                </Sheet>
+                            </Modal>
+                            
+                          
+      
+                            </React.Fragment>
+
+                            </td>
+                            <td>
+                                <Typography level="body-xs">{row?.status}</Typography>
+                            </td>
+                            <td>
+                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                    <Link level="body-xs" component="button">
+                                        Contact
+                                    </Link>
+                                    <RowMenu reservationData={row}/>
+                                </Box>
+                                
+                            </td>
+                        </tr>
+                        
+                    );
+                    
+                })}
                 </tbody>
             </Table>
         </Sheet>
     );
+    
 }

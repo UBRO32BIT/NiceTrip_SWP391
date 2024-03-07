@@ -102,7 +102,7 @@ export default function Exchange() {
         try {
             const makeExchange = await MakeExchange(postId, formData);
             if (makeExchange) {
-                navigate(`/timeshare/${postId}/reservation/${makeExchange._id}/confirm`);
+                navigate(`/timeshare/${postId}/exchange/${makeExchange._id}/confirm`);
             }
         } catch (error) {
             console.error("Error making exchange request:", error);
@@ -532,6 +532,11 @@ export default function Exchange() {
                                             <Input type="hidden" name="myTimeshareId" value={myPosts[selectedResortIndex]?._id}/>
 
                                             <Input type="hidden" name="amount" value={post?.price}/>
+
+                                        <FormControl sx={{display: 'none'}}>
+                                            <Input type="hidden" name="status"
+                                                value="Agreement phase"/>
+                                        </FormControl>
                                         </FormControl>
                                         <FormControl sx={{display: 'none'}}>
                                             <Input type="hidden" name="userId" value={user?._id}/>
@@ -540,7 +545,7 @@ export default function Exchange() {
                                             <Input type="hidden" name="postId" value={postId}/>
                                         </FormControl>
                                         <FormControl sx={{display: 'none'}}>
-                                            <Input type="hidden" name="reservationDate"
+                                            <Input type="hidden" name="request_at"
                                                 value={new Date().toLocaleString() + ""}/>
                                         </FormControl>
                                     </FormControl>
