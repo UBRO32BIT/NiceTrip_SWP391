@@ -11,7 +11,7 @@ const UploadPost = (data: any) => {
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
-const GetPost = () => {
+const GetPost = async () => {
     return api.get('/timeshare')
         .then((res) => {
             return res.data.data.results

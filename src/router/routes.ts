@@ -6,7 +6,7 @@ import Booking from "../pages/Booking";
 import ReviewOrder from "../pages/ReviewOrder";
 import ThankYou from "../pages/ThankYou";
 import Home from "../pages/Home/Home";
-import TimeShare from "../pages/TimeShare";
+import TimeShareList from "../pages/TimeShareList";
 import TimeShareDetails from "../pages/TimeShareDetails";
 import PostTimeshare from "../pages/PostTimeshare";
 import About from "../pages/About";
@@ -17,7 +17,7 @@ import Messenger from "../pages/Messenger"
 import Email from "../pages/Email";
 import VNPay from "../pages/Payment/VNPay"
 import ConfirmExchange from "../pages/ConfirmExchange";
-
+import PaymentPage from "../pages/Payment";
 interface Route {
     path: string;
     page: React.ComponentType<any>;
@@ -72,6 +72,10 @@ const publicRoutes: Route[] = [
         page: ReviewOrder
     },
     {
+        path: '/payment/:reservationId',
+        page: PaymentPage
+    },
+    {
         path: '/thank-you',
         page: ThankYou
     },
@@ -81,7 +85,7 @@ const publicRoutes: Route[] = [
     },
     {
         path: '/timeshare',
-        page: TimeShare
+        page: TimeShareList
     },
     {
         path: '/timeshare-details/:id',
