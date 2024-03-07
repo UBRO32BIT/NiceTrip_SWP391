@@ -185,6 +185,11 @@ export default function MyProfile() {
                                         <Input
                                             size="sm"
                                             type="file"
+                                            slotProps={{
+                                                input: {
+                                                    accept: "image/*",
+                                                }
+                                            }}
                                             placeholder="Image"
                                             onChange={(e) => {
                                                 const files = e?.target?.files;

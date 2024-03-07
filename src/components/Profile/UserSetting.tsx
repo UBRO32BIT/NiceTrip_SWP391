@@ -55,7 +55,7 @@ export default function UserSetting() {
     });
     const [open, setOpen] = React.useState<boolean>(false);
     const [emailVerifyOpen, setEmailVerifyOpen] = React.useState<boolean>(false);
-    const [uploading, setUploading] = React.useState<boolean>();
+    const [uploading, setUploading] = React.useState<boolean>();;
     React.useEffect(() => {
         setIsLoaded(false);
         if (user) {
@@ -85,7 +85,11 @@ export default function UserSetting() {
     const handleUpdateUser = async (e: any) => {
         try {
             setUploading(true);
-            const formData = new FormData(e.currentTarget);
+            const formData = new FormData();
+            formData.append('firstname', e.firstname);
+            formData.append('lastname', e.lastname);
+            formData.append('email', e.email);
+            formData.append('phone', e.phone);
             if (selectedImage instanceof File) {
                 formData.append('profilePicture', selectedImage);
             }

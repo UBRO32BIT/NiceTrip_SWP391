@@ -6,7 +6,7 @@ import Booking from "../pages/Booking";
 import ReviewOrder from "../pages/ReviewOrder";
 import ThankYou from "../pages/ThankYou";
 import Home from "../pages/Home/Home";
-import TimeShare from "../pages/TimeShare";
+import TimeShareList from "../pages/TimeShareList";
 import TimeShareDetails from "../pages/TimeShareDetails";
 import PostTimeshare from "../pages/PostTimeshare";
 import About from "../pages/About";
@@ -75,7 +75,7 @@ const publicRoutes: Route[] = [
     },
     {
         path: '/timeshare',
-        page: TimeShare
+        page: TimeShareList
     },
     {
         path: '/timeshare-details/:id',

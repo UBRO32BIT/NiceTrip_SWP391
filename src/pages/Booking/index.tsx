@@ -6,7 +6,7 @@ import Stack from '@mui/joy/Stack';
 import NavBar from '../../components/Rental/NavBar';
 import {GetPostById} from '../../services/post.service';
 import Grid from '@mui/joy/Grid';
-import {Button, Typography} from '@mui/joy';
+import {Button, FormHelperText, Typography} from '@mui/joy';
 import {Routes, Route, useParams} from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Card from '@mui/joy/Card';
@@ -26,6 +26,10 @@ import {NavLink, useNavigate} from 'react-router-dom';
 import {MakeReservation} from '../../services/booking.service';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import * as yup from "yup";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { InfoOutlined } from '@mui/icons-material';
 
 interface RootState {
     auth: {
@@ -62,10 +66,27 @@ export default function Booking() {
     const navigate = useNavigate();
     let { timeshareId} = useParams();
     const [uploading, setUploading] = React.useState<boolean>(false);
+    const schema = yup.object().shape({
+        fullName: yup.string()
+            .required("Full Name is required!")
+            .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
+        email: yup.string()
+            .required("Email is required!")
+            .email("Email is invalid!"),
+        phone: yup.number()
+            .required("Phone number is required!")
+    })
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
+        resolver: yupResolver(schema),
+    })
 
-    async function handleSubmit(e: any) {
+    async function handleRental(e: any) {
         setUploading(true)
-        e.preventDefault();
+        //e.preventDefault();
         const formData = new FormData(e.currentTarget)
         const formJson = Object.fromEntries((formData as any).entries());
         const address = {
@@ -119,7 +140,7 @@ export default function Booking() {
                         <Typography fontWeight={700} fontSize={26}>
                             Booking request
                         </Typography>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit(handleRental)}>
                             <Box sx={{
                                 width: 1,
                                 display: 'flex',
@@ -148,25 +169,31 @@ export default function Booking() {
                                             type="text"
                                             size="md"
                                             placeholder="Full name"
-                                            name="fullName"
+                                            {...register('fullName')}
+                                            error={!!errors.fullName}
                                             sx={{}}
                                         />
+                                        {errors.fullName && <FormHelperText><InfoOutlined />{errors.fullName.message}</FormHelperText>}
                                         <FormLabel sx={{mt: 2}}>Email</FormLabel>
                                         <Input
                                             size="md"
                                             type="email"
                                             startDecorator={<EmailRoundedIcon/>}
                                             placeholder="email"
-                                            name="email"
+                                            {...register('email')}
+                                            error={!!errors.email}
                                             sx={{flexGrow: 1}}
                                         />
+                                        {errors.email && <FormHelperText><InfoOutlined />{errors.email.message}</FormHelperText>}
                                         <FormLabel sx={{mt: 2}}>Phone</FormLabel>
                                         <Input
                                             size="md"
                                             placeholder="Phone"
-                                            name="phone"
+                                            {...register('phone')}
+                                            error={!!errors.phone}
                                             sx={{flexGrow: 1}}
                                         />
+                                        {errors.phone && <FormHelperText><InfoOutlined />{errors.phone.message}</FormHelperText>}
                                         <FormLabel sx={{mt: 2}}>Country</FormLabel>
                                         <CountrySelector/>
                                     </FormControl>
