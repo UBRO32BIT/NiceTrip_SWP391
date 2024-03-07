@@ -15,6 +15,7 @@ import Exchange from "../pages/Exchange";
 import ConfirmReservation from "../pages/ConfirmReservation";
 import Messenger from "../pages/Messenger"
 import Email from "../pages/Email";
+import VNPay from "../pages/Payment/VNPay"
 import PaymentPage from "../pages/Payment";
 interface Route {
     path: string;
@@ -48,6 +49,10 @@ const publicRoutes: Route[] = [
     {
         path: 'timeshare/:timeshareId/book',
         page: Booking
+    },
+    {
+        path: '/payment/:userId/vnpay_return',
+        page: VNPay
     },
     {
         path: '/timeshare/:postId/exchange',
