@@ -15,6 +15,10 @@ import CardContent from '@mui/joy/CardContent';
 import Divider from '@mui/joy/Divider';
 import Chip from '@mui/joy/Chip';
 import JsBarcode from 'jsbarcode';
+import FormControl from "@mui/joy/FormControl";
+import FormLabel from "@mui/joy/FormLabel";
+import Select from "@mui/joy/Select";
+import Option from "@mui/joy/Option";
 var { createCanvas } = require("canvas");
 // import Canvas
 interface RootState {
@@ -56,6 +60,49 @@ export default function TripList() {
     }, [user])
     return (
         <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 5 }, mt: 2, }}>
+            <Grid
+                md={12} xs={12}
+                sx={{
+                    display: 'flex',
+                    gap: 3,
+                    // p: 0,
+                    mb: 2
+                }}>
+                <FormControl size="sm">
+                    <FormLabel>Status</FormLabel>
+                    <Select
+                        size="sm"
+                        placeholder="Filter by status"
+                        slotProps={{button: {sx: {whiteSpace: 'nowrap'}}}}
+                    >
+                        <Option value="paid">Paid</Option>
+                        <Option value="pending">Pending</Option>
+                        <Option value="refunded">Refunded</Option>
+                        <Option value="cancelled">Cancelled</Option>
+                    </Select>
+                </FormControl>
+                <FormControl size="sm">
+                    <FormLabel>Category</FormLabel>
+                    <Select size="sm" placeholder="All">
+                        <Option value="all">All</Option>
+                        <Option value="refund">Refund</Option>
+                        <Option value="purchase">Purchase</Option>
+                        <Option value="debit">Debit</Option>
+                    </Select>
+                </FormControl>
+                <FormControl size="sm">
+                    <FormLabel>Customer</FormLabel>
+                    <Select size="sm" placeholder="All">
+                        <Option value="all">All</Option>
+                        <Option value="olivia">Olivia Rhye</Option>
+                        <Option value="steve">Steve Hampton</Option>
+                        <Option value="ciaran">Ciaran Murray</Option>
+                        <Option value="marina">Marina Macdonald</Option>
+                        <Option value="charles">Charles Fulton</Option>
+                        <Option value="jay">Jay Hoper</Option>
+                    </Select>
+                </FormControl>
+            </Grid>
                 {myTrips.length > 0 && myTrips.map((item: any) => {
                     return (<Grid xs={12} md={6} lg={4} >
                         <Card orientation="horizontal" variant="outlined" sx={{}}>

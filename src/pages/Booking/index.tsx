@@ -64,7 +64,7 @@ export default function Booking() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [timeshare, setTimeshare] = React.useState<any>([]);
     const navigate = useNavigate();
-    let {timeshareId} = useParams();
+    let { timeshareId} = useParams();
     const [uploading, setUploading] = React.useState<boolean>(false);
     const schema = yup.object().shape({
         fullName: yup.string()
@@ -96,7 +96,7 @@ export default function Booking() {
             postalCode: formJson?.zipCode,
             country: formJson?.country,
         };
-        const reservation = await MakeReservation('rent',formData);
+        const reservation = await MakeReservation('rent', formData);
         if (reservation) {
             // console.log(reservation)
             navigate(`/timeshare/${timeshareId}/reservation/${reservation?._id}/confirm`)

@@ -23,7 +23,7 @@ import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
 import { useSelector } from 'react-redux';
 import { NavLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { MakeReservation, ExecutePayment, GetReservationById } from '../../services/booking.service';
+import { MakeReservation, ExecutePayPalPayment, GetReservationById } from '../../services/booking.service';
 import Sheet from '@mui/joy/Sheet';
 interface RootState {
     auth: {
@@ -75,7 +75,7 @@ export default function ThankYou() {
             PayerID,
             totalAmount
         }
-        const executed = await ExecutePayment(data);
+        const executed = await ExecutePayPalPayment(data);
         if (executed) {
             setUploading(false)
         }

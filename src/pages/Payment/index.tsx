@@ -54,12 +54,12 @@ interface Resort {
     pricePerNight: string;
 }
 
-export default function ReviewOrder() {
+export default function PaymentPage() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [post, setPost] = React.useState<any>([]);
     let [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
-    let {postId, reservationId} = useParams();
+    let {timeshareId, reservationId} = useParams();
     let paymentId = searchParams.get('paymentId');
     let PayerID = searchParams.get('PayerID');
     const [uploading, setUploading] = React.useState<boolean>(false);
@@ -69,11 +69,9 @@ export default function ReviewOrder() {
         e.preventDefault();
         const reservationData = await GetReservationById(reservationId);
         const totalAmount = reservationData?.amount
-        const postId = reservationData?.postId?._id
-        const userId = user?._id
+        const postId = reservationData?.timeshare?._id
         const data = {
-            userId,
-            postId,
+            timeshareId,
             reservationId,
             paymentId,
             PayerID,
@@ -81,6 +79,7 @@ export default function ReviewOrder() {
         }
         const executed = await ExecutePayPalPayment(data);
         if (executed) {
+            console.log(executed)
             setUploading(false)
             if (executed?.state === "approved") navigate('/thank-you', executed)
         }
@@ -91,8 +90,8 @@ export default function ReviewOrder() {
     }, [])
 
     async function Load() {
-        if (postId) {
-            const postData = await GetPostById(postId);
+        if (timeshareId) {
+            const postData = await GetPostById(timeshareId);
             if (postData) {
                 setPost(postData)
             }

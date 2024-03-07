@@ -42,17 +42,17 @@ const VerificationCard = () => {
     const [sendingEmail, setSendingEmail] = React.useState<boolean>(false);
     const [sendButtonDisabled, setSendButtonDisabled] = React.useState<boolean>(false);
     const navigate = useNavigate();
-    let {postId, reservationId} = useParams();
+    let {timeshareId, reservationId} = useParams();
     let [searchParams, setSearchParams] = useSearchParams();
     let token = searchParams.get('token');
 
     React.useEffect(() => {
         Load()
-    }, [postId, reservationId, token])
+    }, [timeshareId, reservationId, token])
 
     async function Load() {
-        if (postId) {
-            const postData = await GetPostById(postId);
+        if (timeshareId) {
+            const postData = await GetPostById(timeshareId);
             if (postData) {
                 setPost(postData)
             }
@@ -65,7 +65,6 @@ const VerificationCard = () => {
         }
         if (token) {
             const data = await ConfirmReservationByToken(reservationId, token);
-            console.log(data)
         }
     }
 
