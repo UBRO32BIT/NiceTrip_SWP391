@@ -40,6 +40,13 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Alert from '@mui/joy/Alert';
 import {MakeExchange} from '../../services/booking.service'
 import '../../styles/exchange.css';
+import { Height, WidthFull } from '@mui/icons-material';
+import Avatar from '@mui/joy/Avatar';
+import AvatarGroup from '@mui/joy/AvatarGroup';
+import CardContent from '@mui/joy/CardContent';
+import IconButton from '@mui/joy/IconButton';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import {convertDate} from '../../utils/date'
 
 interface RootState {
     auth: {
@@ -125,6 +132,11 @@ export default function Exchange() {
     const handleResortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedResortIndex(Number(event.target.value));
     };
+    const [selectedPost, setSelectedPost] = React.useState<any>([]);
+
+    const handleCardClick = (index: number) => {
+        setSelectedResortIndex(index);
+    };
     const handleButtonSubmit = () => {
         if (myPosts && myPosts.length > 0) {
             const selectedResortId = myPosts[selectedResortIndex]?.resortId.name;
@@ -205,59 +217,94 @@ export default function Exchange() {
                             {myPosts[selectedResortIndex]?.resortId.name || 'Select Resort'}
                             </Button>
                 
-                <Modal open={open} onClose={() => setOpen(false)} >
-                
-                <ModalDialog
-                    aria-labelledby="nested-modal-title"
-                    aria-describedby="nested-modal-description"
-                    sx={(theme) => ({
-                        [theme.breakpoints.only('xs')]: {
-                            top: 'unset',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            borderRadius: 0,
-                            transform: 'none',
-                            maxWidth: 'unset',
-                        },
-                    })}
-                >
-                    <Typography id="nested-modal-title" level="h2">
-                        Are you absolutely sure?
-                    </Typography>
-                    <Typography id="nested-modal-description" textColor="text.tertiary">
-                        This action cannot be undone. This will permanently delete your account
-                        and remove your data from our servers.
-                    </Typography>
-                    <FormControl>
-                        <FormLabel>Sizes</FormLabel>
+    
+                            <Modal open={open} onClose={() => setOpen(false)}>
+    <ModalDialog
+        aria-labelledby="nested-modal-title"
+        aria-describedby="nested-modal-description"
+        sx={(theme) => ({
+            [theme.breakpoints.only('xs')]: {
+                top: 'unset',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                borderRadius: 0,
+                transform: 'none',
+                maxWidth: '80%', // Thay đổi maxWidth thành 80%
+            },
+            overflowY: 'scroll', // Add overflowY to enable vertical scrollbar
+            maxHeight: '80vh', // Limit maximum height and enable vertical scrollbar
+        })}
+    >
+        <Typography id="nested-modal-title" level="h2">
+            Select Timeshare
+        </Typography>
 
-                        <RadioGroup
-                        defaultValue=""
-                        name="radio-buttons-group"
-                        onChange={handleResortChange}
-                    >
-                        {myPosts.map((post: any, index: number) => (
-                            
-                            <>
-                            <FormControlLabel
-                                key={post.resortId.name}
-                                value={String(index)}
-                                control={<Radio size="sm" />}
-                                label={post.resortId.name}
-                            />
-                            <Typography>Unit: {post.unitId.name}</Typography>
-                            <Typography>Price: {post.price}</Typography>
+        <Box sx={{ overflowX: 'hidden' }}>
+            <Grid container spacing={2} sx={{ overflowX: 'hidden' }}>
+                {myPosts.map((post: any, index: number) => (
+                    <Grid key={index} xs={12} sm={6}>
+                        <Card
+                            variant="outlined"
+                            sx={{
+                                width: '100%',
+                                cursor: post.is_bookable ? 'pointer' : 'not-allowed', // Kiểm tra nếu không bookable thì sử dụng cursor 'not-allowed'
+                                '&:hover': {
+                                    backgroundColor: post.is_bookable ? '#EEEEEE' : 'none',
+                                    boxShadow: post.is_bookable ? '0 0 8px rgba(0, 0, 0, 0.2)' : 'none', // Chỉ hiển thị boxShadow khi bookable
+                                },
+                            }}
+                            onClick={() => post.is_bookable && handleCardClick(index)} // Kiểm tra nếu bookable thì mới thực hiện handleCardClick
+                        >
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <AvatarGroup size="sm" sx={{ '--Avatar-size': '40px' }}>
+                                    <Avatar src={post?.resortId?.image_urls?.[0]} />
+                                    <Avatar src={post?.resortId?.image_urls?.[1]} />
+                                    <Avatar src={post?.resortId?.image_urls?.[2]} />
+                                    <Avatar src={post?.resortId?.image_urls?.[3]} />
+                                    <Avatar>+</Avatar>
+                                </AvatarGroup>
+                                <Typography sx={{ backgroundColor: post.is_bookable ? '#AEEA00' : 'gray', fontSize:'10px',display: 'inline-block', padding: '3px 8px', borderRadius: '4px', color: post.is_bookable ? '' : '#fff' }}>
+                                    {post.is_bookable ? "NOT YET" : "SOLD"}
+                                </Typography>
+                            </Box>
+                            <CardContent >
+                                <Typography>
+                                    <h6>{post.resortId.name}</h6>
+                                </Typography>
+                                <Typography sx={{fontSize:'12px'}}>
+                                    Unit: {post.unitId.name}
+                                </Typography>
+                                <Typography sx={{fontSize:'10px'}}>
+                                    Price: {post.price}$
+                                </Typography>
+                                <Typography sx={{fontSize:'10px'}}>
+                                    Start Date: {convertDate(post?.start_date)}
+                                </Typography>
+                                <Typography sx={{fontSize:'10px'}}>
+                                    End Date: {convertDate(post?.end_date)}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
 
-                            </>
-                        ))}
-                    </RadioGroup>
-                    </FormControl>
-                    <Button variant="solid" color="primary" type='submit' onClick={handleButtonSubmit}>
-                        Continue
-                    </Button>
-                </ModalDialog>
-            </Modal>
+        <CardActions sx={{ alignSelf: 'flex-end', pt: 2, gap: 2, justifyContent: 'flex-end' }}>
+            <Button sx={{ width: '40%' }} variant="solid" color="primary" type='submit' onClick={handleButtonSubmit}>
+                Continue
+            </Button>
+        </CardActions>
+
+    </ModalDialog>
+</Modal>
+
+
+
+    
+
+
         
             </React.Fragment>
                                 {/*{post && <ImageGallery items={convertImageArray([...post?.images, ...post?.resortId?.image_urls])} showPlayButton={false} />}*/}
