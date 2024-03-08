@@ -19,6 +19,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import DeckIcon from '@mui/icons-material/Deck';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import Avatar from '@mui/joy/Avatar';
 //import {GetAccessToken, GetRefreshToken, SetRefreshToken, SetAccessToken} from "../../utils/tokens";
 
 const nav_links = [
@@ -74,13 +75,19 @@ const Header = () => {
               {/* ========== menu end ============ */}
               <div className="nav__right d-flex align-items-center gap-3">
                 {
-                  userInfo ? <> <h5 className='mb-0'>{userInfo?.username}</h5>
+                  userInfo ? <> <h5 className='mb-0'>{userInfo?.username}
+                  </h5>
+
                     <Dropdown>
                       <MenuButton
                         slots={{ root: IconButton }}
                         slotProps={{ root: { variant: 'plain', color: 'neutral' } }}
                       >
-                        <MoreVert />
+                        <Avatar
+                          variant="outlined"
+                          size="sm"
+                          src={userInfo?.profilePicture}
+                        />
                       </MenuButton>
                       <Menu>
                         <MenuItem onClick={() => navigate('/me')}>
