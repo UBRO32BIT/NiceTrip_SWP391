@@ -40,6 +40,11 @@ interface FormData {
     amount: number,
     userId: string,
     timeshareId: any,
+    country: string,
+    street: string,
+    city: string,
+    province: string,
+    zipCode: number,
 }
 
 interface Unit {
@@ -63,6 +68,19 @@ interface Resort {
     numberOfNights: number;
     pricePerNight: string;
 }
+const schema = yup.object().shape({
+    fullName: yup.string()
+        .required("Full Name is required!"),
+    email: yup.string()
+        .required("Email is required!")
+        .email("Email is invalid!"),
+    phone: yup.string()
+        .required("Phone number is required!"),
+    street: yup.string(),
+    city: yup.string(),
+    province: yup.string(),
+    zipCode: yup.string(),
+})
 
 export default function Booking() {
     const user = useSelector((state: RootState) => state?.auth?.user);
@@ -74,19 +92,11 @@ export default function Booking() {
         }
     }, [isAuthenticated, isAuthLoaded]);
     const [timeshare, setTimeshare] = React.useState<any>([]);
+    const [country, setCountry] = React.useState<any>({ code: 'VN', label: 'Vietnam', phone: '84' });
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     let { timeshareId } = useParams();
     const [uploading, setUploading] = React.useState<boolean>(false);
-    const schema = yup.object().shape({
-        fullName: yup.string()
-            .required("Full Name is required!"),
-        email: yup.string()
-            .required("Email is required!")
-            .email("Email is invalid!"),
-        phone: yup.string()
-            .required("Phone number is required!")
-    })
     const {
         register,
         handleSubmit,
@@ -107,7 +117,13 @@ export default function Booking() {
                 amount: timeshare?.price,
                 userId: user?._id,
                 timeshareId: timeshareId,
+                country: country.label,
+                street: e?.street,
+                city: e?.city,
+                province: e?.province,
+                zipCode: e?.zipCode,
             }
+            console.log(formData);
             const reservation = await MakeReservation('rent', formData);
             if (reservation) {
                 // console.log(reservation)
@@ -217,14 +233,14 @@ export default function Booking() {
                                                 />
                                                 {errors.phone && <FormHelperText><InfoOutlined />{errors.phone.message}</FormHelperText>}
                                                 <FormLabel sx={{ mt: 2 }}>Country</FormLabel>
-                                                <CountrySelector />
+                                                <CountrySelector/>
                                             </FormControl>
                                             <FormControl sx={{ display: 'inline', gap: 1, width: 1 }}>
                                                 <FormLabel sx={{}}>Street</FormLabel>
                                                 <Input
                                                     size="md"
                                                     placeholder="Street"
-                                                    name="street"
+                                                    {...register('street')}
                                                     sx={{ flexGrow: 1 }}
                                                 />
                                             </FormControl>
@@ -240,7 +256,7 @@ export default function Booking() {
                                                         <Input
                                                             size="md"
                                                             placeholder="City"
-                                                            name="city"
+                                                            {...register('city')}
                                                             sx={{ flexGrow: 1 }}
                                                         />
                                                     </Grid>
@@ -249,7 +265,7 @@ export default function Booking() {
                                                         <Input
                                                             size="md"
                                                             placeholder="Province"
-                                                            name="province"
+                                                            {...register('province')}
                                                             sx={{ flexGrow: 1 }}
                                                         />
                                                     </Grid>
@@ -258,7 +274,7 @@ export default function Booking() {
                                                         <Input
                                                             size="md"
                                                             placeholder="Zip code"
-                                                            name="zipCode"
+                                                            {...register('zipCode')}
                                                             sx={{ flexGrow: 1 }}
                                                         />
                                                     </Grid>
