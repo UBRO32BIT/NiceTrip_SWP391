@@ -18,14 +18,18 @@ import "react-image-gallery/styles/css/image-gallery.css"
 import convertImageArray from '../utils/convertImageArray'
 import { Box } from '@mui/material';
 import { useSelector } from "react-redux";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const TimeShareDetails = () => {
     const user = useSelector((state) => state?.auth?.user);
     const { id } = useParams();
     const navigate = useNavigate();
-    const reviewMsgRef = useRef('')
-    const [tourRating, setTourRating] = useState(null)
-    const [post, setPost] = React.useState(null);
+    const reviewMsgRef = useRef('');
+    const [tourRating, setTourRating] = useState(null);
+    const [post, setPost] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    
     React.useEffect(() => {
         GetPostById(id)
             .then((data) => {
@@ -39,7 +43,15 @@ const TimeShareDetails = () => {
                 else console.error("Cannot get data from server!")
             });
     }, []);
-
+    React.useEffect(() => {
+        // Check if user is logged in and show snackbar
+        if (user) {
+            setOpenSnackbar(true);
+        }
+    }, [user]);
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
 
     //destructure properties from tour object
     //const { photo, title, desc, price, address, reviews, city, distance, maxGroupSize, time } = tour
@@ -61,6 +73,12 @@ const TimeShareDetails = () => {
         <section>
             <Container>
                 <Row>
+                {(user?._id === post?.current_owner?._id) && 
+                <Snackbar  open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+                    <MuiAlert onClose={handleCloseSnackbar} severity="error" sx={{ width: '60%' }}>
+                            CAN'T RENT/EXCHANGE ON YOUR TIMESHARE
+                    </MuiAlert>
+                </Snackbar>}
                     <Col lg='12'>
                         <div className="tour__content">
                             <Row>
@@ -69,6 +87,11 @@ const TimeShareDetails = () => {
                                 </Col>
                                 <Col lg='6'>
                                     <div className='tour__info'>
+                                    <Box sx={{ color:'white' ,float: 'right', textAlign: 'center', backgroundColor: 'gray', paddingRight: '15px', paddingLeft: '15px', width: 'fit-content', borderRadius: '5px' }}>
+                                        {(post?.is_bookable === false) ? 'SOLD' : ''}
+                                    </Box>
+
+
                                         <h2>{post?.resortId.name}</h2>
 
                                         <div className='d-flex align-items-center gap-5'>
@@ -102,20 +125,29 @@ const TimeShareDetails = () => {
                                             <h5>Description</h5>
                                             <p>{post?.resortId.description}</p>
                                         </div>
-                                        {(user?._id === post?.current_owner?._id) && <>
-                                        <Box sx={{ backgroundColor:'red' }}>
-                                            Cút ngay
-                                        </Box>
-                                        </>}
-                                        <div className="text-center" style={{ display: "flex", gap: '5px'}}>
-                                            
-                                            <Button disabled={user?._id === post?.current_owner?._id} variant="contained" color="success" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}>
-                                                Rent Now
-                                            </Button>
-                                            <Button disabled={user?._id === post?.current_owner?._id} variant="contained" color="error" size="large" onClick={() => { navigate(`/timeshare/${post?._id}/exchange`) }}>
-                                                Request to exchange
-                                            </Button>
-                                        </div>
+                                        <>
+                                            <div className="text-center" style={{ display: "flex", alignItems: "center", gap: '5px'}}>
+                                                <Button 
+                                                    disabled={post?.is_bookable === false || user?._id === post?.current_owner?._id || post?.type !== 'rental'} 
+                                                    variant="contained" 
+                                                    color="success" 
+                                                    size="large" 
+                                                    onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}
+                                                >
+                                                    Rent Now
+                                                </Button>
+                                                <Button 
+                                                    disabled={post?.is_bookable === false || user?._id === post?.current_owner?._id || post?.type !== 'exchange'} 
+                                                    variant="contained" 
+                                                    color="error" 
+                                                    size="large" 
+                                                    onClick={() => { navigate(`/timeshare/${post?._id}/exchange`) }}
+                                                >
+                                                    Request to exchange
+                                                </Button>
+                                            </div>
+                                        </>
+
                                     </div>
                                 </Col>
                             </Row>
