@@ -1,16 +1,16 @@
 import * as React from 'react';
-import {CssVarsProvider} from '@mui/joy/styles';
+import { CssVarsProvider } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
 import NavBar from '../../components/Rental/NavBar';
-import {GetPostById} from '../../services/post.service';
+import { GetPostById } from '../../services/post.service';
 import Grid from '@mui/joy/Grid';
-import {Button, FormHelperText, Typography} from '@mui/joy';
-import {Routes, Route, useParams} from 'react-router-dom';
+import { Button, FormHelperText, Typography } from '@mui/joy';
+import { Routes, Route, useParams } from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Card from '@mui/joy/Card';
-import {shadows} from '@mui/system';
+import { shadows } from '@mui/system';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
@@ -21,21 +21,25 @@ import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import CountrySelector from '../../components/Profile/CountrySelector';
 import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
-import {useSelector} from 'react-redux';
-import {NavLink, useNavigate} from 'react-router-dom';
-import {MakeReservation} from '../../services/booking.service';
+import { useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { MakeReservation } from '../../services/booking.service';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import * as yup from "yup";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { InfoOutlined } from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
+import { RootState } from '../../features/auth/auth.slice';
 
-interface RootState {
-    auth: {
-        isAuthenticated: boolean;
-        user: any;
-    };
+interface FormData {
+    fullName: string,
+    email: string,
+    phone: string,
+    amount: number,
+    userId: string,
+    timeshareId: any,
 }
 
 interface Unit {
@@ -62,18 +66,25 @@ interface Resort {
 
 export default function Booking() {
     const user = useSelector((state: RootState) => state?.auth?.user);
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+    const isAuthLoaded = useSelector((state: RootState) => state.auth.isLoaded);
+    React.useEffect(() => {
+        if (!isAuthenticated && isAuthLoaded) {
+            navigate('/login');
+        }
+    }, [isAuthenticated, isAuthLoaded]);
     const [timeshare, setTimeshare] = React.useState<any>([]);
     const navigate = useNavigate();
-    let { timeshareId} = useParams();
+    const { enqueueSnackbar } = useSnackbar();
+    let { timeshareId } = useParams();
     const [uploading, setUploading] = React.useState<boolean>(false);
     const schema = yup.object().shape({
         fullName: yup.string()
-            .required("Full Name is required!")
-            .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
+            .required("Full Name is required!"),
         email: yup.string()
             .required("Email is required!")
             .email("Email is invalid!"),
-        phone: yup.number()
+        phone: yup.string()
             .required("Phone number is required!")
     })
     const {
@@ -85,24 +96,30 @@ export default function Booking() {
     })
 
     async function handleRental(e: any) {
-        setUploading(true)
-        //e.preventDefault();
-        const formData = new FormData(e.currentTarget)
-        const formJson = Object.fromEntries((formData as any).entries());
-        const address = {
-            street: formJson?.street,
-            city: formJson?.city,
-            province: formJson?.province,
-            postalCode: formJson?.zipCode,
-            country: formJson?.country,
-        };
-        const reservation = await MakeReservation('rent', formData);
-        if (reservation) {
-            // console.log(reservation)
-            navigate(`/timeshare/${timeshareId}/reservation/${reservation?._id}/confirm`)
+        try {
+            console.log(e)
+            setUploading(true)
+            //e.preventDefault();
+            const formData: FormData = {
+                fullName: e.fullName,
+                email: e.email,
+                phone: e.phone,
+                amount: timeshare?.price,
+                userId: user?._id,
+                timeshareId: timeshareId,
+            }
+            const reservation = await MakeReservation('rent', formData);
+            if (reservation) {
+                // console.log(reservation)
+                navigate(`/timeshare/${timeshareId}/reservation/${reservation?._id}/confirm`)
+                enqueueSnackbar("Booked successully", { variant: "success" });
+                setUploading(false)
+            }
+        }
+        catch (error) {
+            enqueueSnackbar(`Error while booking: ${error}`, { variant: "error" });
             setUploading(false)
         }
-        console.log(formJson)
     }
 
     React.useEffect(() => {
@@ -130,27 +147,29 @@ export default function Booking() {
 
     return (
         <>
-            <Header/>
-            <CssVarsProvider disableTransitionOnChange>
-                <CssBaseline/>
-                {/*<NavBar />*/}
-                <Grid container spacing={0}
-                      sx={{flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1, flexWrap: {xs: 'wrap', md: 'nowrap',}}}>
-                    <Grid xs={12} md={8} sx={{p: 1, boxShadow: '0 0 0px gray'}}>
-                        <Typography fontWeight={700} fontSize={26}>
-                            Booking request
-                        </Typography>
-                        <form onSubmit={handleSubmit(handleRental)}>
-                            <Box sx={{
-                                width: 1,
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                mt: 2,
-                                p: 1,
-                                boxShadow: '0 0 4px gray',
-                            }}>
-                                <Stack direction="column" spacing={4} sx={{width: 1, mt: 1}}>
-                                    {/* <FormControl sx={{ display: 'inline', gap: 1, width: 0.15 }}>
+            {isAuthenticated &&
+                <>
+                    <Header />
+                    <CssVarsProvider disableTransitionOnChange>
+                        <CssBaseline />
+                        {/*<NavBar />*/}
+                        <Grid container spacing={0}
+                            sx={{ flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1, flexWrap: { xs: 'wrap', md: 'nowrap', } }}>
+                            <Grid xs={12} md={8} sx={{ p: 1, boxShadow: '0 0 0px gray' }}>
+                                <Typography fontWeight={700} fontSize={26}>
+                                    Booking request
+                                </Typography>
+                                <form onSubmit={handleSubmit(handleRental)}>
+                                    <Box sx={{
+                                        width: 1,
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        mt: 2,
+                                        p: 1,
+                                        boxShadow: '0 0 4px gray',
+                                    }}>
+                                        <Stack direction="column" spacing={4} sx={{ width: 1, mt: 1 }}>
+                                            {/* <FormControl sx={{ display: 'inline', gap: 1, width: 0.15 }}>
                                     <FormLabel>Guest number</FormLabel>
                                     <Select defaultValue="1">
                                         <Option value="1">1</Option>
@@ -162,192 +181,195 @@ export default function Booking() {
                                     </Select>
                                 </FormControl> */}
 
-                                    {/* ////////// */}
-                                    <FormControl sx={{display: 'inline', gap: 1, width: 0.5}}>
-                                        <FormLabel>Full name</FormLabel>
-                                        <Input
-                                            type="text"
-                                            size="md"
-                                            placeholder="Full name"
-                                            {...register('fullName')}
-                                            error={!!errors.fullName}
-                                            sx={{}}
-                                        />
-                                        {errors.fullName && <FormHelperText><InfoOutlined />{errors.fullName.message}</FormHelperText>}
-                                        <FormLabel sx={{mt: 2}}>Email</FormLabel>
-                                        <Input
-                                            size="md"
-                                            type="email"
-                                            startDecorator={<EmailRoundedIcon/>}
-                                            placeholder="email"
-                                            {...register('email')}
-                                            error={!!errors.email}
-                                            sx={{flexGrow: 1}}
-                                        />
-                                        {errors.email && <FormHelperText><InfoOutlined />{errors.email.message}</FormHelperText>}
-                                        <FormLabel sx={{mt: 2}}>Phone</FormLabel>
-                                        <Input
-                                            size="md"
-                                            placeholder="Phone"
-                                            {...register('phone')}
-                                            error={!!errors.phone}
-                                            sx={{flexGrow: 1}}
-                                        />
-                                        {errors.phone && <FormHelperText><InfoOutlined />{errors.phone.message}</FormHelperText>}
-                                        <FormLabel sx={{mt: 2}}>Country</FormLabel>
-                                        <CountrySelector/>
-                                    </FormControl>
-                                    <FormControl sx={{display: 'inline', gap: 1, width: 1}}>
-                                        <FormLabel sx={{}}>Street</FormLabel>
-                                        <Input
-                                            size="md"
-                                            placeholder="Street"
-                                            name="street"
-                                            sx={{flexGrow: 1}}
-                                        />
-                                    </FormControl>
-                                    <FormControl sx={{display: 'inline-flex', gap: 1, width: 1}}>
-                                        <Grid container spacing={0} sx={{
-                                            flexGrow: 1,
-                                            width: 1,
-                                            gap: 1,
-                                            flexWrap: {xs: 'wrap', md: 'nowrap',}
-                                        }}>
-                                            <Grid xs={12} md={4}>
-                                                <FormLabel sx={{}}>City</FormLabel>
+                                            {/* ////////// */}
+                                            <FormControl sx={{ display: 'inline', gap: 1, width: 0.5 }}>
+                                                <FormLabel>Full name</FormLabel>
+                                                <Input
+                                                    type="text"
+                                                    size="md"
+                                                    placeholder="Full name"
+                                                    {...register('fullName')}
+                                                    defaultValue={user?.firstname + " " + user?.lastname}
+                                                    error={!!errors.fullName}
+                                                    sx={{}}
+                                                />
+                                                {errors.fullName && <FormHelperText><InfoOutlined />{errors.fullName.message}</FormHelperText>}
+                                                <FormLabel sx={{ mt: 2 }}>Email</FormLabel>
                                                 <Input
                                                     size="md"
-                                                    placeholder="City"
-                                                    name="city"
-                                                    sx={{flexGrow: 1}}
+                                                    type="email"
+                                                    startDecorator={<EmailRoundedIcon />}
+                                                    placeholder="email"
+                                                    {...register('email')}
+                                                    defaultValue={user?.email}
+                                                    error={!!errors.email}
+                                                    sx={{ flexGrow: 1 }}
                                                 />
-                                            </Grid>
-                                            <Grid xs={12} md={4}>
-                                                <FormLabel sx={{}}>Province</FormLabel>
+                                                {errors.email && <FormHelperText><InfoOutlined />{errors.email.message}</FormHelperText>}
+                                                <FormLabel sx={{ mt: 2 }}>Phone</FormLabel>
                                                 <Input
                                                     size="md"
-                                                    placeholder="Province"
-                                                    name="province"
-                                                    sx={{flexGrow: 1}}
+                                                    placeholder="Phone"
+                                                    {...register('phone')}
+                                                    defaultValue={user?.phone}
+                                                    error={!!errors.phone}
+                                                    sx={{ flexGrow: 1 }}
                                                 />
-                                            </Grid>
-                                            <Grid xs={12} md={4}>
-                                                <FormLabel sx={{}}>ZipCode</FormLabel>
+                                                {errors.phone && <FormHelperText><InfoOutlined />{errors.phone.message}</FormHelperText>}
+                                                <FormLabel sx={{ mt: 2 }}>Country</FormLabel>
+                                                <CountrySelector />
+                                            </FormControl>
+                                            <FormControl sx={{ display: 'inline', gap: 1, width: 1 }}>
+                                                <FormLabel sx={{}}>Street</FormLabel>
                                                 <Input
                                                     size="md"
-                                                    placeholder="Zip code"
-                                                    name="zipCode"
-                                                    sx={{flexGrow: 1}}
+                                                    placeholder="Street"
+                                                    name="street"
+                                                    sx={{ flexGrow: 1 }}
                                                 />
-                                            </Grid>
+                                            </FormControl>
+                                            <FormControl sx={{ display: 'inline-flex', gap: 1, width: 1 }}>
+                                                <Grid container spacing={0} sx={{
+                                                    flexGrow: 1,
+                                                    width: 1,
+                                                    gap: 1,
+                                                    flexWrap: { xs: 'wrap', md: 'nowrap', }
+                                                }}>
+                                                    <Grid xs={12} md={4}>
+                                                        <FormLabel sx={{}}>City</FormLabel>
+                                                        <Input
+                                                            size="md"
+                                                            placeholder="City"
+                                                            name="city"
+                                                            sx={{ flexGrow: 1 }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid xs={12} md={4}>
+                                                        <FormLabel sx={{}}>Province</FormLabel>
+                                                        <Input
+                                                            size="md"
+                                                            placeholder="Province"
+                                                            name="province"
+                                                            sx={{ flexGrow: 1 }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid xs={12} md={4}>
+                                                        <FormLabel sx={{}}>ZipCode</FormLabel>
+                                                        <Input
+                                                            size="md"
+                                                            placeholder="Zip code"
+                                                            name="zipCode"
+                                                            sx={{ flexGrow: 1 }}
+                                                        />
+                                                    </Grid>
 
-                                        </Grid>
+                                                </Grid>
 
-                                        <FormControl sx={{display: 'none'}}>
-                                            <Input type="hidden" name="amount" value={timeshare?.price}/>
-                                        </FormControl>
-                                        <FormControl sx={{display: 'none'}}>
-                                            <Input type="hidden" name="userId" value={user?._id}/>
-                                        </FormControl>
-                                        <FormControl sx={{display: 'none'}}>
-                                            <Input type="hidden" name="timeshareId" value={timeshareId}/>
-                                        </FormControl>
-                                        <FormControl sx={{display: 'none'}}>
-                                            <Input type="hidden" name="reservationDate"
-                                                   value={new Date().toLocaleString() + ""}/>
-                                        </FormControl>
-                                    </FormControl>
+                                                <FormControl sx={{ display: 'none' }}>
+                                                    <Input type="hidden" name="amount" value={timeshare?.price} />
+                                                </FormControl>
+                                                <FormControl sx={{ display: 'none' }}>
+                                                    <Input type="hidden" name="userId" value={user?._id} />
+                                                </FormControl>
+                                                <FormControl sx={{ display: 'none' }}>
+                                                    <Input type="hidden" name="timeshareId" value={timeshareId} />
+                                                </FormControl>
+                                                <FormControl sx={{ display: 'none' }}>
+                                                    <Input type="hidden" name="reservationDate"
+                                                        value={new Date().toLocaleString() + ""} />
+                                                </FormControl>
+                                            </FormControl>
 
+                                        </Stack>
+                                    </Box>
+                                    <CardOverflow sx={{
+                                        borderTop: '1px solid',
+                                        borderColor: 'divider',
+                                        mt: 2,
+                                        width: 1,
+                                        display: 'flex',
+                                        justifyContent: 'flex-end'
+                                    }}>
+                                        <CardActions sx={{ alignSelf: 'flex-end', pt: 2, gap: 2 }}>
+                                            <Button size="sm" variant="outlined" color="neutral">
+                                                Cancel
+                                            </Button>
+                                            <Button loading={uploading} size="sm" variant="solid" type='submit'>
+                                                Book Now
+                                            </Button>
+                                        </CardActions>
+                                    </CardOverflow>
+                                </form>
+                            </Grid>
+                            <Grid xs={12} md={4} sx={{ p: 1, boxShadow: '0 0 4px gray', height: 'fit-content', }}>
+                                <Stack sx={{ width: 1, display: 'flex', justifyContent: 'center' }} direction="column" spacing={0}
+                                    justifyContent="center">
+                                    <img src={timeshare?.resortId?.image_urls} />
+                                    <Typography fontWeight={600} fontSize={28}>
+                                        {timeshare?.resortId?.name}
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={18}>
+                                        Post: #{timeshare?._id}
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={18}>
+                                        Owner: {timeshare?.current_owner?.username}
+                                    </Typography>
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                        <Typography fontWeight={500} fontSize={20}>
+                                            Unit:
+                                        </Typography>
+                                        <Typography fontWeight={400} fontSize={20}>
+                                            {timeshare?.unitId?.name}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                                        <Typography fontWeight={500} fontSize={20}>
+                                            Stay:
+                                        </Typography>
+                                        <Typography fontWeight={400} fontSize={20}>
+                                            {timeshare?.numberOfNights} night
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between', }}>
+                                        <Typography fontWeight={500} fontSize={20}>
+                                            Check-in:
+                                        </Typography>
+                                        <Typography fontWeight={400} fontSize={20}>
+                                            {formatDate(timeshare?.start_date)}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                                        <Typography fontWeight={500} fontSize={20}>
+                                            Check-out:
+                                        </Typography>
+                                        <Typography fontWeight={400} fontSize={20}>
+                                            {formatDate(timeshare?.end_date)}
+                                        </Typography>
+                                    </Box>
+                                    <Divider sx={{ mt: 1, mb: 1 }} />
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                                        <Typography fontWeight={500} fontSize={20}>
+                                            Price/night:
+                                        </Typography>
+                                        <Typography fontWeight={400} fontSize={20}>
+                                            ${timeshare?.pricePerNight}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
+                                        <Typography fontWeight={500} fontSize={20}>
+                                            Total:
+                                        </Typography>
+                                        <Typography fontWeight={600} fontSize={20}>
+                                            ${timeshare?.price}
+                                        </Typography>
+                                    </Box>
                                 </Stack>
-                            </Box>
-                            <CardOverflow sx={{
-                                borderTop: '1px solid',
-                                borderColor: 'divider',
-                                mt: 2,
-                                width: 1,
-                                display: 'flex',
-                                justifyContent: 'flex-end'
-                            }}>
-                                <CardActions sx={{alignSelf: 'flex-end', pt: 2, gap: 2}}>
-                                    <Button size="sm" variant="outlined" color="neutral">
-                                        Cancel
-                                    </Button>
-                                    {uploading ? (<Button loading size="sm" variant="solid" type='submit'>
-                                        Save
-                                    </Button>) : <Button size="sm" variant="solid" type='submit'>
-                                        Booking request
-                                    </Button>}
-                                </CardActions>
-                            </CardOverflow>
-                        </form>
-                    </Grid>
-                    <Grid xs={12} md={4} sx={{p: 1, boxShadow: '0 0 4px gray', height: 'fit-content',}}>
-                        <Stack sx={{width: 1, display: 'flex', justifyContent: 'center'}} direction="column" spacing={0}
-                               justifyContent="center">
-                            <img src={timeshare?.resortId?.image_urls}/>
-                            <Typography fontWeight={600} fontSize={28}>
-                                {timeshare?.resortId?.name}
-                            </Typography>
-                            <Typography fontWeight={400} fontSize={18}>
-                                Post: #{timeshare?._id}
-                            </Typography>
-                            <Typography fontWeight={400} fontSize={18}>
-                                Owner: {timeshare?.current_owner?.username}
-                            </Typography>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Unit:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {timeshare?.unitId?.name}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Stay:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {timeshare?.numberOfNights} night
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Check-in:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {formatDate(timeshare?.start_date)}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Check-out:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {formatDate(timeshare?.end_date)}
-                                </Typography>
-                            </Box>
-                            <Divider sx={{mt: 1, mb: 1}}/>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Price/night:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    ${timeshare?.pricePerNight}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Total:
-                                </Typography>
-                                <Typography fontWeight={600} fontSize={20}>
-                                    ${timeshare?.price}
-                                </Typography>
-                            </Box>
-                        </Stack>
-                    </Grid>
-                </Grid>
-            </CssVarsProvider>
-            <Footer/>
+                            </Grid>
+                        </Grid>
+                    </CssVarsProvider>
+                    <Footer />
+                </>
+            }
         </>
     );
 
