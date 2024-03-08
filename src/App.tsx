@@ -14,22 +14,28 @@ import {
   getToken,
   removeSessionCookies
 } from './utils/tokenCookies'
-import { SnackbarOrigin, SnackbarProvider } from 'notistack';
+import { SnackbarOrigin, SnackbarProvider, useSnackbar } from 'notistack';
 
 
 function App() {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [isLoading, setIsLoading] = React.useState<boolean | null>(null);
   const dispatch = useDispatch()
+  const { enqueueSnackbar } = useSnackbar();
   const checkAuth = async () => {
-    if (getToken()) {
-      const response = await api.patch('/auth/isAuth');
-      if (response.data) {
-        const loginData = response.data.data;
-        dispatch(LoginSuccess(loginData));
+    try {
+      if (getToken()) {
+        const response = await api.patch('/auth/isAuth');
+        if (response.data) {
+          const loginData = response.data.data;
+          dispatch(LoginSuccess(loginData));
+        }
       }
+      dispatch(Loaded());
     }
-    dispatch(Loaded());
+    catch (error) {
+      enqueueSnackbar(`Error while fetching user: ${error}`, { variant: "error" });
+    }
   }
   type AnchorOrigin = SnackbarOrigin;
   const customAnchorOrigin: AnchorOrigin = {
