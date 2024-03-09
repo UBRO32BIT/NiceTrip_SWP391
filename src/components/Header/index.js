@@ -77,7 +77,6 @@ const Header = () => {
                 {
                   userInfo ? <> <h5 className='mb-0'>{userInfo?.username}
                   </h5>
-
                     <Dropdown>
                       <MenuButton
                         slots={{ root: IconButton }}
