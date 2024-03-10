@@ -20,7 +20,7 @@ import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import { GetAllAccount } from '../../services/admin.services';
+import { GetAllAccount, BanAnAccount, UnbanAccount, DeleteAccount, RestoreAccount } from '../../services/admin.services';
 var { createCanvas } = require("canvas");
 
 interface RootState {
@@ -47,6 +47,20 @@ export default function AccountList() {
         }
     }
 
+    async function handleBan(id: string) {
+        // Your logic to handle accepting the request goes here
+        console.log("Ban account:", id);
+        BanAnAccount(id);
+        window.location.reload();
+    }
+
+    async function handleDelete(id: string) {
+        // Your logic to handle canceling the request goes here
+        console.log("Delete account:", id);
+        DeleteAccount(id);
+        window.location.reload();
+    }
+
     return (
         <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 5 }, mt: 2 }}>
             {accounts.length > 0 && accounts.map((account: any, index: number) => (
@@ -62,13 +76,14 @@ export default function AccountList() {
                             <Typography>
                                 Role: {account.role}
                             </Typography>
-                            <Typography>
-                                isBanned: {account.isBanned}
-                            </Typography>
                         </CardContent>
                         <CardActions>
-                            <Button>Ban</Button>
-                            <Button>Delete</Button>
+                            {account.isBanned !== "true" && (
+                                <Button onClick={() => handleBan(account._id)}>Ban</Button>
+                            )}
+                            {(
+                                <Button onClick={() => handleDelete(account._id)}>Delete</Button>
+                            )}
                         </CardActions>
                     </Card>
                 </Grid>
