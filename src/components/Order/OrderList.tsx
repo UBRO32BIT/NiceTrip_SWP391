@@ -9,6 +9,8 @@ import {styled, Grid, Button} from '@mui/joy';
 import {useSelector} from 'react-redux';
 import {UpdateUser} from '../../services/auth.service';
 import {GetReservationOfUser} from '../../services/booking.service';
+import {GetExchangeOfUser} from '../../services/booking.service';
+import {DeleteExchange} from '../../services/booking.service';
 import {Routes, Route, Navigate, useNavigate, NavLink, Link} from "react-router-dom";
 import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
@@ -38,6 +40,7 @@ import Input from "@mui/joy/Input";
 import {InfoOutlined} from "@mui/icons-material";
 import Checkbox from "@mui/joy/Checkbox";
 import OrderDetailModal from "./OrderDetailModal";
+import {useSnackbar} from 'notistack';
 
 interface RootState {
     auth: {
@@ -50,14 +53,32 @@ function CreditCardIcon() {
     return null;
 }
 
+
+
 export default function OrderList() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [myReservations, setMyReservations] = React.useState([]);
+    const [myExchanges, setMyExchanges] = React.useState([]);
+
     const navigate = useNavigate()
     const [open, setOpen] = React.useState<boolean>(false);
     const [paymentOpen, setPaymentOpen] = React.useState<boolean>(false);
     const [modalStates, setModalStates] = React.useState<boolean[]>([]);
+    const {enqueueSnackbar} = useSnackbar();
 
+async function handleDeleteExchange (exchangeId: string) {
+    try {
+        const success = await DeleteExchange(exchangeId);
+        if (success) {
+            enqueueSnackbar("Cancel success", { variant: "success" });
+        } else {
+            enqueueSnackbar("ERROR: Cancel failed", { variant: "error" });
+        }
+    } catch(error) {
+        enqueueSnackbar("Error deleting exchange", { variant: "error" });
+    }
+};
+    
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
         const options: Intl.DateTimeFormatOptions = {
@@ -74,6 +95,12 @@ export default function OrderList() {
             setMyReservations(ReservationsData)
         }
     }
+    async function GetMyExchanges(userId: string) {
+        const ExchangeData = await GetExchangeOfUser(userId);
+        if (ExchangeData && ExchangeData.length > 0) {
+            setMyExchanges(ExchangeData)
+        }
+    }
 
     const toggleModal = (index: number) => {
         const newModalStates = [...modalStates];
@@ -83,6 +110,7 @@ export default function OrderList() {
     React.useEffect(() => {
         if (user?._id) {
             GetMyReservations(user?._id)
+            GetMyExchanges(user?._id)
         }
     }, [user])
     return (
@@ -193,6 +221,73 @@ export default function OrderList() {
                                     <Typography level="body-md" fontWeight="md" textColor="text.secondary">
                                         {formatDate(item?.reservationDate)}
                                     </Typography>
+                                </CardContent>
+                            </CardOverflow>
+                        </Card>
+                    </Grid>
+                </>)
+            })}
+            {myExchanges.map((item: any, index: number) => {
+                return (<>
+                    <OrderDetailModal item={item} open={modalStates[index]} setOpen={() => toggleModal(index)}/>
+                    <Grid xs={12} md={6} lg={4}>
+                        <Card key={index} variant="outlined" sx={{}}>
+                            <CardOverflow>
+                                <AspectRatio ratio="2">
+                                    <img
+                                        src={item?.timeshareId?.resortId?.image_urls}
+                                        // srcSet="https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318&dpr=2 2x"
+                                        loading="lazy"
+                                        alt=""
+                                    />
+                                </AspectRatio>
+                            </CardOverflow>
+                            <CardContent>
+                                <Typography sx={{display: 'inline-flex', gap: 1}}>
+                                    {item?.status === 'Completed' ? <Chip
+                                            variant="soft"
+                                            color="success"
+                                            size="sm"
+                                            startDecorator={<CheckRoundedIcon/>}
+                                        >
+                                            Owner confirmed, go to trip
+                                        </Chip> :
+                                        <Chip
+                                            variant="soft"
+                                            color="danger"
+                                            size="sm"
+                                            startDecorator={<BlockIcon/>}
+                                        >
+                                            {item?.status === 'Agreement phase' ? ('Wait for accept') : (
+                                            <>
+                                                {(item?.deleted === false ? (
+                                                `Canceled by Owner`
+
+                                                ) : ( 
+                                                'You are canceled'
+                                                ))}
+                                            </>
+                                                
+                                                )}
+                                        </Chip>}
+                                </Typography>
+                                <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
+                                <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
+                                {/*<Link to={`/timeshare-details/${item?.timeshareId?._id}`} target="_blank" rel="noopener noreferrer">View original post</Link>*/}
+                                <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                    <Button variant="soft" color="primary"
+                                            onClick={() => toggleModal(index)}>View</Button>
+                                <Button variant="plain" color="danger" onClick={() => handleDeleteExchange(item?._id)}>Cancel</Button>
+                                </Box>
+
+                            </CardContent>
+                            <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
+                                <Divider inset="context"/>
+                                <CardContent orientation="horizontal">
+                                    <Typography level="body-md" fontWeight="md" textColor="text.secondary">
+                                        ${item?.amount}
+                                    </Typography>
+                                    <Divider orientation="vertical"/>
                                 </CardContent>
                             </CardOverflow>
                         </Card>

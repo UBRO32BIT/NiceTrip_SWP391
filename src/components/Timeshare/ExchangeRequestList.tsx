@@ -48,6 +48,8 @@ import {useEffect } from 'react';
 import convertImageArray from '../../utils/convertImageArray'
 import { Height } from '@mui/icons-material';
 import '../../styles/exchangeRequestList.css';
+import {useSnackbar} from 'notistack';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface ServicePack {
     _id: string;
@@ -118,10 +120,26 @@ function formatDate(dateString?: string): string {
 }
 
 
+
 function RowMenu(props: any) {
+    const [isLoading, setIsLoading] = React.useState(false);
+
     const reservationData = props.reservationData; // Assuming you pass the reservation data to the component
     const [open, setOpen] = React.useState<boolean>(false);
-
+    const {enqueueSnackbar} = useSnackbar();
+    async function HandleAcceptExchangeByOwner(exchangeId: any) {
+        try {
+            setIsLoading(true);
+            const data = await AcceptExchangeByOwner(exchangeId)
+            if (data) {
+                enqueueSnackbar("Accept successfully", {variant: "success"});
+            }
+        } catch (err: any) {
+            enqueueSnackbar("Accept successfully", {variant: "error"});
+        } finally {
+            setIsLoading(false);
+        }
+    }
     return (
         <>
             <Dropdown>
@@ -198,11 +216,11 @@ function RowMenu(props: any) {
                                 ) : (
                                     <>
                                             <Button  variant="solid" color="success" onClick={() => {
-                                                AcceptExchangeByOwner(reservationData?._id);
-                                                setOpen(false);
+                                                HandleAcceptExchangeByOwner(reservationData?._id);
                                             }}>
                                                 Accept
                                             </Button>
+
                                             <Button sx={{ margin: 1 }} variant="solid" color="danger" onClick={() => {
                                                 const isConfirmed = window.confirm('You sure about that????');
                                                 if (isConfirmed) {
@@ -257,6 +275,23 @@ export default function RentRequestList(props: any) {
     const [requestList, setRequestList] = React.useState<any[]>([]);
     const [servicePacks, setServicePacks] = useState<ServicePack[]>([]);
     const [timeshares, setTimeshares] = useState<Timeshare[]>([]);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const {enqueueSnackbar} = useSnackbar();
+    async function HandleAcceptExchangeByOwner(exchangeId: any) {
+        try {
+            setIsLoading(true);
+            // Disable the button while loading
+            const data = await AcceptExchangeByOwner(exchangeId)
+            if (data) {
+                enqueueSnackbar("Accept successfully", {variant: "success"});
+            }
+        } catch (err: any) {
+            enqueueSnackbar("Accept successfully", {variant: "error"});
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    
     useEffect(() => {
         const fetchTimeshares = async () => {
             try {
@@ -314,7 +349,7 @@ export default function RentRequestList(props: any) {
     React.useEffect(() => {
         // Load rent requests when timeshareId changes
         Load();
-    }, [timeshareId]);
+    }, [timeshareId, isLoading]);
 
     const [order, setOrder] = React.useState<Order>('desc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -393,12 +428,38 @@ export default function RentRequestList(props: any) {
                                     </Box>
                                 ) : (
                                     <>
-                                            <Button  variant="solid" color="success" onClick={() => {
-                                                AcceptExchangeByOwner(row?._id);
-                                                setOpen(false);
-                                            }}>
-                                                Accept
-                                            </Button>
+                                        <Button 
+                                            variant="solid" 
+                                            color="success" 
+                                            onClick={() => {
+                                                HandleAcceptExchangeByOwner(row?._id);
+                                            }}
+                                            disabled={isLoading} // Disable the button while loading
+                                            sx={{
+                                                position: 'relative', // Để có thể định vị CircularProgress
+                                            }}
+                                        >
+                                            {isLoading && (
+                                                <Box
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: 0,
+                                                        left: 0,
+                                                        right: 0,
+                                                        bottom: 0,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        borderRadius: '5px', // Tạo hình tròn cho CircularProgress
+                                                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu nền semi-transparent
+                                                    }}
+                                                >
+                                                    <CircularProgress size={24} color="inherit" />
+                                                </Box>
+                                            )}
+                                            Accept
+</Button>
+
                                             <Button sx={{ margin: 1 }} variant="solid" color="danger" onClick={() => {
                                                 const isConfirmed = window.confirm('You sure about that????');
                                                 if (isConfirmed) {
