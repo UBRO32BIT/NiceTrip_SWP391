@@ -14,6 +14,7 @@ import ResortManagement from '../../components/Resort';
 
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
+  
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   
   React.useEffect(() => {
