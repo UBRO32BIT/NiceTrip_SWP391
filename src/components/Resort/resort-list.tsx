@@ -59,17 +59,7 @@ export default function ResortList() {
                             <Typography >
                                 Location: {resort.location}
                             </Typography>
-                            <Typography>
-                                Role: {resort.role}
-                            </Typography>
-                            <Typography>
-                                isBanned: {resort.isBanned}
-                            </Typography>
                         </CardContent>
-                        <CardActions>
-                            <Button>Ban</Button>
-                            <Button>Delete</Button>
-                        </CardActions>
                     </Card>
                 </Grid>
             ))}
