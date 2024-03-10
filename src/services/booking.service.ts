@@ -182,19 +182,19 @@ const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
         })
 }
 
-const MakeExchange = (timeshareId: any, exchangeData: any) => {
-    return api.post(`/reservation/exchange/${timeshareId}`, exchangeData)
-        .then((res) => {
-            return res.data.data
+// const MakeExchange = (timeshareId: any, exchangeData: any) => {
+//     return api.post(`/reservation/exchange/${timeshareId}`, exchangeData)
+//         .then((res) => {
+//             return res.data.data
 
-        })
+//         })
         
-        .catch((error) => {
-            // Handle errors here, you might want to log or show a user-friendly message
-            console.error('Error making reservation:', error);
-            throw error; // Re-throw the error to let the caller handle it if needed
-        })
-}
+//         .catch((error) => {
+//             // Handle errors here, you might want to log or show a user-friendly message
+//             console.error('Error making reservation:', error);
+//             throw error; // Re-throw the error to let the caller handle it if needed
+//         })
+// }
 
 export {
     MakeReservation,

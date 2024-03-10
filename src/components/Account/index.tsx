@@ -26,7 +26,7 @@ interface RootState {
         user: any;
     };
 }
-export default function AccountManagement() {
+export default function RequestManagement() {
     const [imageFiles, setImageFiles] = React.useState([]);
     const [imagePreview, setImagePreview] = React.useState([]);
     return (
@@ -63,10 +63,45 @@ export default function AccountManagement() {
                         >
                             Users
                         </Link>
-                        
+                        <Typography color="primary" fontWeight={500} fontSize={12}>
+                            Account list
+                        </Typography>
                     </Breadcrumbs>
+
+                    <Typography level="h2" component="h1" sx={{ mt: 1, mb: 2 }}>
+                        Account list
+                    </Typography>
                 </Box>
-                
+                <Tabs
+                    defaultValue={0}
+                    sx={{
+                        bgcolor: 'transparent',
+                    }}
+                >
+                    <TabList
+                        tabFlex={1}
+                        size="sm"
+                        sx={{
+                            pl: { xs: 0, md: 4 },
+                            justifyContent: 'left',
+                            [`&& .${tabClasses.root}`]: {
+                                fontWeight: '600',
+                                flex: 'initial',
+                                color: 'text.tertiary',
+                                [`&.${tabClasses.selected}`]: {
+                                    bgcolor: 'transparent',
+                                    color: 'text.primary',
+                                    '&::after': {
+                                        height: '2px',
+                                        bgcolor: 'primary.500',
+                                    },
+                                },
+                            },
+                        }}
+                    >
+                    
+                    </TabList>
+                </Tabs>
                 <Routes>
                     <Route>
                     <Route path="/" element={<AccountList />} />

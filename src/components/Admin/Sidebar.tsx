@@ -204,14 +204,7 @@ export default function Sidebar() {
             </ListItemButton>
           </NavLink>
 
-          <NavLink to="/admin/post-list" style={{ textDecoration: 'none' }}>
-            <ListItemButton>
-              <PostAddIcon />
-              <ListItemContent>
-                <Typography level="title-sm">Post management</Typography>
-              </ListItemContent>
-            </ListItemButton>
-          </NavLink>
+          
 
           <NavLink to="/admin/request-list" style={{ textDecoration: 'none' }} >
             <ListItemButton>
@@ -232,39 +225,6 @@ export default function Sidebar() {
           </NavLink>
 
         </List>
-        <List
-          size="sm"
-          sx={{
-            mt: 'auto',
-            flexGrow: 0,
-            '--ListItem-radius': (theme) => theme.vars.radius.sm,
-            '--List-gap': '8px',
-            mb: 2,
-          }}
-        >
-          <NavLink to="/me/support" style={{ textDecoration: 'none' }}>
-            <ListItemButton>
-              <SupportRoundedIcon />
-              Support
-            </ListItemButton>
-          </NavLink>
-
-          <NavLink to="/me/settings" style={{ textDecoration: 'none' }}>
-            <ListItemButton>
-              <SettingsRoundedIcon />
-              Settings
-            </ListItemButton>
-          </NavLink>
-        </List>
-        
-        <Card
-  invertedColors
-  variant="soft"
-  color="warning"
-  size="sm"
-  sx={{ boxShadow: 'none' }}
->
-</Card>
       </Box>
       <Divider />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>

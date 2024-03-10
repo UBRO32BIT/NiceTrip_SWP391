@@ -64,12 +64,12 @@ export default function RequestManagement() {
                             Users
                         </Link>
                         <Typography color="primary" fontWeight={500} fontSize={12}>
-                            Post list
+                            Request list
                         </Typography>
                     </Breadcrumbs>
 
                     <Typography level="h2" component="h1" sx={{ mt: 1, mb: 2 }}>
-                        Post list
+                        Request list
                     </Typography>
                 </Box>
                 <Tabs
