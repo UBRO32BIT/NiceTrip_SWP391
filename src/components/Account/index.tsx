@@ -20,6 +20,9 @@ import { useSelector } from 'react-redux';
 import { UpdateUser } from '../../services/auth.service';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
 import AccountList from './account-list';
+import BannedList from './banned-account-list'
+import DeletedList from './deleted-account-list'
+
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -27,8 +30,10 @@ interface RootState {
     };
 }
 export default function RequestManagement() {
-    const [imageFiles, setImageFiles] = React.useState([]);
-    const [imagePreview, setImagePreview] = React.useState([]);
+    // const [imageFiles, setImageFiles] = React.useState([]);
+    // const [imagePreview, setImagePreview] = React.useState([]);
+    const navigate = useNavigate();
+
     return (
         <Box sx={{ flex: 1, width: '100%' }}>
             <Box
@@ -99,12 +104,16 @@ export default function RequestManagement() {
                             },
                         }}
                     >
-                    
+                        <Tab onClick={() => navigate('/')} >All account</Tab>
+                        <Tab onClick={() => navigate('/banned-list')} >Banned accounts</Tab>
+                        <Tab onClick={() => navigate('/deleted-list')} >Deleted accounts</Tab>
                     </TabList>
                 </Tabs>
                 <Routes>
                     <Route>
-                    <Route path="/" element={<AccountList />} />
+                        <Route path="/" element={<AccountList />} />
+                        <Route path="/banned-list" element={<BannedList />} />
+                        <Route path="/deleted-list" element={<DeletedList />} />
                     </Route>
                 </Routes>
             </Box>

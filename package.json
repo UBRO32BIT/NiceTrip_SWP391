@@ -8,6 +8,7 @@
     "@hookform/resolvers": "^3.3.4",
     "@mui/icons-material": "^5.15.7",
     "@mui/joy": "^5.0.0-beta.25",
+    "@mui/lab": "^5.0.0-alpha.167",
     "@mui/x-date-pickers": "^6.19.3",
     "@paypal/react-paypal-js": "^8.1.4",
     "@reduxjs/toolkit": "^2.1.0",
