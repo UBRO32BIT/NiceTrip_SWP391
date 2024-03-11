@@ -33,6 +33,9 @@ import {InfoOutlined} from "@mui/icons-material";
 import Checkbox from "@mui/joy/Checkbox";
 import {CreatePayPalPayment} from "../../services/booking.service";
 import OrderPaymentInfoModal from "./OrderPaymentInfo";
+
+import LuggageIcon from '@mui/icons-material/Luggage';
+
 import Countdown from "react-countdown";
 
 function CreditCardIcon() {
@@ -244,6 +247,54 @@ export default function OrderDetailModal(props: any) {
                                 </div>
                                 {/* Add more details as needed */}
                             </DialogContent>
+
+                            {item?.timeshareId?.type === "exchange" ? (
+                                    <>
+                                    {item?.timeshareId?.is_bookable === true && (
+                                        <Button
+                                            onClick={() => setPaymentOpen(true)}
+                                            disabled={item?.timeshareId?.is_bookable}
+                                            startDecorator={<PaymentIcon />}
+                                        >
+                                            Waiting for love
+                                        </Button>
+                                    )}
+
+                                    {item?.status === 'Completed' && (
+                                        
+
+                                        <Link to="/me/my-trips">
+                                        <Button startDecorator={<LuggageIcon />}>
+                                            View Trip
+                                        </Button>
+                                        </Link>
+                                    )}
+                                    </>
+                                    
+                                ) : (
+                                    <>
+                                    {!item?.isPaid && (
+                                        <Button
+                                            onClick={() => setPaymentOpen(true)}
+                                            disabled={!item?.is_accepted_by_owner}
+                                            startDecorator={<PaymentIcon />}
+                                        >
+                                            Go payment
+                                        </Button>
+                                    )}
+
+                                    {item?.isPaid && (
+                                        <Button
+                                            onClick={() => setPaymentDetailOpen(true)}
+                                            startDecorator={<PaymentIcon />}
+                                        >
+                                            View payment detail
+                                        </Button>
+                                    )}
+                                    </>
+                                )}
+
+                            <OrderPaymentInfoModal open={paymentDetailOpen} item={item} setOpen={setPaymentDetailOpen} />
                             {item?.status === "Canceled" ?
                                 (<Button
                                     variant="outlined"

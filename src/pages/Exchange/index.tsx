@@ -35,7 +35,7 @@ import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
 import RadioGroup from '@mui/joy/RadioGroup';
 import Radio from '@mui/joy/Radio';
-import {GetPostBelongToOwner} from '../../services/post.service'
+import {GetTimeshareExchangeByCurrentOwner} from '../../services/post.service'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Alert from '@mui/joy/Alert';
 import {MakeExchange} from '../../services/booking.service'
@@ -47,6 +47,8 @@ import CardContent from '@mui/joy/CardContent';
 import IconButton from '@mui/joy/IconButton';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import {convertDate} from '../../utils/date'
+import {useSnackbar} from 'notistack';
+;
 
 interface RootState {
     auth: {
@@ -86,6 +88,7 @@ export default function Exchange() {
     let {postId} = useParams();
     const [uploading, setUploading] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -112,7 +115,8 @@ export default function Exchange() {
                 navigate(`/timeshare/${postId}/exchange/${makeExchange._id}/confirm`);
             }
         } catch (error) {
-            console.error("Error making exchange request:", error);
+            
+            enqueueSnackbar('Request already exists. Please choose another timeshare', { variant: 'error' });
             // Handle error appropriately, e.g., show error message to the user
         } finally {
             setUploading(false);
@@ -153,7 +157,7 @@ export default function Exchange() {
 
 
     async function GetMyPosts() {
-        const postsData = await GetPostBelongToOwner(user._id);
+        const postsData = await GetTimeshareExchangeByCurrentOwner(user._id);
         console.log(postsData)
         if (postsData && postsData.length > 0) {
             console.log(postsData);
