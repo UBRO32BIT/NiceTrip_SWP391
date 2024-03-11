@@ -18,6 +18,7 @@ import Email from "../pages/Email";
 import VNPay from "../pages/Payment/VNPay"
 import ConfirmExchange from "../pages/ConfirmExchange";
 import PaymentPage from "../pages/Payment";
+import ResetPassword from "../pages/ResetPassword";
 interface Route {
     path: string;
     page: React.ComponentType<any>;
@@ -106,6 +107,10 @@ const publicRoutes: Route[] = [
     {
         path: '/email/*',
         page: Email
+    },
+    {
+        path: '/reset-password',
+        page: ResetPassword
     },
 ];
 

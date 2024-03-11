@@ -106,6 +106,21 @@ const ChangePassword = async (data: any) => {
             throw error;
         })
 }
+const ResetPasswordByToken = async (data: any) => {
+    return api.post(`/email/reset-password`, data)
+        .then((res) => {
+            return res.data;
+        })
+        .catch((error) => {
+            if (error.response.status === 400) {
+                throw Error(error.message)
+            }
+            if (error.response.status > 500) {
+                throw Error("Server Error" + error.message);
+            }
+            throw error;
+        })
+}
 const CreateVNPay = (data: any) => {
     return api.post(`/payment/create-payment-vnpay`, data)
         .then((res)=>{
@@ -132,6 +147,7 @@ export {
     SendEmailVerification,
     CheckEmailToken,
     ChangePassword,
+    ResetPasswordByToken,
     CreateVNPay,
     VNPayReturn
 }

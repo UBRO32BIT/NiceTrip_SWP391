@@ -18,11 +18,18 @@ import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import GoogleIcon from './GoogleIcon';
 import { LoginWithUsernameAndPassword } from '../../services/auth.service';
-import { LoginSuccess } from '../../features/auth/auth.slice';
+import { LoginSuccess, RootState } from '../../features/auth/auth.slice';
 import { useSelector, useDispatch } from 'react-redux'
 import { createSlice, Dispatch } from '@reduxjs/toolkit'
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from 'notistack';
+import Modal from '@mui/joy/Modal';
+import { DialogContent, DialogTitle, FormHelperText, ModalClose, ModalDialog } from '@mui/joy';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import { InfoOutlined } from '@mui/icons-material';
+import * as yup from "yup";
+import { RequestPasswordReset } from '../../services/email.service';
 
 interface FormElements extends HTMLFormControlsCollection {
   username: HTMLInputElement;
@@ -67,24 +74,26 @@ function ColorSchemeToggle(props: IconButtonProps) {
     </IconButton>
   );
 }
-// Assuming your store state has a property 'auth' with a 'user' field
-type RootState = {
-  auth: {
-    user: {};
-    isAuthenticated: boolean;
-    // ...other auth properties
-  };
-  // ...other reducer properties
-};
-
-// Replace 'YourUserType' with the actual type of the 'user' field in your auth state.
+const emailSchema = yup.object().shape({
+  email: yup.string()
+    .required("Email is required!")
+    .email("Email is invalid!"),
+})
 
 export default function JoySignInSideTemplate() {
   const isAuthenticated = useSelector((state: RootState) => state?.auth?.isAuthenticated);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const [open, setOpen] = React.useState<boolean>(false);
   const [uploading, setUploading] = React.useState<boolean>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: errors }
+  } = useForm({
+    resolver: yupResolver(emailSchema),
+  })
 
   const Login = async (data: LoginData) => {
     try {
@@ -99,6 +108,22 @@ export default function JoySignInSideTemplate() {
     catch (err) {
       enqueueSnackbar(`${err}`, { variant: "error" });
       setUploading(false);
+    }
+  }
+  const handlePasswordReset = async (e: any) => {
+    console.log(e);
+    const data = {
+      email: e.email,
+    }
+    try {
+      const result = await RequestPasswordReset(data);
+      //Close the input tab
+      setOpen(false);
+      //Print success message
+      enqueueSnackbar(`${result.message}`, { variant: "success" });
+    }
+    catch (error) {
+      enqueueSnackbar(`Error while changing password: ${error}`, { variant: "error" });
     }
   }
   React.useEffect(() => {
@@ -249,7 +274,7 @@ export default function JoySignInSideTemplate() {
                     }}
                   >
                     <Checkbox size="sm" label="Remember me" name="persistent" />
-                    <Link level="title-sm" href="#replace-with-a-link">
+                    <Link level="title-sm" onClick={() => setOpen(true)}>
                       Forgot your password?
                     </Link>
                   </Box>
@@ -290,6 +315,27 @@ export default function JoySignInSideTemplate() {
           },
         })}
       />
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <ModalDialog>
+          <ModalClose />
+          <DialogTitle>Reset my password</DialogTitle>
+          <DialogContent>Please enter your email.</DialogContent>
+          <form onSubmit={handleSubmit(handlePasswordReset)}>
+            <Stack spacing={2}>
+              <FormControl error={!!errors.email}>
+                <Input type='text' {...register('email')} />
+                {errors.email &&
+                  <FormHelperText>
+                    <InfoOutlined />
+                    {errors.email.message}
+                  </FormHelperText>
+                }
+              </FormControl>
+              <Button type="submit">Submit</Button>
+            </Stack>
+          </form>
+        </ModalDialog>
+      </Modal>
     </CssVarsProvider>
   );
 }

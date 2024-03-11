@@ -143,12 +143,19 @@ export default function Booking() {
     }, [])
 
     async function Load() {
-        if (timeshareId) {
-            const timeshareData = await GetPostById(timeshareId);
-            if (timeshareData) {
-                setTimeshare(timeshareData)
+        try {
+            if (timeshareId) {
+                const timeshareData = await GetPostById(timeshareId);
+                if (timeshareData) {
+                    setTimeshare(timeshareData)
+                }
             }
         }
+        catch (error) {
+            navigate('/home');
+            enqueueSnackbar(`${error}`, { variant: "error" });
+        }
+
     }
 
     function formatDate(dateString?: string): string {
@@ -278,7 +285,6 @@ export default function Booking() {
                                                             sx={{ flexGrow: 1 }}
                                                         />
                                                     </Grid>
-
                                                 </Grid>
 
                                                 <FormControl sx={{ display: 'none' }}>

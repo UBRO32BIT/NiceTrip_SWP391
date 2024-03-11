@@ -18,7 +18,6 @@ const SearchBar = ({props}) => {
     const searchHandler = (e) => {
         e.preventDefault();
         const location = locationRef.current.value
-        const maxGroupSize = maxGroupSizeRef.current.value
 
         if (location === '' && (startDate === '' || endDate === '')) {
             enqueueSnackbar("At least one field is required!", { variant: "error" });
@@ -42,15 +41,6 @@ const SearchBar = ({props}) => {
                         <div>
                             <h6>Location</h6>
                             <input type='text' placeholder='Search For A Destination' defaultValue={props} ref={locationRef} />
-                        </div>
-                    </span>
-                </FormGroup>
-                <FormGroup className='d-flex gap-3 form__group form__group-fast'>
-                    <span>
-                        <i class="ri-group-line"></i>
-                        <div>
-                            <h6>Guests</h6>
-                            <input type='number' placeholder='How many Guests?' ref={maxGroupSizeRef} />
                         </div>
                     </span>
                 </FormGroup>

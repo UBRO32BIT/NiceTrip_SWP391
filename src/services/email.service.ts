@@ -10,7 +10,18 @@ const SendConfirmReservationEmail = async (reservation: any) => {
         throw error; // Re-throw the error to let the caller handle it if needed
     }
 }
+const RequestPasswordReset = async (data: any) => {
+    try {
+        const res = await api.post('/email/request-password-reset', data);
+        return res.data;
+    }
+    catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
 
 export {
-    SendConfirmReservationEmail
+    SendConfirmReservationEmail,
+    RequestPasswordReset,
 }

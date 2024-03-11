@@ -12,7 +12,7 @@ import Renting from '../components/Renting/Renting'
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import {convertDate} from '../utils/date'
+import { convertDate } from '../utils/date'
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css"
 import convertImageArray from '../utils/convertImageArray'
@@ -29,7 +29,7 @@ const TimeShareDetails = () => {
     const [tourRating, setTourRating] = useState(null);
     const [post, setPost] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    
+
     React.useEffect(() => {
         GetPostById(id)
             .then((data) => {
@@ -73,23 +73,23 @@ const TimeShareDetails = () => {
         <section>
             <Container>
                 <Row>
-                {(user?._id === post?.current_owner?._id) && 
-                <Snackbar  open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                    <MuiAlert onClose={handleCloseSnackbar} severity="error" sx={{ width: '60%' }}>
-                            CAN'T RENT/EXCHANGE ON YOUR TIMESHARE
-                    </MuiAlert>
-                </Snackbar>}
+                    {/* {(user?._id === post?.current_owner?._id) &&
+                        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+                            <MuiAlert onClose={handleCloseSnackbar} severity="error" sx={{ width: '60%' }}>
+                                CAN'T RENT/EXCHANGE ON YOUR TIMESHARE
+                            </MuiAlert>
+                        </Snackbar>} */}
                     <Col lg='12'>
                         <div className="tour__content">
                             <Row>
                                 <Col lg='6'>
-                                {post && <ImageGallery items={convertImageArray([...post.images, ...post.resortId.image_urls])} showPlayButton={false} />}
+                                    {post && <ImageGallery items={convertImageArray([...post.images, ...post.resortId.image_urls])} showPlayButton={false} />}
                                 </Col>
                                 <Col lg='6'>
                                     <div className='tour__info'>
-                                    <Box sx={{ color:'white' ,float: 'right', textAlign: 'center', backgroundColor: 'gray', paddingRight: '15px', paddingLeft: '15px', width: 'fit-content', borderRadius: '5px' }}>
-                                        {(post?.is_bookable === false) ? 'SOLD' : ''}
-                                    </Box>
+                                        <Box sx={{ color: 'white', float: 'right', textAlign: 'center', backgroundColor: 'gray', paddingRight: '15px', paddingLeft: '15px', width: 'fit-content', borderRadius: '5px' }}>
+                                            {(post?.is_bookable === false) ? 'SOLD' : ''}
+                                        </Box>
 
 
                                         <h2>{post?.resortId.name}</h2>
@@ -126,25 +126,42 @@ const TimeShareDetails = () => {
                                             <p>{post?.resortId.description}</p>
                                         </div>
                                         <>
-                                            <div className="text-center" style={{ display: "flex", alignItems: "center", gap: '5px'}}>
-                                                <Button 
-                                                    disabled={post?.is_bookable === false || user?._id === post?.current_owner?._id || post?.type !== 'rental'} 
-                                                    variant="contained" 
-                                                    color="success" 
-                                                    size="large" 
-                                                    onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}
-                                                >
-                                                    Rent Now
-                                                </Button>
-                                                <Button 
-                                                    disabled={post?.is_bookable === false || user?._id === post?.current_owner?._id || post?.type !== 'exchange'} 
-                                                    variant="contained" 
-                                                    color="error" 
-                                                    size="large" 
-                                                    onClick={() => { navigate(`/timeshare/${post?._id}/exchange`) }}
-                                                >
-                                                    Request to exchange
-                                                </Button>
+                                            <div className="text-center" style={{ display: "flex", alignItems: "center", gap: '5px' }}>
+                                                {user?._id === post?.current_owner?._id ? (
+                                                    <>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            size="large"
+                                                            onClick={() => navigate(`/me/my-timeshares/timeshares-list/${id}`)}
+                                                        >
+                                                            Manage
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {post?.is_bookable === true && post?.type === 'rental' && (
+                                                            <Button
+                                                                variant="contained"
+                                                                color="success"
+                                                                size="large"
+                                                                onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}
+                                                            >
+                                                                Rent Now
+                                                            </Button>
+                                                        )}
+                                                        {post?.is_bookable === true && post?.type === 'exchange' && (
+                                                            <Button
+                                                                variant="contained"
+                                                                color="error"
+                                                                size="large"
+                                                                onClick={() => { navigate(`/timeshare/${post?._id}/exchange`) }}
+                                                            >
+                                                                Request to exchange
+                                                            </Button>
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
                                         </>
 
