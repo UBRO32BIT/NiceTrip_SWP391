@@ -42,6 +42,31 @@ const VisuallyHiddenInput = styled('input')`
   white-space: nowrap;
   width: 1px;
 `;
+const schema = yup.object().shape({
+    firstname: yup.string()
+        .required("First Name is required!")
+        .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
+    lastname: yup.string()
+        .required("Last Name is required!")
+        .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
+    email: yup.string()
+        .required("Email is required!")
+        .email("Email is invalid!"),
+    phone: yup.string()
+})
+const passwordSchema = yup.object().shape({
+    currentPassword: yup.string()
+        .required("Current password is required!"),
+    newPassword: yup.string()
+        .required("Password is required!")
+        .min(8, 'Password must be at least 8 characters long')
+        .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
+        .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
+    repeatPassword: yup.string()
+        .required("Repeat password is required!")
+        .oneOf([yup.ref('newPassword'), ''], 'Passwords must match'),
+})
+
 export default function UserSetting() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const isAuthenticated = useSelector((state: RootState) => state?.auth?.isAuthenticated);
@@ -55,7 +80,8 @@ export default function UserSetting() {
     });
     const [open, setOpen] = React.useState<boolean>(false);
     const [emailVerifyOpen, setEmailVerifyOpen] = React.useState<boolean>(false);
-    const [uploading, setUploading] = React.useState<boolean>();;
+    const [uploading, setUploading] = React.useState<boolean>();
+    const { enqueueSnackbar } = useSnackbar();
     React.useEffect(() => {
         setIsLoaded(false);
         if (user) {
@@ -72,12 +98,6 @@ export default function UserSetting() {
         console.log(user);
         setIsLoaded(true);
     }, [user, isAuthenticated === true])
-
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
-    const { enqueueSnackbar } = useSnackbar();
     const verifyEmail = () => {
         SendEmailVerification();
         setEmailVerifyOpen(true);
@@ -131,30 +151,6 @@ export default function UserSetting() {
             enqueueSnackbar(`Error while changing password: ${error}`, { variant: "error" });
         }
     }
-    const schema = yup.object().shape({
-        firstname: yup.string()
-            .required("First Name is required!")
-            .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
-        lastname: yup.string()
-            .required("Last Name is required!")
-            .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
-        email: yup.string()
-            .required("Email is required!")
-            .email("Email is invalid!"),
-        phone: yup.string()
-    })
-    const passwordSchema = yup.object().shape({
-        currentPassword: yup.string()
-            .required("Current password is required!"),
-        newPassword: yup.string()
-            .required("Password is required!")
-            .min(8, 'Password must be at least 8 characters long')
-            .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
-            .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
-        repeatPassword: yup.string()
-            .required("Repeat password is required!")
-            .oneOf([yup.ref('newPassword'), ''], 'Passwords must match'),
-    })
     const {
         register,
         handleSubmit,

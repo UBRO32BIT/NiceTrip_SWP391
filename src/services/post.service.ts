@@ -28,9 +28,15 @@ const GetPostById = (timeshareId: string) => {
             return res.data.data
         })
         .catch((error) => {
-            // Handle errors here, you might want to log or show a user-friendly message
-            console.error('Error fetching resort by ID:', error);
-            throw error; // Re-throw the error to let the caller handle it if needed
+            if (error.response) {
+                if (error.response.status === 404) {
+                    throw Error("Timeshare not found!")
+                }
+                else if (error.response.status >= 500) {
+                    throw Error("Server Error");
+                }
+            }
+            throw error;
         })
 }
 const GetPostBelongToOwner = (userId: string) => {
