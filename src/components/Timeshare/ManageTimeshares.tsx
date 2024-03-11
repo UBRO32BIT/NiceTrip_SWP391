@@ -124,7 +124,9 @@ export default function ManageTimeshares() {
                             color="primary"
                             sx={{ pointerEvents: 'none', mr: 1, mb: 1 }} // Adjust styling as needed
                         >
+
                             {post?.is_bookable === false ? "Completed" : "Pending"}
+                            {requestList[0]?.timeshareId?.is_bookable === false ? "Completed" : "Pending"}
                         </Chip>
                     }
 

@@ -34,48 +34,14 @@ import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import {GetRentRequestOfTimeshare} from "../../services/booking.service";
+import {DenyReservationByOwner, GetRentRequestOfTimeshare} from "../../services/booking.service";
 import {Transition} from 'react-transition-group';
 import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
 import {AcceptReservationByOwner} from "../../services/booking.service";
 import {useSnackbar} from 'notistack';
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
 type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key,
-): (
-    a: { [key in Key]: number | string },
-    b: { [key in Key]: number | string },
-) => number {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-}
 
 function formatDate(dateString?: string): string {
     if (!dateString) return '';
@@ -167,11 +133,18 @@ function RowMenu(props: any) {
                                     <strong>Phone:</strong> {reservationData?.phone}
                                 </div>
                                 <div>
-                                    <strong>Reservation Date:</strong> {formatDate(reservationData?.reservationDate)}
+                                    <strong>Reservation Date:</strong> {formatDate(reservationData?.createdAt)}
                                 </div>
-                                <div>
+                                <div style={{ color: reservationData?.status === 'Canceled' ? 'red' : 'inherit' }}>
                                     <strong>Status:</strong> {reservationData?.status}
                                 </div>
+                                {reservationData?.status === 'Canceled' && (
+                                    <div>
+                                        <strong>Cancel reason:</strong> {reservationData?.cancel_reason}
+                                    </div>
+                                )}
+
+
                                 {/* Add more details as needed */}
                             </DialogContent>
                         </ModalDialog>
@@ -188,20 +161,65 @@ export default function RentRequestList(props: any) {
     const [requestList, setRequestList] = React.useState([]);
     const {enqueueSnackbar} = useSnackbar();
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
 
-    async function HandleAcceptReservation(reservationId: string) {
-        try {
-            setIsLoading(true);
-            const data = await AcceptReservationByOwner(reservationId)
-            if (data) {
-                enqueueSnackbar("Accept successfully", {variant: "success"});
-            }
-        } catch (err: any) {
-            enqueueSnackbar("Accept successfully", {variant: "error"});
-        } finally {
-            setIsLoading(false);
+    const RenderAcceptDenyButtons = (row: any) => {
+        const isAccepted = row?.is_accepted_by_owner;
+        const isDenied = row?.is_denied_by_owner;
+
+        if (isAccepted) {
+            return <span style={{color: "#14813d"}}>Accepted</span>;
+        } else if (isDenied) {
+            return <span style={{color: "#8d2925"}}>Denied</span>;
+        } else {
+            return (
+                <>
+                    <Button variant="solid" sx={{p: 1, mr: 1}} color={'success'}
+                            onClick={() => HandleAcceptReservation(row?._id)}>
+                        Accept
+                    </Button>
+                    <Button variant="solid" sx={{p: 1}} color={'danger'}
+                            onClick={() => HandleDenyReservation(row?._id)}>
+                        Deny
+                    </Button>
+                </>
+            );
         }
     }
+
+    async function HandleDenyReservation(reservationId: string) {
+        if (window.confirm("Deny this reservation ?")) {
+            try {
+                setIsLoading(true);
+                const data = await DenyReservationByOwner(reservationId)
+                if (data) {
+                    enqueueSnackbar("Reservation denied", {variant: "success"});
+                }
+            } catch (err: any) {
+                enqueueSnackbar("Deny fail", {variant: "error"});
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    }
+
+    async function HandleAcceptReservation(reservationId: string) {
+        if (window.confirm("Accept this reservation, " +
+            "once you accept, this timeshare will be temporary disabled for payment phase ")) {
+            try {
+                setIsLoading(true);
+                const data = await AcceptReservationByOwner(reservationId)
+                if (data) {
+                    enqueueSnackbar("Accept successfully", {variant: "success"});
+                }
+            } catch (err: any) {
+                enqueueSnackbar("Accept successfully", {variant: "error"});
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    }
+
     async function Load() {
         try {
             // Fetch rent requests based on timeshareId
@@ -253,25 +271,37 @@ export default function RentRequestList(props: any) {
             >
                 <thead>
                 <tr>
+                    <th style={{width: 140, padding: '12px 6px'}}>No</th>
                     <th style={{width: 140, padding: '12px 6px'}}>Date</th>
                     <th style={{width: 140, padding: '12px 6px'}}>Paid</th>
                     <th style={{width: 240, padding: '12px 6px'}}>Customer</th>
-                    <th style={{width: 240, padding: '12px 6px'}}>Accepted</th>
+                    <th style={{width: 240, padding: '12px 6px'}}>Accept/Deny</th>
                     <th style={{width: 240, padding: '12px 6px'}}>Status</th>
                     <th style={{width: 100, padding: '12px 6px'}}></th>
                 </tr>
                 </thead>
                 <tbody>
-                {requestList?.map((row: any) => {
+                {requestList?.map((row: any, index: any) => {
                     return (
-                        <tr key={row._id}>
+                        <tr key={row._id} style={{
+                            backgroundColor:
+                                row?.status === 'Canceled' ? '#FFEBE5' :
+                                    row?.status === 'Payment phase' ? '#FFFFCC' :
+                                        row?.status === 'Finished' ? '#C8E6C9' : 'inherit',
+                            filter: row.pending ? 'brightness(70%)' : 'none',  // Darken the row if pending is true
+                            pointerEvents: row.pending ? 'none' : 'auto',  // Disable interaction if pending is true
+                        }}>
                             <td>
-                                <Typography level="body-xs">{formatDate(row?.reservationDate)}</Typography>
+                                <Typography level="body-xs">{index + 1}</Typography>
+                            </td>
+                            <td>
+                                <Typography level="body-xs">{formatDate(row?.createdAt)}</Typography>
                             </td>
                             <td>
                                 {/* Display status or Chip based on your logic */}
                                 {row?.isPaid ? (
-                                    <Chip variant="soft" size="sm" startDecorator={<CheckRoundedIcon/>} color="success">
+                                    <Chip variant="soft" size="sm" startDecorator={<CheckRoundedIcon/>}
+                                          color="success">
                                         Paid
                                     </Chip>
                                 ) : (
@@ -293,14 +323,48 @@ export default function RentRequestList(props: any) {
                             </td>
                             <td>
                                 <Typography level="body-xs">
-                                    {row?.is_accepted_by_owner ? (
-                                        <span>Accepted</span>
-                                    ) : (
-                                        <Button variant="soft" color={'success'}
-                                                onClick={() => HandleAcceptReservation(row?._id)}>
-                                            Accept
-                                        </Button>
-                                    )}
+                                    {RenderAcceptDenyButtons(row)}
+                                    {/*<Modal*/}
+                                    {/*    aria-labelledby="modal-title"*/}
+                                    {/*    aria-describedby="modal-desc"*/}
+                                    {/*    open={isConfirmationModalOpen}*/}
+                                    {/*    onClose={() => setConfirmationModalOpen(false)}*/}
+                                    {/*    sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}*/}
+                                    {/*>*/}
+                                    {/*    <Sheet*/}
+                                    {/*        variant="outlined"*/}
+                                    {/*        sx={{*/}
+                                    {/*            maxWidth: 500,*/}
+                                    {/*            borderRadius: 'md',*/}
+                                    {/*            p: 3,*/}
+                                    {/*            boxShadow: 'lg',*/}
+                                    {/*        }}*/}
+                                    {/*    >*/}
+                                    {/*        <ModalClose variant="plain" sx={{ m: 1 }} />*/}
+                                    {/*        <Typography*/}
+                                    {/*            component="h2"*/}
+                                    {/*            id="modal-title"*/}
+                                    {/*            level="h4"*/}
+                                    {/*            textColor="inherit"*/}
+                                    {/*            fontWeight="lg"*/}
+                                    {/*            mb={1}*/}
+                                    {/*        >*/}
+                                    {/*            Confirmation*/}
+                                    {/*        </Typography>*/}
+                                    {/*        <Typography id="modal-desc" textColor="text.tertiary">*/}
+                                    {/*            Make sure to use <code>aria-labelledby</code> on the modal dialog with an*/}
+                                    {/*            optional <code>aria-describedby</code> attribute.*/}
+                                    {/*        </Typography>*/}
+                                    {/*        <Box sx={{width: 1, display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2,}}>*/}
+                                    {/*            <Button variant="solid" sx={{p: 1, mr: 1}} color={'danger'} onClick={() => setConfirmationModalOpen(false)}>*/}
+                                    {/*                Confirm*/}
+                                    {/*            </Button>*/}
+                                    {/*            <Button variant="solid" sx={{p: 1, mr: 1}} color={'danger'} onClick={() => setConfirmationModalOpen(false)}>*/}
+                                    {/*                Cancel*/}
+                                    {/*            </Button>*/}
+                                    {/*        </Box>*/}
+                                    {/*    </Sheet>*/}
+                                    {/*</Modal>*/}
                                 </Typography>
                             </td>
                             <td>
@@ -317,75 +381,6 @@ export default function RentRequestList(props: any) {
                         </tr>
                     );
                 })}
-
-                {/*{stableSort(rows, getComparator(order, 'id')).map((row) => (*/}
-                {/*    <tr key={row.id}>*/}
-                {/*        <td style={{textAlign: 'center', width: 120}}>*/}
-                {/*            <Checkbox*/}
-                {/*                size="sm"*/}
-                {/*                checked={selected.includes(row.id)}*/}
-                {/*                color={selected.includes(row.id) ? 'primary' : undefined}*/}
-                {/*                onChange={(event) => {*/}
-                {/*                    setSelected((ids) =>*/}
-                {/*                        event.target.checked*/}
-                {/*                            ? ids.concat(row.id)*/}
-                {/*                            : ids.filter((itemId) => itemId !== row.id),*/}
-                {/*                    );*/}
-                {/*                }}*/}
-                {/*                slotProps={{checkbox: {sx: {textAlign: 'left'}}}}*/}
-                {/*                sx={{verticalAlign: 'text-bottom'}}*/}
-                {/*            />*/}
-                {/*        </td>*/}
-                {/*        <td>*/}
-                {/*            <Typography level="body-xs">{row.id}</Typography>*/}
-                {/*        </td>*/}
-                {/*        <td>*/}
-                {/*            <Typography level="body-xs">{row.date}</Typography>*/}
-                {/*        </td>*/}
-                {/*        <td>*/}
-                {/*            <Chip*/}
-                {/*                variant="soft"*/}
-                {/*                size="sm"*/}
-                {/*                startDecorator={*/}
-                {/*                    {*/}
-                {/*                        Paid: <CheckRoundedIcon/>,*/}
-                {/*                        Refunded: <AutorenewRoundedIcon/>,*/}
-                {/*                        Cancelled: <BlockIcon/>,*/}
-                {/*                    }[row.status]*/}
-                {/*                }*/}
-                {/*                color={*/}
-                {/*                    {*/}
-                {/*                        Paid: 'success',*/}
-                {/*                        Refunded: 'neutral',*/}
-                {/*                        Cancelled: 'danger',*/}
-                {/*                    }[row.status] as ColorPaletteProp*/}
-                {/*                }*/}
-                {/*            >*/}
-                {/*                {row.status}*/}
-                {/*            </Chip>*/}
-                {/*        </td>*/}
-                {/*        <td>*/}
-                {/*            <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>*/}
-                {/*                <Avatar size="sm">{row.customer.initial}</Avatar>*/}
-                {/*                <div>*/}
-                {/*                    <Typography level="body-xs">{row.customer.name}</Typography>*/}
-                {/*                    <Typography level="body-xs">{row.customer.email}</Typography>*/}
-                {/*                </div>*/}
-                {/*            </Box>*/}
-                {/*        </td>*/}
-                {/*        <td>*/}
-                {/*            /!*{row?.amount}*!/*/}
-                {/*        </td>*/}
-                {/*        <td>*/}
-                {/*            <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>*/}
-                {/*                <Link level="body-xs" component="button">*/}
-                {/*                    Download*/}
-                {/*                </Link>*/}
-                {/*                <RowMenu/>*/}
-                {/*            </Box>*/}
-                {/*        </td>*/}
-                {/*    </tr>*/}
-                {/*))}*/}
                 </tbody>
             </Table>
         </Sheet>

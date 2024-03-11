@@ -33,7 +33,10 @@ import {InfoOutlined} from "@mui/icons-material";
 import Checkbox from "@mui/joy/Checkbox";
 import {CreatePayPalPayment} from "../../services/booking.service";
 import OrderPaymentInfoModal from "./OrderPaymentInfo";
+
 import LuggageIcon from '@mui/icons-material/Luggage';
+
+import Countdown from "react-countdown";
 
 function CreditCardIcon() {
     return null;
@@ -45,6 +48,9 @@ export default function OrderDetailModal(props: any) {
     const setOpen = props.setOpen; // Ensure you pass setOpen as a prop
     const [paymentOpen, setPaymentOpen] = React.useState<boolean>(false);
     const [paymentDetailOpen, setPaymentDetailOpen] = React.useState<boolean>(false);
+    const targetTime = item?.paymentDeadline;
+    // targetTime.setMinutes(targetTime.getMinutes() + 15);
+
     async function HandlePayPalPayment(reservation: any) {
         try {
             const paymentUrl = await CreatePayPalPayment(reservation);
@@ -130,14 +136,28 @@ export default function OrderDetailModal(props: any) {
                                                     fontSize={14}>
                                             {item?.timeshareId?.resortId?.location}
                                         </Typography>
-                                        <Chip
+                                        {item?.status === "Canceled" ? <Chip
                                             variant="outlined"
-                                            color="primary"
+                                            color="danger"
                                             size="sm"
                                             sx={{pointerEvents: 'none', fontSize: 14}}
                                         >
                                             {item?.status}
-                                        </Chip>
+                                        </Chip>:
+                                            <Chip
+                                                variant="outlined"
+                                                color="primary"
+                                                size="sm"
+                                                sx={{pointerEvents: 'none', fontSize: 14}}
+                                            >
+                                                {item?.status}
+                                            </Chip>
+                                        }
+                                        {item?.status === "Canceled" && (
+                                            <Typography fontWeight={500} fontSize={14}>
+                                                Canceled reason: {item?.cancel_reason}
+                                            </Typography>
+                                        )}
                                         <Grid container spacing={2} sx={{flexGrow: 1, mt: 1}}>
                                             <Grid xs={12} md={4}>
                                                 <Typography fontWeight={700} fontSize={14}>
@@ -227,6 +247,7 @@ export default function OrderDetailModal(props: any) {
                                 </div>
                                 {/* Add more details as needed */}
                             </DialogContent>
+
                             {item?.timeshareId?.type === "exchange" ? (
                                     <>
                                     {item?.timeshareId?.is_bookable === true && (
@@ -274,6 +295,41 @@ export default function OrderDetailModal(props: any) {
                                 )}
 
                             <OrderPaymentInfoModal open={paymentDetailOpen} item={item} setOpen={setPaymentDetailOpen} />
+                            {item?.status === "Canceled" ?
+                                (<Button
+                                    variant="outlined"
+                                    disabled
+                                    color="danger"
+                                >
+                                    Canceled
+                                </Button>) : (
+                                    <>
+                                        {!item?.isPaid && (
+                                            <Button
+                                                onClick={() => setPaymentOpen(true)}
+                                                disabled={!item?.is_accepted_by_owner}
+                                                startDecorator={<PaymentIcon/>}
+                                            >
+                                                Go payment
+                                            </Button>
+                                        )}
+
+                                        {item?.isPaid && (
+                                            <Button
+                                                onClick={() => setPaymentDetailOpen(true)}
+                                                startDecorator={<PaymentIcon/>}
+                                            >
+                                                View payment detail
+                                            </Button>
+                                        )}
+                                        <OrderPaymentInfoModal open={paymentDetailOpen} item={item}
+                                                               setOpen={setPaymentDetailOpen}/>
+                                    </>
+
+                                )
+
+                            }
+
                         </ModalDialog>
 
                     </Modal>
@@ -400,11 +456,17 @@ export default function OrderDetailModal(props: any) {
                                                 ${item?.amount}
                                             </Typography>
                                         </Box>
+                                        <Typography fontWeight={500} fontSize={15} sx={{color: "red", mt: 2}}>
+                                            <p>Payment will expired in</p>
+                                            <Countdown date={targetTime} />
+                                        </Typography>
                                     </Stack>
                                 </Grid>
                                 <Grid md={7} xs={12}>
-                                    <Button onClick={()=>{HandlePayPalPayment(item)}} sx={{width: 1, mb: 1}}><img width={'20px'}
-                                                                        src={"https://cdn-icons-png.flaticon.com/512/174/174861.png"}/>Pay
+                                    <Button onClick={() => {
+                                        HandlePayPalPayment(item)
+                                    }} sx={{width: 1, mb: 1}}><img width={'20px'}
+                                                                   src={"https://cdn-icons-png.flaticon.com/512/174/174861.png"}/>Pay
                                         with PayPal</Button>
                                     <Button variant="outlined" sx={{width: 1, boxShadow: 1}}><img
                                         width={'20px'}
