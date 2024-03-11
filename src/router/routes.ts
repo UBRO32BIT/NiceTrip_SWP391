@@ -113,9 +113,10 @@ const publicRoutes: Route[] = [
         path: '/reset-password',
         page: ResetPassword
     },
+    {
         path: '/admin/*',
         page: Admin
-    }
+    },
 ];
 
 export {
