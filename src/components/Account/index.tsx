@@ -15,7 +15,7 @@ import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import { styled, Grid } from '@mui/joy';
+import { styled, Grid, TabPanel } from '@mui/joy';
 import { useSelector } from 'react-redux';
 import { UpdateUser } from '../../services/auth.service';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
@@ -107,6 +107,10 @@ export default function RequestManagement() {
                         <Tab onClick={() => navigate('/')} >All account</Tab>
                         <Tab onClick={() => navigate('/banned-list')} >Banned accounts</Tab>
                         <Tab onClick={() => navigate('/deleted-list')} >Deleted accounts</Tab>
+                        <br></br>
+                        <TabPanel value={0}> All account </TabPanel>
+                        <TabPanel value={1}> Banned accounts </TabPanel>
+                        <TabPanel value={2}> Deleted accounts </TabPanel>
                     </TabList>
                 </Tabs>
                 <Routes>
