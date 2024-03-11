@@ -10,13 +10,23 @@ import { RootState } from '../../features/auth/auth.slice';
 import AccountManagement from '../../components/Account';
 import RequestManagement from '../../components/Request';
 import ResortManagement from '../../components/Resort';
+import userEvent from '@testing-library/user-event';
 
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
-  
+  const user = useSelector((state: RootState) => state?.auth?.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  
-  React.useEffect(() => console.log(isAuthenticated))
+  const isAuthLoaded = useSelector((state: RootState) => state.auth.isLoaded);
+  React.useEffect(() => {
+    console.log("account role:" + user?.role);
+    if (isAuthLoaded) {
+      if(!isAuthenticated){
+        navigate('/login');
+      }else if(user?.role !== "admin"){
+        navigate('/login');
+      }
+    }
+  }, [isAuthenticated, isAuthLoaded]);
   return (
     <>
       {isAuthenticated &&

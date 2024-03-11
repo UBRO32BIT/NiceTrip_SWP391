@@ -47,6 +47,7 @@ import axios from 'axios';
 import {useEffect } from 'react';
 import convertImageArray from '../../utils/convertImageArray'
 import { Height } from '@mui/icons-material';
+import '../../styles/exchangeRequestList.css';
 
 interface ServicePack {
     _id: string;
@@ -140,56 +141,84 @@ function RowMenu(props: any) {
             <Transition in={open} timeout={400}>
                 {(state: string) => (
                     <Modal
-                        keepMounted
+                        
                         open={!['exited', 'exiting'].includes(state)}
                         onClose={() => setOpen(false)}
                         slotProps={{
                             backdrop: {
                                 sx: {
-                                    opacity: 0,
-                                    backdropFilter: 'none',
-                                    transition: `opacity 400ms, backdrop-filter 400ms`,
                                     ...(state === 'entering' || state === 'entered'
                                         ? { opacity: 1, backdropFilter: 'blur(8px)' }
                                         : {}),
                                 },
                             },
                         }}
-                        sx={{
-                            visibility: state === 'exited' ? 'hidden' : 'visible',
-                        }}
+                        
                     >
                         <ModalDialog
                             sx={{
-                                opacity: 0,
                                 transition: `opacity 300ms`,
                                 ...(state === 'entering' || state === 'entered'
                                     ? { opacity: 1 }
                                     : {}),
                             }}
-                        >
-                            <DialogTitle>Reservation Details</DialogTitle>
-                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', maxWidth: 600 }}>
-                                <Avatar size="sm" src={reservationData?.userId?.profilePicture} sx={{ width: 32, height: 32 }}>
-                                    {reservationData?.userId?.firstname?.charAt(0)}
-                                </Avatar>
-                                <div>
-                                    <Typography level="body-xs">{reservationData?.userId?.firstname} {reservationData?.userId?.lastname}</Typography>
-                                    <Typography level="body-xs">{reservationData?.userId?.email}</Typography>
-                                </div>
-                            </Box>
-                            <Box sx={{ marginLeft: 2 }}>
+                        ><Box sx={{
+                            maxWidth: 600,
+                            maxHeight: 'fixed',
+                            borderRadius: 'md',
+                            p: 1,
+                        }}>
+                            
+                            <ImageGallery items={convertImageArray([...reservationData?.myTimeshareId?.images, ...reservationData?.myTimeshareId?.resortId.image_urls])}/>
+                                
                                 <h2>{reservationData?.myTimeshareId?.resortId.name}</h2>
                                 <span>
-                                    <h5>{reservationData?.myTimeshareId?.unitId?.name}</h5>
+                                    <h5>Unit: {reservationData?.myTimeshareId?.unitId?.name}</h5>
                                 </span>
                                 <span>
                                     <h6>Number of Nights: {reservationData?.myTimeshareId?.numberOfNights}</h6>
                                 </span>
-                            </Box>
-                            <DialogContent>
+                                <div className='tour__extra-details'>
+                                    <span>
+                                        <i className="ri-map-pin-range-line"></i>{reservationData?.myTimeshareId?.resortId.location}
+                                    </span>
+                                    <span>
+                                        <i className="ri-money-dollar-circle-line"></i>{reservationData?.myTimeshareId?.price}
+                                    </span>
+                                    <span>
+                                        <i className="ri-time-line"></i> {convertDate(reservationData?.myTimeshareId?.start_date)} - {convertDate(reservationData?.myTimeshareId?.end_date)}
+                                    </span>
+                                </div>
+                                <td> 
+                                <Typography level="body-xs" sx={{ marginLeft:'400px' }}>
+                                {reservationData?.myTimeshareId?.is_bookable === false || reservationData?.timeshareId?.is_bookable === false || reservationData?.status === 'Canceled' || reservationData?.status === 'Expired'? (
+                                    <Box sx={{ textAlign:'center' ,width: 'fit-content', fontSize: '15px', border: '1px', backgroundColor: 'gray', color: 'white', padding: '8px', borderRadius: '5px' }}>
+                                        {reservationData?.status}
+                                    </Box>
+                                ) : (
+                                    <>
+                                            <Button  variant="solid" color="success" onClick={() => {
+                                                AcceptExchangeByOwner(reservationData?._id);
+                                                setOpen(false);
+                                            }}>
+                                                Accept
+                                            </Button>
+                                            <Button sx={{ margin: 1 }} variant="solid" color="danger" onClick={() => {
+                                                const isConfirmed = window.confirm('You sure about that????');
+                                                if (isConfirmed) {
+                                                    CancelExchangeByOwner(reservationData?._id);
+                                                    setOpen(false);
+                                                }
+                                            }}>
+                                                Denied
+                                            </Button>
 
-                                <div>
+                                        
+                                    </>
+                                )}
+                                </Typography>
+                                    </td>
+                                {/* <div>
                                     <strong>Address:</strong> {reservationData?.address?.street},{' '}
                                     {reservationData?.address?.city}, {reservationData?.address?.province},{' '}
                                     {reservationData?.address?.zipCode}, {reservationData?.address?.country}
@@ -207,13 +236,13 @@ function RowMenu(props: any) {
                                     <strong>Phone:</strong> {reservationData?.phone}
                                 </div>
                                 <div>
-                                    <strong>Reservation Date:</strong> {formatDate(reservationData?.request_at)}
+                                    <strong>Exchange Date:</strong> {formatDate(reservationData?.request_at)}
                                 </div>
                                 <div>
                                     <strong>Status:</strong> {reservationData?.status}
-                                </div>
-
-                            </DialogContent>
+                                </div> */}
+                            </Box>
+                           
                         </ModalDialog>
                     </Modal>
                 )}
@@ -319,33 +348,30 @@ export default function RentRequestList(props: any) {
             >
                 <thead>
                 <tr>
+                    <th style={{width: 50, padding: '12px 6px'}}>No.</th>
                     <th style={{width: 140, padding: '12px 6px'}}>Date</th>
-                    <th style={{width: 140, padding: '12px 6px'}}>Paid</th>
                     <th style={{width: 240, padding: '12px 6px'}}>Customer</th>
-                    <th style={{width: 240, padding: '12px 6px'}}>View detail</th>
-                    <th style={{width: 240, padding: '12px 6px'}}>Status</th>
-                    <th style={{width: 100, padding: '12px 6px'}}></th>
+                    <th style={{width: 140, padding: '12px 6px'}}>Country</th>
+                    <th style={{width: 200, padding: '12px 6px'}}>Accept/Deny</th>
+                    <th style={{width: 100, padding: '12px 6px'}}>Status</th>
+                    <th style={{width: 100, padding: '12px 6px'}}>Contact</th>
+                    <th style={{width: 100, padding: '12px 6px'}}>View detail</th>
                 </tr>
                 </thead>
                 <tbody>
-                {requestList?.map((row: any) => {
+                {requestList?.map((row: any, index: number) => {
+                const rowIndex = index + 1;
+
                     return (
                         <tr key={row._id}>
                             <td>
+                            {rowIndex}                            
+                            </td>
+
+                            <td>
                                 <Typography level="body-xs">{formatDate(row?.request_at)}</Typography>
                             </td>
-                            <td>
-                                {/* Display status or Chip based on your logic */}
-                                {row?.isPaid ? (
-                                    <Chip variant="soft" size="sm" startDecorator={<CheckRoundedIcon />} color="success">
-                                        Paid
-                                    </Chip>
-                                ) : (
-                                    <Chip variant="soft" size="sm" color="danger">
-                                        Not paid
-                                    </Chip>
-                                )}
-                            </td>
+
                             <td>
                                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                     <Avatar size="sm" src={row?.userId?.profilePicture}>{row?.userId?.firstname?.charAt(0)}</Avatar>
@@ -355,111 +381,55 @@ export default function RentRequestList(props: any) {
                                     </div>
                                 </Box>
                             </td>
+
                             <td>
-                            
-                            <React.Fragment>
-                            <Button variant="outlined" color="neutral" onClick={() => setOpen(true)}>
-                                View detail
-                            </Button>
-                            
-                            
-                            <Modal
-                                aria-labelledby="modal-title"
-                                aria-describedby="modal-desc"
-                                open={open}
-                                onClose={() => setOpen(false)}
-                                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            >
-                                <Sheet
-                                variant="outlined"
-                                sx={{
-                                    maxWidth: 600,
-                                    borderRadius: 'md',
-                                    p: 3,
-                                    boxShadow: 'lg',
-                                }}
-                                >
-                                <ModalClose variant="plain" sx={{ m: -1 }} />
-                                <Typography
-                                    component="h2"
-                                    id="modal-title"
-                                    level="h4"
-                                    textColor="inherit"
-                                    fontWeight="lg"
-                                    mb={1}
-                                >
+                            <Typography level="body-xs">{row?.address?.country}</Typography>
+                            </td>
 
-                                </Typography>
-                            <ImageGallery items={convertImageArray([...row?.myTimeshareId?.images, ...row?.myTimeshareId?.resortId.image_urls])}/>
-                            <h2>{row?.myTimeshareId?.resortId.name}</h2>
-                                    <span>
-                                        <h5>{row?.myTimeshareId?.unitId?.name}</h5>
-                                    </span>
-
-                                <span>
-                                        <h6>Number of Nights: {row?.myTimeshareId?.numberOfNights}</h6>
-                                </span>
-                            <Typography> 
-                                <div className='tour__extra-details'>
-                                    <span>
-                                        <i className="ri-map-pin-range-line"></i>{row?.myTimeshareId?.resortId.location}
-                                    </span>
-                                    <span>
-                                        <i className="ri-money-dollar-circle-line"></i>{row?.myTimeshareId?.price}
-                                    </span>
-                                    <span>
-                                        <i className="ri-time-line"></i> {convertDate(row?.myTimeshareId?.start_date)} - {convertDate(row?.myTimeshareId?.end_date)}
-                                    </span>
-                                </div>
-                            
-                            </Typography>
-
-                            <td> 
-                                <Typography level="body-xs">
-                                    {row?.timeshareId?.is_bookable === false ? (
-                                        <Box sx={{ fontSize:'15px', border: '1px' , backgroundColor:'gray', color:'white', padding:'10px', borderRadius:'5px'}}>
-                                            Accepted
-                                        </Box>                                     
-                                    ) : (
-                                        <>
-                                            <Button variant="solid" color="success" onClick={() => {
+                            <td>
+                                { row?.myTimeshareId?.is_bookable === false || row?.timeshareId?.is_bookable === false|| row?.status === 'Canceled' || row?.status === 'Expired'? (
+                                    <Box sx={{ textAlign:'center' ,width: 'fit-content', fontSize: '15px', border: '1px', backgroundColor: 'gray', color: 'white', padding: '8px', borderRadius: '5px' }}>
+                                        {row?.status}
+                                    </Box>
+                                ) : (
+                                    <>
+                                            <Button  variant="solid" color="success" onClick={() => {
                                                 AcceptExchangeByOwner(row?._id);
                                                 setOpen(false);
                                             }}>
                                                 Accept
                                             </Button>
-                                            <Button variant="solid" color="danger"  onClick={() => {
-                                                CancelExchangeByOwner(row?._id);
-                                                setOpen(false);
+                                            <Button sx={{ margin: 1 }} variant="solid" color="danger" onClick={() => {
+                                                const isConfirmed = window.confirm('You sure about that????');
+                                                if (isConfirmed) {
+                                                    CancelExchangeByOwner(row?._id);
+                                                    setOpen(false);
+                                                }
                                             }}>
-                                                Cancel
+                                                Denied
                                             </Button>
-                                        </>
-                                    )}
-                                </Typography>
+
+                                        
+                                    </>
+                                )}
                             </td>
 
-
-                                </Sheet>
-                            </Modal>
                             
-                          
-      
-                            </React.Fragment>
-
-                            </td>
                             <td>
                                 <Typography level="body-xs">{row?.status}</Typography>
                             </td>
+
                             <td>
                                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                     <Link level="body-xs" component="button">
                                         Contact
                                     </Link>
-                                    <RowMenu reservationData={row}/>
                                 </Box>
                                 
                             </td>
+
+                            <td><RowMenu reservationData={row}/>
+                            </td>   
                         </tr>
                         
                     );

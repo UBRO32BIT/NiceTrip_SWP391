@@ -107,10 +107,10 @@ export default function RequestManagement() {
                         <Tab onClick={() => navigate('/')} >All account</Tab>
                         <Tab onClick={() => navigate('/banned-list')} >Banned accounts</Tab>
                         <Tab onClick={() => navigate('/deleted-list')} >Deleted accounts</Tab>
-                        <br></br>
+{/*                         
                         <TabPanel value={0}> All account </TabPanel>
                         <TabPanel value={1}> Banned accounts </TabPanel>
-                        <TabPanel value={2}> Deleted accounts </TabPanel>
+                        <TabPanel value={2}> Deleted accounts </TabPanel> */}
                     </TabList>
                 </Tabs>
                 <Routes>

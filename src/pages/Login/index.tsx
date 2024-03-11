@@ -84,17 +84,21 @@ export default function JoySignInSideTemplate() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const [uploading, setUploading] = React.useState<boolean>();
 
   const Login = async (data: LoginData) => {
     try {
+      setUploading(true);
       const login = await LoginWithUsernameAndPassword(data);
       if (login?.data) {
         const loginData = login.data;
         dispatch(LoginSuccess(loginData));
       }
+      setUploading(false);
     }
     catch (err) {
       enqueueSnackbar(`${err}`, { variant: "error" });
+      setUploading(false);
     }
   }
   React.useEffect(() => {
@@ -249,7 +253,7 @@ export default function JoySignInSideTemplate() {
                       Forgot your password?
                     </Link>
                   </Box>
-                  <Button type="submit" fullWidth>
+                  <Button loading={uploading} type="submit" fullWidth>
                     Sign in
                   </Button>
                 </Stack>
