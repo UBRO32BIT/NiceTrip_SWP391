@@ -16,6 +16,7 @@ import ConfirmReservation from "../pages/ConfirmReservation";
 import Messenger from "../pages/Messenger"
 import Email from "../pages/Email";
 import VNPay from "../pages/Payment/VNPay"
+import Admin from "../pages/Admin";
 import ConfirmExchange from "../pages/ConfirmExchange";
 import PaymentPage from "../pages/Payment";
 interface Route {
@@ -107,6 +108,10 @@ const publicRoutes: Route[] = [
         path: '/email/*',
         page: Email
     },
+    {
+        path: '/admin/*',
+        page: Admin
+    }
 ];
 
 export {
