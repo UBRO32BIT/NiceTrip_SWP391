@@ -136,50 +136,66 @@ export default function OrderList() {
                                         loading="lazy"
                                         alt=""
                                     />
+                                    {/*{item?.status === "Canceled" && (*/}
+                                    {/*    <h2 style={{opacity: 0.9, color: "#fff"}}>Expired</h2>)}*/}
                                 </AspectRatio>
                             </CardOverflow>
                             <CardContent>
-                                <Typography sx={{display: 'inline-flex', gap: 1}}>
-                                    {item?.isPaid === true ? <Chip
-                                            variant="soft"
-                                            color="success"
-                                            size="sm"
-                                            startDecorator={<CheckRoundedIcon/>}
-                                        >
-                                            Paid
-                                        </Chip> :
+                                {item?.status === "Canceled" ? (<Typography sx={{display: 'inline-flex', gap: 1}}>
                                         <Chip
                                             variant="soft"
                                             color="danger"
                                             size="sm"
                                             startDecorator={<BlockIcon/>}
                                         >
-                                            Paid
-                                        </Chip>}
-                                    {item?.is_accepted_by_owner ? <Chip
-                                            variant="soft"
-                                            color="success"
-                                            size="sm"
-                                            startDecorator={<CheckRoundedIcon/>}
-                                        >
-                                            Owner confirmed, go to payment phase
-                                        </Chip> :
-                                        <Chip
-                                            variant="soft"
-                                            color="danger"
-                                            size="sm"
-                                            startDecorator={<BlockIcon/>}
-                                        >
-                                            Wait for accept
-                                        </Chip>}
-                                </Typography>
+                                            Canceled
+                                        </Chip>
+                                    </Typography>) :
+                                    (<Typography sx={{display: 'inline-flex', gap: 1}}>
+                                        {item?.isPaid === true ? <Chip
+                                                variant="soft"
+                                                color="success"
+                                                size="sm"
+                                                startDecorator={<CheckRoundedIcon/>}
+                                            >
+                                                Paid
+                                            </Chip> :
+                                            <Chip
+                                                variant="soft"
+                                                color="danger"
+                                                size="sm"
+                                                startDecorator={<BlockIcon/>}
+                                            >
+                                                Paid
+                                            </Chip>}
+                                        {item?.is_accepted_by_owner ? <Chip
+                                                variant="soft"
+                                                color="success"
+                                                size="sm"
+                                                startDecorator={<CheckRoundedIcon/>}
+                                            >
+                                                Owner confirmed, go to payment phase
+                                            </Chip> :
+                                            <Chip
+                                                variant="soft"
+                                                color="danger"
+                                                size="sm"
+                                                startDecorator={<BlockIcon/>}
+                                            >
+                                                Wait for accept
+                                            </Chip>}
+                                    </Typography>)}
                                 <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
                                 <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
                                 {/*<Link to={`/timeshare-details/${item?.timeshareId?._id}`} target="_blank" rel="noopener noreferrer">View original post</Link>*/}
                                 <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
                                     <Button variant="soft" color="primary"
                                             onClick={() => toggleModal(index)}>View</Button>
-                                    <Button variant="plain" color="danger" onClick={() => setOpen(true)}>Cancel</Button>
+                                    {item?.status === "Canceled" ?
+                                        (<Button variant="plain" color="danger">Remove</Button>) :
+                                        (<Button variant="plain" color="danger"
+                                                 onClick={() => setOpen(true)}>Cancel</Button>)}
+
                                 </Box>
 
                             </CardContent>
@@ -191,7 +207,7 @@ export default function OrderList() {
                                     </Typography>
                                     <Divider orientation="vertical"/>
                                     <Typography level="body-md" fontWeight="md" textColor="text.secondary">
-                                        {formatDate(item?.reservationDate)}
+                                        {formatDate(item?.createdAt)}
                                     </Typography>
                                 </CardContent>
                             </CardOverflow>

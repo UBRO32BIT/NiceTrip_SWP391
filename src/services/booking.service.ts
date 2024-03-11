@@ -6,9 +6,7 @@ const MakeReservation = (type: string, data: any) => {
             return res.data.data
         })
         .catch((error) => {
-            // Handle errors here, you might want to log or show a user-friendly message
-            console.error('Error making reservation:', error);
-            throw error; // Re-throw the error to let the caller handle it if needed
+            throw error.response.data.status; // Re-throw the error to let the caller handle it if needed
         })
 }
 
@@ -106,6 +104,16 @@ const AcceptReservationByOwner = (reservationId: any) => {
             throw error;
         })
 }
+const DenyReservationByOwner = (reservationId: any) => {
+    return api.patch(`/reservation/${reservationId}/deny`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
 const MakeExchange = (timeshareId: any, exchangeData: any) => {
     return api.post(`/exchange/${timeshareId}`, exchangeData)
         .then((res) => {
@@ -182,19 +190,6 @@ const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
         })
 }
 
-// const MakeExchange = (timeshareId: any, exchangeData: any) => {
-//     return api.post(`/reservation/exchange/${timeshareId}`, exchangeData)
-//         .then((res) => {
-//             return res.data.data
-
-//         })
-        
-//         .catch((error) => {
-//             // Handle errors here, you might want to log or show a user-friendly message
-//             console.error('Error making reservation:', error);
-//             throw error; // Re-throw the error to let the caller handle it if needed
-//         })
-// }
 
 export {
     MakeReservation,
@@ -208,6 +203,7 @@ export {
     GetTripOfUser,
     ConfirmReservationByToken,
     AcceptReservationByOwner,
+    DenyReservationByOwner,
     CreatePayPalPayment,
     GetOrderPaymentInfo,
     MakeExchange,
