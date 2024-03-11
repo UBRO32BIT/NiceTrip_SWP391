@@ -132,8 +132,9 @@ export default function Booking() {
                 setUploading(false)
             }
         }
-        catch (error) {
-            enqueueSnackbar(`Error while booking: ${error}`, { variant: "error" });
+        catch (error: any) {
+            console.log(error)
+            enqueueSnackbar(`Error while booking: ${error?.message}`, { variant: "error" });
             setUploading(false)
         }
     }

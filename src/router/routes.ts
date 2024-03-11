@@ -16,6 +16,7 @@ import ConfirmReservation from "../pages/ConfirmReservation";
 import Messenger from "../pages/Messenger"
 import Email from "../pages/Email";
 import VNPay from "../pages/Payment/VNPay"
+import Admin from "../pages/Admin";
 import ConfirmExchange from "../pages/ConfirmExchange";
 import PaymentPage from "../pages/Payment";
 import ResetPassword from "../pages/ResetPassword";
@@ -112,6 +113,9 @@ const publicRoutes: Route[] = [
         path: '/reset-password',
         page: ResetPassword
     },
+        path: '/admin/*',
+        page: Admin
+    }
 ];
 
 export {

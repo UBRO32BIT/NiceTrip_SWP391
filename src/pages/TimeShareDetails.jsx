@@ -90,10 +90,7 @@ const TimeShareDetails = () => {
                                         <Box sx={{ color: 'white', float: 'right', textAlign: 'center', backgroundColor: 'gray', paddingRight: '15px', paddingLeft: '15px', width: 'fit-content', borderRadius: '5px' }}>
                                             {(post?.is_bookable === false) ? 'SOLD' : ''}
                                         </Box>
-
-
                                         <h2>{post?.resortId.name}</h2>
-
                                         <div className='d-flex align-items-center gap-5'>
                                             <span className='d-flex align-items-center gap-1'>
                                                 <span className='tour__rating d-flex align-items-center gap-1'>
@@ -124,6 +121,10 @@ const TimeShareDetails = () => {
                                         <div>
                                             <h5>Description</h5>
                                             <p>{post?.resortId.description}</p>
+                                        </div>
+                                        <div style={{ display: "inline-flex", alignItems: "center", justifyContent:"center", gap: '5px', marginTop: 10, marginBottom: 10}}>
+                                            <img style={{ borderRadius: "50%", margin: 0, width: 40, height: 40 }} src={post?.current_owner?.profilePicture}/>
+                                            <p style={{ margin: 0 }}>Post by: {post?.current_owner?.username}</p>
                                         </div>
                                         <>
                                             <div className="text-center" style={{ display: "flex", alignItems: "center", gap: '5px' }}>

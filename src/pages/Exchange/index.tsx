@@ -21,22 +21,32 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ImageGallery from "react-image-gallery";
+import convertImageArray from "../../utils/convertImageArray";
+import {MenuItem} from '@mui/joy';
+import InputLabel from '@mui/material/InputLabel';
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
-import { GetPostBelongToOwner } from '../../services/post.service'
+import RadioGroup from '@mui/joy/RadioGroup';
+import Radio from '@mui/joy/Radio';
+import {GetTimeshareExchangeByCurrentOwner} from '../../services/post.service'
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Alert from '@mui/joy/Alert';
 import { MakeExchange } from '../../services/booking.service'
 import '../../styles/exchange.css';
-import Avatar from '@mui/joy/Avatar';
-import AvatarGroup from '@mui/joy/AvatarGroup';
-import CardContent from '@mui/joy/CardContent';
-import { convertDate } from '../../utils/date'
 import { RootState } from '../../features/auth/auth.slice';
 import * as yup from "yup";
 import { InfoOutlined } from '@mui/icons-material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { useSnackbar } from 'notistack';
+import {Height, WidthFull} from '@mui/icons-material';
+import Avatar from '@mui/joy/Avatar';
+import AvatarGroup from '@mui/joy/AvatarGroup';
+import CardContent from '@mui/joy/CardContent';
+import IconButton from '@mui/joy/IconButton';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import {convertDate} from '../../utils/date'
+import {useSnackbar} from 'notistack';
 
 interface Unit {
     _id: string;
@@ -124,7 +134,6 @@ export default function Exchange() {
     async function handleExchange(e: any) {
         //e.preventDefault();
         setUploading(true);
-
         const formData: FormData = {
             fullName: e.fullName,
             email: e.email,
@@ -146,7 +155,8 @@ export default function Exchange() {
                 navigate(`/timeshare/${postId}/exchange/${makeExchange._id}/confirm`);
             }
         } catch (error) {
-            console.error("Error making exchange request:", error);
+            
+            enqueueSnackbar('Request already exists. Please choose another timeshare', { variant: 'error' });
             // Handle error appropriately, e.g., show error message to the user
         } finally {
             setUploading(false);
@@ -187,7 +197,7 @@ export default function Exchange() {
 
 
     async function GetMyPosts() {
-        const postsData = await GetPostBelongToOwner(user._id);
+        const postsData = await GetTimeshareExchangeByCurrentOwner(user._id);
         console.log(postsData)
         if (postsData && postsData.length > 0) {
             console.log(postsData);
@@ -224,9 +234,6 @@ export default function Exchange() {
         };
         return new Date(dateString).toLocaleDateString('en-US', options);
     }
-
-
-
     return (
         <>
             {isAuthLoaded && (
@@ -660,7 +667,6 @@ export default function Exchange() {
                                     </CardOverflow>
                                 </form>
                             </Grid>
-
                         </Grid>
                     </CssVarsProvider>
                     <Footer />
