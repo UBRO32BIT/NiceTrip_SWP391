@@ -249,30 +249,48 @@ export default function OrderDetailModal(props: any) {
                             </DialogContent>
 
                             {item?.timeshareId?.type === "exchange" ? (
-                                    <>
-                                    {item?.timeshareId?.is_bookable === true && (
-                                        <Button
-                                            onClick={() => setPaymentOpen(true)}
-                                            disabled={item?.timeshareId?.is_bookable}
-                                            startDecorator={<PaymentIcon />}
-                                        >
-                                            Waiting for love
-                                        </Button>
-                                    )}
-
-                                    {item?.status === 'Completed' && (
-                                        
-
-                                        <Link to="/me/my-trips">
-                                        <Button startDecorator={<LuggageIcon />}>
-                                            View Trip
-                                        </Button>
-                                        </Link>
-                                    )}
-                                    </>
-                                    
+                            <>
+                                {item?.status === "Canceled" ? (
+                                    <Button
+                                        variant="outlined"
+                                        disabled
+                                        color="danger"
+                                    >
+                                        Canceled
+                                    </Button>
                                 ) : (
                                     <>
+                                        {item?.timeshareId?.is_bookable === true && (
+                                            <Button
+                                                onClick={() => setPaymentOpen(true)}
+                                                disabled={item?.timeshareId?.is_bookable}
+                                            >
+                                                Waiting for accept by owner...
+                                            </Button>
+                                        )}
+
+                                        {item?.status === 'Completed' && (
+                                            <Link to="/me/my-trips">
+                                                <Button startDecorator={<LuggageIcon />}>
+                                                    View Trip
+                                                </Button>
+                                            </Link>
+                                        )}
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                            {item?.status === "Canceled" ? (
+                                <Button
+                                    variant="outlined"
+                                    disabled
+                                    color="danger"
+                                >
+                                    Canceled
+                                </Button>
+                            ) : (
+                                <>
                                     {!item?.isPaid && (
                                         <Button
                                             onClick={() => setPaymentOpen(true)}
@@ -282,53 +300,30 @@ export default function OrderDetailModal(props: any) {
                                             Go payment
                                         </Button>
                                     )}
-
+                                    
                                     {item?.isPaid && (
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <Link to="/me/my-trips" style={{ marginRight: '10px' }}>
+                                            <Button startDecorator={<LuggageIcon />}>
+                                                View Trip
+                                            </Button>
+                                        </Link>
                                         <Button
                                             onClick={() => setPaymentDetailOpen(true)}
                                             startDecorator={<PaymentIcon />}
                                         >
                                             View payment detail
                                         </Button>
-                                    )}
-                                    </>
+                                    </div>
                                 )}
+                                </>
+                            )}
+                        </>
+                        )}
 
-                            <OrderPaymentInfoModal open={paymentDetailOpen} item={item} setOpen={setPaymentDetailOpen} />
-                            {item?.status === "Canceled" ?
-                                (<Button
-                                    variant="outlined"
-                                    disabled
-                                    color="danger"
-                                >
-                                    Canceled
-                                </Button>) : (
-                                    <>
-                                        {!item?.isPaid && (
-                                            <Button
-                                                onClick={() => setPaymentOpen(true)}
-                                                disabled={!item?.is_accepted_by_owner}
-                                                startDecorator={<PaymentIcon/>}
-                                            >
-                                                Go payment
-                                            </Button>
-                                        )}
+                        <OrderPaymentInfoModal open={paymentDetailOpen} item={item} setOpen={setPaymentDetailOpen} />
 
-                                        {item?.isPaid && (
-                                            <Button
-                                                onClick={() => setPaymentDetailOpen(true)}
-                                                startDecorator={<PaymentIcon/>}
-                                            >
-                                                View payment detail
-                                            </Button>
-                                        )}
-                                        <OrderPaymentInfoModal open={paymentDetailOpen} item={item}
-                                                               setOpen={setPaymentDetailOpen}/>
-                                    </>
 
-                                )
-
-                            }
 
                         </ModalDialog>
 

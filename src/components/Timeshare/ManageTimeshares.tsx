@@ -126,7 +126,6 @@ export default function ManageTimeshares() {
                         >
 
                             {post?.is_bookable === false ? "Completed" : "Pending"}
-                            {requestList[0]?.timeshareId?.is_bookable === false ? "Completed" : "Pending"}
                         </Chip>
                     }
 
