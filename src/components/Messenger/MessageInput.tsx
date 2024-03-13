@@ -37,7 +37,7 @@ export default function MessageInput(props: MessageInputProps) {
             setTextAreaValue(e.target.value);
           }}
           value={textAreaValue}
-          minRows={3}
+          minRows={2}
           maxRows={10}
           endDecorator={
             <Stack
@@ -52,7 +52,7 @@ export default function MessageInput(props: MessageInputProps) {
                 borderColor: 'divider',
               }}
             >
-              <div>
+              {/* <div>
                 <IconButton size="sm" variant="plain" color="neutral">
                   <FormatBoldRoundedIcon />
                 </IconButton>
@@ -65,7 +65,7 @@ export default function MessageInput(props: MessageInputProps) {
                 <IconButton size="sm" variant="plain" color="neutral">
                   <FormatListBulletedRoundedIcon />
                 </IconButton>
-              </div>
+              </div> */}
               <Button
                 size="sm"
                 color="primary"

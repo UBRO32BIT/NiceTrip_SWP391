@@ -24,7 +24,7 @@ import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
 import MenuItem from '@mui/joy/MenuItem';
 import Dropdown from '@mui/joy/Dropdown';
-
+import {CreateConversation} from '../../services/chat.service'
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -40,7 +40,8 @@ import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
 import {AcceptReservationByOwner} from "../../services/booking.service";
 import {useSnackbar} from 'notistack';
-
+import {useSelector} from "react-redux";
+import { NavLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 type Order = 'asc' | 'desc';
 
 function formatDate(dateString?: string): string {
@@ -154,15 +155,21 @@ function RowMenu(props: any) {
         </>
     );
 }
-
+interface RootState {
+    auth: {
+        isAuthenticated: boolean;
+        user: any;
+    };
+}
 
 export default function RentRequestList(props: any) {
+    const user = useSelector((state: RootState) => state?.auth?.user);
     const timeshareId = props?.timeshareId;
     const [requestList, setRequestList] = React.useState([]);
     const {enqueueSnackbar} = useSnackbar();
     const [isLoading, setIsLoading] = React.useState(false);
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
-
+    const navigate = useNavigate()
     const RenderAcceptDenyButtons = (row: any) => {
         const isAccepted = row?.is_accepted_by_owner;
         const isDenied = row?.is_denied_by_owner;
@@ -324,47 +331,7 @@ export default function RentRequestList(props: any) {
                             <td>
                                 <Typography level="body-xs">
                                     {RenderAcceptDenyButtons(row)}
-                                    {/*<Modal*/}
-                                    {/*    aria-labelledby="modal-title"*/}
-                                    {/*    aria-describedby="modal-desc"*/}
-                                    {/*    open={isConfirmationModalOpen}*/}
-                                    {/*    onClose={() => setConfirmationModalOpen(false)}*/}
-                                    {/*    sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}*/}
-                                    {/*>*/}
-                                    {/*    <Sheet*/}
-                                    {/*        variant="outlined"*/}
-                                    {/*        sx={{*/}
-                                    {/*            maxWidth: 500,*/}
-                                    {/*            borderRadius: 'md',*/}
-                                    {/*            p: 3,*/}
-                                    {/*            boxShadow: 'lg',*/}
-                                    {/*        }}*/}
-                                    {/*    >*/}
-                                    {/*        <ModalClose variant="plain" sx={{ m: 1 }} />*/}
-                                    {/*        <Typography*/}
-                                    {/*            component="h2"*/}
-                                    {/*            id="modal-title"*/}
-                                    {/*            level="h4"*/}
-                                    {/*            textColor="inherit"*/}
-                                    {/*            fontWeight="lg"*/}
-                                    {/*            mb={1}*/}
-                                    {/*        >*/}
-                                    {/*            Confirmation*/}
-                                    {/*        </Typography>*/}
-                                    {/*        <Typography id="modal-desc" textColor="text.tertiary">*/}
-                                    {/*            Make sure to use <code>aria-labelledby</code> on the modal dialog with an*/}
-                                    {/*            optional <code>aria-describedby</code> attribute.*/}
-                                    {/*        </Typography>*/}
-                                    {/*        <Box sx={{width: 1, display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2,}}>*/}
-                                    {/*            <Button variant="solid" sx={{p: 1, mr: 1}} color={'danger'} onClick={() => setConfirmationModalOpen(false)}>*/}
-                                    {/*                Confirm*/}
-                                    {/*            </Button>*/}
-                                    {/*            <Button variant="solid" sx={{p: 1, mr: 1}} color={'danger'} onClick={() => setConfirmationModalOpen(false)}>*/}
-                                    {/*                Cancel*/}
-                                    {/*            </Button>*/}
-                                    {/*        </Box>*/}
-                                    {/*    </Sheet>*/}
-                                    {/*</Modal>*/}
+                                
                                 </Typography>
                             </td>
                             <td>
@@ -372,7 +339,11 @@ export default function RentRequestList(props: any) {
                             </td>
                             <td>
                                 <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
-                                    <Link level="body-xs" component="button">
+                                    <Link level="body-xs" component="button"
+                                    onClick={()=>{
+                                        CreateConversation(user?._id, row?._id)
+                                        navigate('/me/my-messages')
+                                    }}>
                                         Contact
                                     </Link>
                                     <RowMenu reservationData={row}/>
