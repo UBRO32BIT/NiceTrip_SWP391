@@ -31,7 +31,7 @@ const RegisterWithCredentials = (data: RegisterData) => {
             }
         })
         .catch((error) => {
-            console.log(`Register failed at services: ${error}`)
+            throw Error(error.response.data)
         })
         
 }

@@ -64,10 +64,32 @@ const GetTimeshareExchangeByCurrentOwner = (userId: string) => {
         })
 }
 
+const UploadReview = async (data: any) => {
+    return api.post('/review', data)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            throw Error(error.response.data)
+        })
+}
+
+const GetReviewByResortId = async (resortId: string) => {
+    return api.get(`/review/resort/${resortId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            throw Error(error.response.data)
+        })
+}
+
 export {
     UploadPost,
     GetPost,
     GetPostById,
     GetPostBelongToOwner,
-    GetTimeshareExchangeByCurrentOwner
+    GetTimeshareExchangeByCurrentOwner,
+    UploadReview,
+    GetReviewByResortId
 }
