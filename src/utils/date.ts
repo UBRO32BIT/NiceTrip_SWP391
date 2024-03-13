@@ -31,3 +31,32 @@ export function isValidDateRange(startDateString: string, endDateString: string)
     const endDate = new Date(endDateString);
     return startDate < endDate;
 }
+export function formatMessageTime(timestamp: Date | string): string {
+    const currentDate = new Date();
+    const messageDate = new Date(timestamp);
+    console.log(currentDate, messageDate);
+    const timeDifferenceInSeconds = Math.abs(Math.floor((currentDate.getTime() - messageDate.getTime()) / 1000));
+    if (timeDifferenceInSeconds < 60) {
+        return 'Now';
+    }
+    if (timeDifferenceInSeconds > 60 && timeDifferenceInSeconds < 3600) {
+        const minutes = Math.floor(timeDifferenceInSeconds / 60);
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    }
+    if (timeDifferenceInSeconds < 86400 && timeDifferenceInSeconds > 3600) {
+        const hours = Math.floor(timeDifferenceInSeconds / 3600);
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    }
+    if (timeDifferenceInSeconds > 86400) {
+        // If the message was sent yesterday or earlier, format as dd/mm/yyyy hh:mm
+        const options: Intl.DateTimeFormatOptions = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        };
+        return messageDate.toLocaleDateString('en-US', options).toString();
+    }
+    return 'Invalid';
+}

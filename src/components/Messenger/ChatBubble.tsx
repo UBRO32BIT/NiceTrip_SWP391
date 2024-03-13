@@ -9,12 +9,16 @@ import CelebrationOutlinedIcon from '@mui/icons-material/CelebrationOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import InsertDriveFileRoundedIcon from '@mui/icons-material/InsertDriveFileRounded';
 import { MessageProps } from '../types';
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/auth/auth.slice";
+import { formatMessageTime } from '../../utils/date';
 
 type ChatBubbleProps = MessageProps & {
   variant: 'sent' | 'received';
 };
 
 export default function ChatBubble(props: ChatBubbleProps) {
+  const user = useSelector((state: RootState) => state?.auth?.user);
   const { content, variant, timestamp, attachment = undefined, sender } = props;
   const isSent = variant === 'sent';
   const [isHovered, setIsHovered] = React.useState<boolean>(false);
@@ -29,9 +33,9 @@ export default function ChatBubble(props: ChatBubbleProps) {
         sx={{ mb: 0.25 }}
       >
         <Typography level="body-xs">
-          {sender === 'You' ? sender : sender.name}
+          {sender._id === user?._id ? 'you' : sender.username}
         </Typography>
-        <Typography level="body-xs">{timestamp}</Typography>
+        <Typography level="body-xs">{formatMessageTime(timestamp)}</Typography>
       </Stack>
       {attachment ? (
         <Sheet
@@ -95,13 +99,13 @@ export default function ChatBubble(props: ChatBubbleProps) {
                 p: 1.5,
                 ...(isSent
                   ? {
-                      left: 0,
-                      transform: 'translate(-100%, -50%)',
-                    }
+                    left: 0,
+                    transform: 'translate(-100%, -50%)',
+                  }
                   : {
-                      right: 0,
-                      transform: 'translate(100%, -50%)',
-                    }),
+                    right: 0,
+                    transform: 'translate(100%, -50%)',
+                  }),
               }}
             >
               <IconButton

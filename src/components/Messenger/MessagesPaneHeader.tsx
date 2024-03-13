@@ -42,7 +42,7 @@ export default function MessagesPaneHeader(props: MessagesPaneHeaderProps) {
         >
           <ArrowBackIosNewRoundedIcon />
         </IconButton>
-        <Avatar size="lg" src={sender.avatar} />
+        <Avatar size="lg" src={sender?.profilePicture} />
         <div>
           <Typography
             fontWeight="lg"
@@ -50,7 +50,7 @@ export default function MessagesPaneHeader(props: MessagesPaneHeaderProps) {
             component="h2"
             noWrap
             endDecorator={
-              sender.online ? (
+              sender?.online ? (
                 <Chip
                   variant="outlined"
                   size="sm"
@@ -68,9 +68,9 @@ export default function MessagesPaneHeader(props: MessagesPaneHeaderProps) {
               ) : undefined
             }
           >
-            {sender.name}
+            {sender?.username}
           </Typography>
-          <Typography level="body-sm">{sender.username}</Typography>
+          <Typography level="body-sm">{sender?.email} </Typography>
         </div>
       </Stack>
       <Stack spacing={1} direction="row" alignItems="center">

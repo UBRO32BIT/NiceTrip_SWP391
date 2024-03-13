@@ -6,14 +6,14 @@ import Sidebar from '../../components/Messenger/Sidebar';
 import Header from '../../components/Messenger/Header';
 import MyMessages from '../../components/Messenger/MyMessages';
 
-export default function JoyMessagesTemplate() {
+export default function MessengerPage() {
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
-      <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
+      <Box sx={{ display: 'flex', height: '100vh', p: 0}}>
         {/*<Sidebar />*/}
         <Header />
-        <Box component="main" className="MainContent" sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, height: '100vh', overflow: 'hidden',  p: 0, m: 0,  }}>
           <MyMessages />
         </Box>
       </Box>

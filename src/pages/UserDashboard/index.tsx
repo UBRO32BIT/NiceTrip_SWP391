@@ -12,6 +12,7 @@ import MyMessage from '../../components/Messenger/MyMessages';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../features/auth/auth.slice';
 import MyTimeshares from '../../components/Timeshare/MyTimeshares';
+
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -34,7 +35,7 @@ export default function JoyOrderDashboardTemplate() {
               className="MainContent"
               sx={{
                 pt: { xs: 'calc(12px + var(--Header-height))', md: 3 },
-                pb: { xs: 2, sm: 2, md: 3 },
+                // pb: { xs: 2, sm: 2, md: 3 },
                 flex: 1,
                 display: 'flex',
                 flexDirection: 'column',
