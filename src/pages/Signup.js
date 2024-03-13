@@ -21,6 +21,7 @@ import { Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { RegisterSuccess } from '../features/auth/auth.slice';
+import { useSnackbar } from 'notistack';
 
 function Copyright(props) {
   return (
@@ -53,9 +54,10 @@ const defaultTheme = createTheme(
 export default function SignUp() {
 
   const [open, setOpen] = React.useState(false);
-  const [success, setSuccess] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   const schema = yup.object().shape({
     firstname: yup.string()
@@ -88,7 +90,7 @@ export default function SignUp() {
       resolver: yupResolver(schema),
   })
   const onRegister = async (event) => {
-    setSuccess(false);
+    setUploading(true);
     // event.preventDefault();
     // const data = new FormData(event);
     const data = {
@@ -108,7 +110,8 @@ export default function SignUp() {
         navigate('/home');
       }
     } catch (error) {
-      console.error("Register failed: " + error)
+      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
+      setUploading(false);
     }
   };
 
@@ -130,14 +133,6 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          {
-              (success === true && open) && (
-          <Alert variant="filled" severity="success" onClose={() => { setOpen(false);}}>
-            Register successfully
-          </Alert>
-              )
-          }
-
           <Box component="form" noValidate onSubmit={handleSubmit(onRegister)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>

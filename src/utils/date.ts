@@ -13,7 +13,19 @@ export function convertDate(dateString: string) {
     const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
     return formattedDate;
 }
+export function convertDateTime(dateTimeString: string) {
+    const dateObj = new Date(dateTimeString);
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
 
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    return formattedDate;
+}
 export function isValidDateRange(startDateString: string, endDateString: string) {
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);

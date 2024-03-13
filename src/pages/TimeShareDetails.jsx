@@ -1,34 +1,33 @@
 import React, { useRef, useState } from 'react'
 import '../styles/timeshare-details.css'
-import { GetPostById } from '../services/post.service'
+import { GetPostById, GetReviewByResortId } from '../services/post.service'
 import { Container, Row, Col, Form, ListGroup } from 'reactstrap'
 import { useParams, useNavigate } from 'react-router-dom'
-import tourData from '../assets/data/tours'
 import calculateAvgRating from '../utils/avgRating'
-import { Money } from '@mui/icons-material'
 import Button from '@mui/material/Button';
-import avatar from '../assets/images/avatar.jpg'
-import Renting from '../components/Renting/Renting'
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { convertDate } from '../utils/date'
+import { convertDate, convertDateTime } from '../utils/date'
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css"
 import convertImageArray from '../utils/convertImageArray'
 import { Box } from '@mui/material';
 import { useSelector } from "react-redux";
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+import { useSnackbar } from 'notistack';
+import { Typography } from '@mui/joy'
+import Rating from '@mui/material/Rating';
+import { UploadReview } from '../services/post.service'
 
 const TimeShareDetails = () => {
     const user = useSelector((state) => state?.auth?.user);
     const { id } = useParams();
     const navigate = useNavigate();
     const reviewMsgRef = useRef('');
-    const [tourRating, setTourRating] = useState(null);
     const [post, setPost] = useState(null);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [reviews, setReviews] = useState([]);
+    const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
         GetPostById(id)
@@ -45,14 +44,17 @@ const TimeShareDetails = () => {
     }, []);
     React.useEffect(() => {
         // Check if user is logged in and show snackbar
-        if (user) {
-            setOpenSnackbar(true);
+        if (post) {
+            getReviews();
         }
-    }, [user]);
-    const handleCloseSnackbar = () => {
-        setOpenSnackbar(false);
-    };
+    }, [post]);
 
+    const getReviews = async () => {
+        console.log(post?.resortId?._id)
+        const data = await GetReviewByResortId(post?.resortId?._id);
+        console.log(data);
+        setReviews(data);
+    }
     //destructure properties from tour object
     //const { photo, title, desc, price, address, reviews, city, distance, maxGroupSize, time } = tour
 
@@ -61,11 +63,25 @@ const TimeShareDetails = () => {
     //format date
     const options = { day: 'numeric', month: 'long', year: 'numeric' };
     //submit request to server
-    const submitHandler = e => {
-        e.preventDefault()
-        const reviewText = reviewMsgRef.current.value;
-        alert(`${reviewText}, ${tourRating}`);
-        //later will call API
+    const submitHandler = async (e) => {
+        try {
+            e.preventDefault()
+            if (rating) {
+                const reviewText = reviewMsgRef.current.value;
+                await UploadReview({
+                    resortId: post?.resortId?._id,
+                    star: rating,
+                    description: reviewText,
+                })
+                await getReviews();
+                reviewMsgRef.current.value = ""; // Clear input field
+                setRating(0); // Reset rating state if needed
+            }
+            else enqueueSnackbar(`Star rating is required!`, { variant: "error" });
+        }
+        catch (error) {
+            enqueueSnackbar(`${error}`, { variant: "error" });
+        }
     }
 
     return <>
@@ -122,8 +138,8 @@ const TimeShareDetails = () => {
                                             <h5>Description</h5>
                                             <p>{post?.resortId.description}</p>
                                         </div>
-                                        <div style={{ display: "inline-flex", alignItems: "center", justifyContent:"center", gap: '5px', marginTop: 10, marginBottom: 10}}>
-                                            <img style={{ borderRadius: "50%", margin: 0, width: 40, height: 40 }} src={post?.current_owner?.profilePicture}/>
+                                        <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: '5px', marginTop: 10, marginBottom: 10 }}>
+                                            <img style={{ borderRadius: "50%", margin: 0, width: 40, height: 40 }} src={post?.current_owner?.profilePicture} />
                                             <p style={{ margin: 0 }}>Post by: {post?.current_owner?.username}</p>
                                         </div>
                                         <>
@@ -171,47 +187,51 @@ const TimeShareDetails = () => {
                             </Row>
                             {/*===========tour review section first========== */}
                             <div className='tour__reviews mt-4'>
-                                <h4>Reviews ({'reviews?.length'} reviews)</h4>
-                                <Form onSubmit={submitHandler}>
-                                    <div className='d-flex align-items-center gap-3 mb-4 rating__group'>
-                                        <span onClick={() => setTourRating(1)}> 1<i class="ri-star-s-fill"></i></span>
-                                        <span onClick={() => setTourRating(2)}> 2<i class="ri-star-s-fill"></i></span>
-                                        <span onClick={() => setTourRating(3)}> 3<i class="ri-star-s-fill"></i></span>
-                                        <span onClick={() => setTourRating(4)}> 4<i class="ri-star-s-fill"></i></span>
-                                        <span onClick={() => setTourRating(5)}> 5<i class="ri-star-s-fill"></i></span>
-                                    </div>
-                                    <div className="review__input">
-                                        <input
-                                            type="text"
-                                            ref={reviewMsgRef}
-                                            placeholder='share your thoughts'
-                                            required />
-                                        <button className='btn primary__btn text-white'
-                                            type='submit'>
-                                            Submit
-                                        </button>
-                                    </div>
-                                </Form>
+                                <h4>Reviews ({reviews?.length} reviews)</h4>
+                                <Box>
+                                    <Form onSubmit={submitHandler}>
+                                        <Rating
+                                            name="simple-controlled"
+                                            size='large'
+                                            value={rating}
+                                            onChange={(event, newValue) => {
+                                                setRating(newValue);
+                                            }}
+                                        />
+                                        <div className="review__input">
+                                            <input
+                                                type="text"
+                                                name="description"
+                                                ref={reviewMsgRef}
+                                                placeholder='Share your thoughts'
+                                                required />
+                                            <button className='btn primary__btn text-white'
+                                                type='submit'>
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </Form>
+                                </Box>
                                 <ListGroup className='user__reviews'>
                                     {
-                                        // reviews?.map(review => (
-                                        //     <div className="review__item">
-                                        //         <img src={avatar} alt="" />
+                                        reviews?.map(review => (
+                                            <div className="review__item">
+                                                <img src={review.userId.profilePicture} alt="" />
 
-                                        //         <div className="w-100">
-                                        //             <div className='d-flex align-items-center justify-content-between'>
-                                        //                 <div>
-                                        //                     <h5>Minh Duc</h5>
-                                        //                     <p>{new Date("10/01/2024").toLocaleDateString("en-US", options)}</p>
-                                        //                 </div>
-                                        //                 <span className='d-flex align-items-center'>
-                                        //                     5<i className='ri-star-s-fill'></i>
-                                        //                 </span>
-                                        //             </div>
-                                        //             <h6>Wowww so sexy</h6>
-                                        //         </div>
-                                        //     </div>
-                                        // ))
+                                                <div className="w-100">
+                                                    <div className='d-flex align-items-center justify-content-between'>
+                                                        <div>
+                                                            <h5>{review?.userId?.username}</h5>
+                                                            <p>{convertDateTime(review?.timestamp)}</p>
+                                                        </div>
+                                                        <span className='d-flex align-items-center'>
+                                                        <Rating name="read-only" value={review.star} readOnly />
+                                                        </span>
+                                                    </div>
+                                                    <h6>{review.description}</h6>
+                                                </div>
+                                            </div>
+                                        ))
                                     }
                                 </ListGroup>
                             </div>

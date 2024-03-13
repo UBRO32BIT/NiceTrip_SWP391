@@ -23,6 +23,7 @@ import { UploadPost } from '../../services/post.service';
 import CardContent from '@mui/joy/CardContent';
 import { isValidDateRange } from '../../utils/date';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 interface RootState {
     auth: {
@@ -45,6 +46,7 @@ export default function MyProfile() {
     const [endDate, setEndDate] = React.useState<string>('');
     const [price, setPrice] = React.useState<string>('');
     const [uploading, setUploading] = React.useState<boolean>();
+    const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
 
     const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,19 +82,25 @@ export default function MyProfile() {
     };
 
     async function handleSubmit(e: any) {
-        setUploading(true)
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget)
-        imageFiles.forEach((file, index) => {
-            formData.append('imageFiles', file);
-        });
-        const formJson = Object.fromEntries((formData as any).entries());
-        console.log(formJson)
-        const result = await UploadPost(formData);
-        if (result) {
-            setUploading(false)
+        try {
+            setUploading(true)
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget)
+            if (!formData.get('price')) {
+                throw Error('Price is required')
+            }
+            imageFiles.forEach((file, index) => {
+                formData.append('imageFiles', file);
+            });
+            const formJson = Object.fromEntries((formData as any).entries());
+            console.log(formJson)
+            const result = await UploadPost(formData);
+            navigate('/me/my-timeshares')
         }
-        window.location.reload();
+        catch (error: any) {
+            enqueueSnackbar(`${error}`, { variant: "error" });
+            setUploading(false);
+        }
     }
     const calculateNumberOfNights = () => {
         if (startDate && endDate) {
