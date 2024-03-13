@@ -65,7 +65,9 @@ export default function OrderList() {
     const [paymentOpen, setPaymentOpen] = React.useState<boolean>(false);
     const [modalStates, setModalStates] = React.useState<boolean[]>([]);
     const {enqueueSnackbar} = useSnackbar();
-
+    const [reservationModalStates, setReservationModalStates] = React.useState<boolean[]>([]);
+    const [exchangeModalStates, setExchangeModalStates] = React.useState<boolean[]>([]);
+    
 async function handleDeleteExchange (exchangeId: string) {
     try {
         const success = await DeleteExchange(exchangeId);
@@ -101,12 +103,18 @@ async function handleDeleteExchange (exchangeId: string) {
             setMyExchanges(ExchangeData)
         }
     }
-
-    const toggleModal = (index: number) => {
-        const newModalStates = [...modalStates];
+    const toggleReservationModal = (index: number) => {
+        const newModalStates = [...reservationModalStates];
         newModalStates[index] = !newModalStates[index];
-        setModalStates(newModalStates);
+        setReservationModalStates(newModalStates);
     };
+
+    const toggleExchangeModal = (index: number) => {
+        const newModalStates = [...exchangeModalStates];
+        newModalStates[index] = !newModalStates[index];
+        setExchangeModalStates(newModalStates);
+    };
+
     React.useEffect(() => {
         if (user?._id) {
             GetMyReservations(user?._id)
@@ -153,7 +161,7 @@ async function handleDeleteExchange (exchangeId: string) {
             </Grid>
             {myReservations.map((item: any, index: number) => {
                 return (<>
-                    <OrderDetailModal item={item} open={modalStates[index]} setOpen={() => toggleModal(index)}/>
+                    <OrderDetailModal item={item} open={reservationModalStates[index]} setOpen={() => toggleReservationModal(index)}/>
                     <Grid xs={12} md={6} lg={4}>
                         <Card key={index} variant="outlined" sx={{}}>
                             <CardOverflow>
@@ -215,17 +223,12 @@ async function handleDeleteExchange (exchangeId: string) {
                                     </Typography>)}
                                 <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
                                 <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
-                                {/*<Link to={`/timeshare-details/${item?.timeshareId?._id}`} target="_blank" rel="noopener noreferrer">View original post</Link>*/}
                                 <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                                    <Button variant="soft" color="primary"
-                                            onClick={() => toggleModal(index)}>View</Button>
+                                    <Button variant="soft" color="primary" onClick={() => toggleReservationModal(index)}>View</Button>
                                     {item?.status === "Canceled" ?
                                         (<Button variant="plain" color="danger">Remove</Button>) :
-                                        (<Button variant="plain" color="danger"
-                                                 onClick={() => setOpen(true)}>Cancel</Button>)}
-
+                                        (<Button variant="plain" color="danger" onClick={() => setOpen(true)}>Cancel</Button>)}
                                 </Box>
-
                             </CardContent>
                             <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
                                 <Divider inset="context"/>
@@ -245,7 +248,7 @@ async function handleDeleteExchange (exchangeId: string) {
             })}
             {myExchanges.map((item: any, index: number) => {
                 return (<>
-                    <OrderDetailModal item={item} open={modalStates[index]} setOpen={() => toggleModal(index)}/>
+                    <OrderDetailModal item={item} open={exchangeModalStates[index]} setOpen={() => toggleExchangeModal(index)}/>
                     <Grid xs={12} md={6} lg={4}>
                         <Card key={index} variant="outlined" sx={{}}>
                             <CardOverflow>
@@ -289,13 +292,13 @@ async function handleDeleteExchange (exchangeId: string) {
                                 </Typography>
                                 <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
                                 <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
-                                {/*<Link to={`/timeshare-details/${item?.timeshareId?._id}`} target="_blank" rel="noopener noreferrer">View original post</Link>*/}
                                 <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                                    <Button variant="soft" color="primary"
-                                            onClick={() => toggleModal(index)}>View</Button>
-                                <Button variant="plain" color="danger" onClick={() => handleDeleteExchange(item?._id)}>Cancel</Button>
+                                    <Button variant="soft" color="primary" onClick={() => toggleExchangeModal(index)}>View</Button>
+                                    {item?.status === "Canceled" ?
+                                        (<Button variant="plain" color="danger">Remove</Button>) :
+                                        (<Button variant="plain" color="danger" onClick={() => handleDeleteExchange(item?._id)}>Cancel</Button>
+                                        )}
                                 </Box>
-
                             </CardContent>
                             <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
                                 <Divider inset="context"/>
@@ -311,6 +314,5 @@ async function handleDeleteExchange (exchangeId: string) {
                 </>)
             })}
         </Grid>
-
     )
 }
