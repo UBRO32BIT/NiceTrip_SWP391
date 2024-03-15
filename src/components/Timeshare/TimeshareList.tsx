@@ -22,6 +22,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import Stack from '@mui/joy/Stack';
 import Divider from '@mui/material/Divider';
+import {DeleteTimeshareByOwner} from '../../services/booking.service'
+import {useSnackbar} from 'notistack';
 
 interface RootState {
     auth: {
@@ -34,6 +36,8 @@ export default function TimeshareList() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [myPosts, setMyPosts] = React.useState([]);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = React.useState(false);
+    const {enqueueSnackbar} = useSnackbar();
 
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
@@ -44,7 +48,24 @@ export default function TimeshareList() {
         };
         return new Date(dateString).toLocaleDateString('en-US', options);
     }
-
+    async function DeleteTimeshare(timeshareId: any) {
+        try {
+            setIsLoading(true);
+            const confirmed = window.confirm("Are you sure you want to delete this timeshare?");
+            const timeshare = await DeleteTimeshareByOwner(timeshareId);
+            if (confirmed) {
+                if (timeshare) {
+                    enqueueSnackbar("Delete successfully", {variant: "success"});
+                } else {
+                    enqueueSnackbar("Delete failed" , {variant: "error"});
+                }
+            }
+        } catch (err: any) {
+            enqueueSnackbar("Delete Failed", {variant: "error"});
+        } finally {
+            setIsLoading(false);
+        }
+    }
     async function GetMyPosts(userId: string) {
         const postsData = await GetPostBelongToOwner(userId);
         if (postsData && postsData.length > 0) {
@@ -107,7 +128,8 @@ export default function TimeshareList() {
             <Grid container spacing={2} sx={{flexGrow: 1}}>
                 {myPosts.length > 0 && myPosts.map((post: any) => {
                 return (<Grid xs={12} md={6} lg={4} >
-                    <Card sx={{}}>
+                    {post?.deleted === false ? (
+                        <Card sx={{}}>
                         <div>
                             <Typography level="title-lg" noWrap>{post?.resortId?.name}</Typography>
                             <Typography level="body-sm"
@@ -194,7 +216,11 @@ export default function TimeshareList() {
                                     }}>
                                 <EditIcon/>
                             </Button>
-                            <Button color="danger" variant='outlined' sx={{width: '20px'}}>
+                            <Button color="danger" variant='outlined' sx={{width: '20px'}}
+                            onClick={() => {
+                                DeleteTimeshare(post?._id)
+                            }} >
+                            
                                 <DeleteOutlineIcon/>
                             </Button>
                             <IconButton
@@ -227,6 +253,10 @@ export default function TimeshareList() {
                             </Button>
                         </CardContent>
                     </Card>
+                    ) : (
+                        ''
+                    )}
+                   
                 </Grid>)
             })}
             </Grid>
