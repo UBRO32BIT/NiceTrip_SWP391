@@ -34,7 +34,7 @@ import { styled } from '@mui/joy';
 import { useSelector } from 'react-redux';
 import { UpdateUser } from '../../services/auth.service';
 import {NavLink, Route, Routes} from "react-router-dom";
-import OrderList from "../Order/OrderList";
+import OrderList from "../Order/RentalOrders";
 import UserSetting from "./UserSetting";
 import MyBilling from "./MyBilling";
 
