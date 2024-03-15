@@ -115,7 +115,7 @@ const publicRoutes: Route[] = [
     },
     {
         path: '/admin/*',
-        page: Admin
+        page: Admin,
     },
 ];
 

@@ -199,7 +199,7 @@ export default function Sidebar() {
             <ListItemButton>
               <GroupRoundedIcon />
               <ListItemContent>
-                <Typography level="title-sm">Account management</Typography>
+                <Typography level="title-sm">Accounts</Typography>
               </ListItemContent>
             </ListItemButton>
           </NavLink>
@@ -210,7 +210,7 @@ export default function Sidebar() {
             <ListItemButton>
               <ShoppingCartRoundedIcon />
               <ListItemContent>
-                <Typography level="title-sm">Request management</Typography>
+                <Typography level="title-sm">Requests</Typography>
               </ListItemContent>
             </ListItemButton>
           </NavLink>
@@ -219,7 +219,7 @@ export default function Sidebar() {
             <ListItemButton>
               <LuggageIcon />
               <ListItemContent>
-                <Typography level="title-sm">Resort management</Typography>
+                <Typography level="title-sm">Resorts</Typography>
               </ListItemContent>
             </ListItemButton>
           </NavLink>

@@ -11,6 +11,8 @@ import AccountManagement from '../../components/Account';
 import RequestManagement from '../../components/Request';
 import ResortManagement from '../../components/Resort';
 import userEvent from '@testing-library/user-event';
+import ResortList from '../../components/Resort/ResortList';
+import CreateResort from '../../components/Resort/CreateResort';
 
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
@@ -54,7 +56,8 @@ export default function JoyOrderDashboardTemplate() {
                 <Route>
                     <Route path="/account-list/*" element={<AccountManagement />} />
                     <Route path="/request-list/*" element={<RequestManagement />} />
-                    <Route path="/resort-list/*" element={<ResortManagement />} />
+                    <Route path="/resort-list/" element={<ResortManagement/>} />
+                    <Route path="/resort-list/create" element={<CreateResort/>} />
                 </Route>
               </Routes>
             </Box>

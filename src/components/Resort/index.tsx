@@ -1,113 +1,124 @@
-import * as React from 'react';
 import Box from '@mui/joy/Box';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
 import Typography from '@mui/joy/Typography';
-import Tabs from '@mui/joy/Tabs';
-import TabList from '@mui/joy/TabList';
-import Tab, { tabClasses } from '@mui/joy/Tab';
 import Breadcrumbs from '@mui/joy/Breadcrumbs';
 import Link from '@mui/joy/Link';
-import Card from '@mui/joy/Card';
-import CardActions from '@mui/joy/CardActions';
-import CardOverflow from '@mui/joy/CardOverflow';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import { styled, Grid } from '@mui/joy';
-import { useSelector } from 'react-redux';
-import { UpdateUser } from '../../services/auth.service';
+import { styled, Grid, TabPanel, Button } from '@mui/joy';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
-import ResortList from './resort-list';
-interface RootState {
-    auth: {
-        isAuthenticated: boolean;
-        user: any;
-    };
-}
-export default function ResortManagement() {
-    const [imageFiles, setImageFiles] = React.useState([]);
-    const [imagePreview, setImagePreview] = React.useState([]);
-    return (
-        <Box sx={{ flex: 1, width: '100%' }}>
-            <Box
-                sx={{
-                    position: 'sticky',
-                    top: { sm: -100, md: -110 },
-                    bgcolor: 'background.body',
-                    // zIndex: 9995,
-                }}
-            >
-                <Box sx={{ px: { xs: 2, md: 6 } }}>
-                    <Breadcrumbs
-                        size="sm"
-                        aria-label="breadcrumbs"
-                        separator={<ChevronRightRoundedIcon />}
-                        sx={{ pl: 0 }}
-                    >
-                        <Link
-                            underline="none"
-                            color="neutral"
-                            href="#some-link"
-                            aria-label="Home"
-                        >
-                            <HomeRoundedIcon />
-                        </Link>
-                        <Link
-                            underline="hover"
-                            color="neutral"
-                            href="#some-link"
-                            fontSize={12}
-                            fontWeight={500}
-                        >
-                            Users
-                        </Link>
-                        <Typography color="primary" fontWeight={500} fontSize={12}>
-                            Resort list
-                        </Typography>
-                    </Breadcrumbs>
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import ResortList from './ResortList';
+import AddIcon from '@mui/icons-material/Add';
 
-                    <Typography level="h2" component="h1" sx={{ mt: 1, mb: 2 }}>
-                        Resort list
-                    </Typography>
-                </Box>
-                <Tabs
-                    defaultValue={0}
-                    sx={{
-                        bgcolor: 'transparent',
-                    }}
+interface RootState {
+  auth: {
+    isAuthenticated: boolean;
+    user: any;
+  };
+}
+export default function RequestManagement() {
+  // const [imageFiles, setImageFiles] = React.useState([]);
+  // const [imagePreview, setImagePreview] = React.useState([]);
+  const navigate = useNavigate();
+
+  return (<>
+    <Box sx={{ flex: 1, width: '100%', padding: '10px' }}>
+      <Box
+        sx={{
+          position: 'sticky',
+          top: { sm: -100, md: -110 },
+          bgcolor: 'background.body',
+          // zIndex: 9995,
+        }}
+      >
+        <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
+          <Box
+            component="main"
+            className="MainContent"
+            sx={{
+              px: { xs: 2, md: 6 },
+              pt: {
+                xs: 'calc(12px + var(--Header-height))',
+                sm: 'calc(12px + var(--Header-height))',
+                md: 3,
+              },
+              pb: { xs: 2, sm: 2, md: 3 },
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: 0,
+              height: '100dvh',
+              gap: 1,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Breadcrumbs
+                size="sm"
+                aria-label="breadcrumbs"
+                separator={<ChevronRightRoundedIcon fontSize='small' />}
+                sx={{ pl: 0 }}
+              >
+                <Link
+                  underline="none"
+                  color="neutral"
+                  href="#some-link"
+                  aria-label="Home"
                 >
-                    <TabList
-                        tabFlex={1}
-                        size="sm"
-                        sx={{
-                            pl: { xs: 0, md: 4 },
-                            justifyContent: 'left',
-                            [`&& .${tabClasses.root}`]: {
-                                fontWeight: '600',
-                                flex: 'initial',
-                                color: 'text.tertiary',
-                                [`&.${tabClasses.selected}`]: {
-                                    bgcolor: 'transparent',
-                                    color: 'text.primary',
-                                    '&::after': {
-                                        height: '2px',
-                                        bgcolor: 'primary.500',
-                                    },
-                                },
-                            },
-                        }}
-                    >
-                    
-                    </TabList>
-                </Tabs>
-                <Routes>
-                    <Route>
-                    <Route path="/" element={<ResortList />} />
-                    </Route>
-                </Routes>
+                  <HomeRoundedIcon />
+                </Link>
+                <Link
+                  underline="hover"
+                  color="neutral"
+                  href="#some-link"
+                  fontSize={12}
+                  fontWeight={500}
+                >
+                  Dashboard
+                </Link>
+                <Typography color="primary" fontWeight={500} fontSize={12}>
+                  Resorts
+                </Typography>
+              </Breadcrumbs>
             </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                mb: 1,
+                gap: 1,
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'start', sm: 'center' },
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography level="h2" component="h1">
+                Resorts
+              </Typography>
+              <Box sx={{
+                display: 'flex',
+                gap: 1,
+              }}>
+                <Button
+                    color="success"
+                    startDecorator={<AddIcon />}
+                    size="sm"
+                >
+                    New
+                </Button>
+                <Button
+                    color="primary"
+                    startDecorator={<DownloadRoundedIcon />}
+                    size="sm"
+                >
+                    Download PDF
+                </Button>
+              </Box>
+            </Box>
+            <ResortList />
+          </Box>
         </Box>
-    );
+      </Box>
+    </Box>
+  </>
+  );
 }

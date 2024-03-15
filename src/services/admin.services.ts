@@ -1,6 +1,6 @@
 import { api } from '../api';
-const GetAllAccount = () => {
-    return api.get(`/admin/account-list`)
+const GetAllAccount = async (search: any, pageNumber: any, role: any) => {
+    return api.get(`/user?page=${pageNumber}&role=${role}&username=${search}`)
         .then((res) => {
             return res.data.data
         })
@@ -21,8 +21,8 @@ const GetAllRequest = () => {
         throw error; // Re-throw the error to let the caller handle it if needed
     })
 }
-const GetAllResort = () => {
-    return api.get('/admin/resort-list')
+const GetAllResort = async (search: string, page: any) => {
+    return api.get(`/resort?search=${search}&page=${page}`)
     .then((res) => {
         return res.data.data
     })
