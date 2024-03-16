@@ -42,7 +42,7 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/joy';
-import { Link } from 'react-router-dom';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 function getRoleColor(role: any) {
   switch (role) {
@@ -220,6 +220,14 @@ export default function Sidebar() {
               <LuggageIcon />
               <ListItemContent>
                 <Typography level="title-sm">Resorts</Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </NavLink>
+          <NavLink to="/admin/payment-list" style={{ textDecoration: 'none' }}>
+            <ListItemButton>
+              <CreditCardIcon />
+              <ListItemContent>
+                <Typography level="title-sm">Payments</Typography>
               </ListItemContent>
             </ListItemButton>
           </NavLink>

@@ -28,17 +28,14 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import { BanUser, GetAllAccount, UnbanUser } from '../../services/admin.services';
+import { GetAllAccount } from '../../services/admin.services';
 import { useParams } from 'react-router-dom';
 import { convertDateTime } from '../../utils/date';
-import { DialogActions, DialogContent, DialogTitle } from '@mui/joy';
-import { useSnackbar } from 'notistack';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -80,7 +77,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-function RowMenu({user, setOpenBan, setOpenUnban}: any) {
+function RowMenu() {
   return (
     <Dropdown>
       <MenuButton
@@ -91,18 +88,16 @@ function RowMenu({user, setOpenBan, setOpenUnban}: any) {
       </MenuButton>
       <Menu size="sm" sx={{ minWidth: 140 }}>
         <MenuItem>Edit</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuItem>Move</MenuItem>
         <Divider />
-        {!user.isBanned ? (
-          <MenuItem color="danger" onClick={() => setOpenBan(true)}>Ban</MenuItem>
-        ) : (
-          <MenuItem color="warning" onClick={() => setOpenUnban(true)}>Unban</MenuItem>
-        )}
+        <MenuItem color="danger">Delete</MenuItem>
       </Menu>
     </Dropdown>
   );
 }
 
-export default function UserList() {
+export default function PaymentList() {
   const [page, setPage] = React.useState(1);
   const [role, setRole] = React.useState('');
   const [search, setSearch] = React.useState('');
@@ -112,11 +107,7 @@ export default function UserList() {
   const [order, setOrder] = React.useState<Order>('desc');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
-  const [openBan, setOpenBan] = React.useState(false);
-  const [openUnban, setOpenUnban] = React.useState(false);
-  const [openEdit, setOpenEdit] = React.useState(false);
   const { pageString } = useParams();
-  const { enqueueSnackbar } = useSnackbar();
   async function getAllAccounts() {
     const data = await GetAllAccount(search, page, role);
     if (data && data.results) {
@@ -131,26 +122,6 @@ export default function UserList() {
     e.preventDefault()
     console.log(searchTemp);
     setSearch(searchTemp);
-  }
-  const banUser = async (userId: string) => {
-    try {
-      await BanUser(userId);
-      enqueueSnackbar(`Ban user successfully`, { variant: "success" });
-      setOpenBan(false);
-    }
-    catch (error: any) {
-      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
-    }
-  }
-  const unbanUser = async (userId: string) => {
-    try {
-      await UnbanUser(userId);
-      enqueueSnackbar(`Unban user successfully`, { variant: "success" });
-      setOpenUnban(false);
-    }
-    catch (error: any) {
-      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
-    }
   }
   React.useEffect(() => {
     getAllAccounts();
@@ -370,49 +341,9 @@ export default function UserList() {
                     <Link level="body-xs" component="button">
                       Download
                     </Link>
-                    <RowMenu user={user} setOpenBan={setOpenBan} setOpenUnban={setOpenUnban}/>
+                    <RowMenu />
                   </Box>
                 </td>
-                <Modal open={openBan} onClose={() => setOpenBan(false)}>
-                  <ModalDialog variant="outlined" role="alertdialog">
-                    <DialogTitle>
-                      <WarningRoundedIcon />
-                      Confirmation
-                    </DialogTitle>
-                    <Divider />
-                    <DialogContent>
-                      Are you sure you want to ban {user.username}?
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="solid" color="danger" onClick={() => banUser(user._id)}>
-                        Yes
-                      </Button>
-                      <Button variant="plain" color="neutral" onClick={() => setOpenBan(false)}>
-                        No
-                      </Button>
-                    </DialogActions>
-                  </ModalDialog>
-                </Modal>
-                <Modal open={openUnban} onClose={() => setOpenUnban(false)}>
-                  <ModalDialog variant="outlined" role="alertdialog">
-                    <DialogTitle>
-                      <WarningRoundedIcon />
-                      Confirmation
-                    </DialogTitle>
-                    <Divider />
-                    <DialogContent>
-                      Are you sure you want to unban {user.username}?
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="solid" color="warning" onClick={() => unbanUser(user._id)}>
-                        Yes
-                      </Button>
-                      <Button variant="plain" color="neutral" onClick={() => setOpenUnban(false)}>
-                        No
-                      </Button>
-                    </DialogActions>
-                  </ModalDialog>
-                </Modal>
               </tr>
             ))}
           </tbody>

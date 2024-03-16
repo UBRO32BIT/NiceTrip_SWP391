@@ -12,14 +12,25 @@ import React from 'react';
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+interface Unit {
+    name: string,
+    sleeps: number,
+    beds: number,
+    bathrooms: number,
+    kitchenType: string,
+    features: string[],
+}
+
 export default function CreateResort() {
     const [facilities, setFacilities] = React.useState<string[]>([]);
     const [attractions, setAttractions] = React.useState<string[]>([]);
     const [policies, setPolicies] = React.useState<string[]>([]);
+    const [images, setImages] = React.useState<string[]>([]);
+    const [units, setUnits] = React.useState<Unit[]>([]);
     const [newFacility, setNewFacility] = React.useState<string>('');
     const [newAttraction, setNewAttraction] = React.useState<string>('');
     const [newPolicy, setNewPolicy] = React.useState<string>('');
-    const [imageFiles, setImageFiles] = React.useState<File[]>([]);
+    //const [imageFiles, setImageFiles] = React.useState<File[]>([]);
     const [uploading, setUploading] = React.useState<boolean>();
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
@@ -295,7 +306,7 @@ export default function CreateResort() {
                                                 </Box>
 
                                                 <FormLabel sx={{ mt: 2 }}>Add image</FormLabel>
-                                                <Input
+                                                {/* <Input
                                                     size="sm"
                                                     type="file"
                                                     slotProps={{
@@ -313,8 +324,8 @@ export default function CreateResort() {
                                                             else enqueueSnackbar(`You can only upload up to five images!`, { variant: "error" });
                                                         }
                                                     }}
-                                                />
-                                                {imageFiles?.length !== 0 && (
+                                                /> */}
+                                                {/* {imageFiles?.length !== 0 && (
                                                     <Box sx={{ display: 'flex', width: 1, flexWrap: 'wrap', mt: 2 }}>
                                                         {imageFiles.map(function (url, imageIndex) {
                                                             return (<div style={{ position: "relative" }}>
@@ -336,7 +347,8 @@ export default function CreateResort() {
 
                                                             )
                                                         })}
-                                                    </Box>)}
+                                                    </Box>
+                                                )} */}
                                                 <FormLabel sx={{ mt: 2 }}>Price</FormLabel>
                                                 <Input
                                                     type="text"

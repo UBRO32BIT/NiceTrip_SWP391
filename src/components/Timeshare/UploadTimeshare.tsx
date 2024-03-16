@@ -98,7 +98,7 @@ export default function MyProfile() {
             navigate('/me/my-timeshares')
         }
         catch (error: any) {
-            enqueueSnackbar(`${error}`, { variant: "error" });
+            enqueueSnackbar(`${error.message}`, { variant: "error" });
             setUploading(false);
         }
     }

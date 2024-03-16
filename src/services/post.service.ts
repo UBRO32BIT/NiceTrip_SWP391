@@ -1,14 +1,14 @@
 import { api } from '../api';
 
-const UploadPost = (data: any) => {
+const UploadPost = async (data: any) => {
     return api.post('/timeshare/upload', data)
         .then((res) => {
             return res.data.data
         })
         .catch((error) => {
             // Handle errors here, you might want to log or show a user-friendly message
-            console.error('Error fetching resort by ID:', error);
-            throw error; // Re-throw the error to let the caller handle it if needed
+            console.error('Error fetching resort by ID:', error.response.data.status.message);
+            throw Error(error.response.data.status.message); // Re-throw the error to let the caller handle it if needed
         })
 }
 const GetPost = async () => {

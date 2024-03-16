@@ -13,6 +13,7 @@ import ResortManagement from '../../components/Resort';
 import userEvent from '@testing-library/user-event';
 import ResortList from '../../components/Resort/ResortList';
 import CreateResort from '../../components/Resort/CreateResort';
+import PaymentDashboard from '../../components/Payment';
 
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ export default function JoyOrderDashboardTemplate() {
                     <Route path="/request-list/*" element={<RequestManagement />} />
                     <Route path="/resort-list/" element={<ResortManagement/>} />
                     <Route path="/resort-list/create" element={<CreateResort/>} />
+                    <Route path="/payment-list" element={<PaymentDashboard/>}/>
                 </Route>
               </Routes>
             </Box>

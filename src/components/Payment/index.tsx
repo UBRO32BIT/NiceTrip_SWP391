@@ -7,21 +7,11 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { styled, Grid, TabPanel, Button } from '@mui/joy';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import ResortList from './ResortList';
-import AddIcon from '@mui/icons-material/Add';
+import PaymentList from './PaymentList';
 
-interface RootState {
-  auth: {
-    isAuthenticated: boolean;
-    user: any;
-  };
-}
-export default function RequestManagement() {
-  // const [imageFiles, setImageFiles] = React.useState([]);
-  // const [imagePreview, setImagePreview] = React.useState([]);
-  const navigate = useNavigate();
-
-  return (<>
+export default function PaymentDashboard() {
+    return (
+        <>
     <Box sx={{ flex: 1, width: '100%', padding: '10px' }}>
       <Box
         sx={{
@@ -76,7 +66,7 @@ export default function RequestManagement() {
                   Dashboard
                 </Link>
                 <Typography color="primary" fontWeight={500} fontSize={12}>
-                  Resorts
+                  Users
                 </Typography>
               </Breadcrumbs>
             </Box>
@@ -92,34 +82,21 @@ export default function RequestManagement() {
               }}
             >
               <Typography level="h2" component="h1">
-                Resorts
+                Users
               </Typography>
-              <Box sx={{
-                display: 'flex',
-                gap: 1,
-              }}>
-                <Button
-                    color="success"
-                    startDecorator={<AddIcon />}
-                    size="sm"
-                    onClick={() => navigate('/admin/resort-list/create')}
-                >
-                    New
-                </Button>
-                <Button
-                    color="primary"
-                    startDecorator={<DownloadRoundedIcon />}
-                    size="sm"
-                >
-                    Download PDF
-                </Button>
-              </Box>
+              <Button
+                color="primary"
+                startDecorator={<DownloadRoundedIcon />}
+                size="sm"
+              >
+                Download PDF
+              </Button>
             </Box>
-            <ResortList />
+            <PaymentList />
           </Box>
         </Box>
       </Box>
     </Box>
   </>
-  );
+    )
 }
