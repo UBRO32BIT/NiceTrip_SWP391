@@ -140,10 +140,17 @@ export default function MyProfile() {
         };
     }, [user?._id]);
     
-    const totalUploads = user?.servicePack?.numberPosts;
-    
-    let remaining = totalUploads != null ? totalUploads - remainingUploads : 'Unlimited';;
-    
+    const servicePackId = user && user.servicePack ? user.servicePack._id : null;
+    const totalUploads = user && user.servicePack ? user.servicePack.numberPosts : null;
+
+    let remaining;
+
+    if (totalUploads !== null) {
+        remaining = totalUploads - remainingUploads;
+    } else {
+        remaining = servicePackId !== null ? 'Unlimited' : 0;
+    }
+
     return (
         <Box sx={{  flex: 1, width: '100%' }}>
             <Stack
