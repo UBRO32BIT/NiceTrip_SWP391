@@ -98,8 +98,9 @@ export default function MyProfile() {
             console.log(formJson)
             const result = await UploadPost(formData);
             navigate('/me/my-timeshares')
-        } catch (error) {
-            enqueueSnackbar(`Error: ${error}`, { variant: "error" });
+        }
+        catch (error: any) {
+            enqueueSnackbar(`${error.message}`, { variant: "error" });
             setUploading(false);
         }
     }

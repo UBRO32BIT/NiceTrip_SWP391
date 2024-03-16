@@ -40,7 +40,7 @@ export default function ResortList() {
     }, []);
 
     async function getAllResorts() {
-        const allResort = await GetAllResort();
+        const allResort = await GetAllResort('', '');
         if (allResort && allResort.length > 0) {
             console.log("Log all account:" + allResort);
             setResorts(allResort);
