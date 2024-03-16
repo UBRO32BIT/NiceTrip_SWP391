@@ -252,7 +252,7 @@ export default function Exchange() {
                                         p: 1,
                                         display: 'flex',
                                         justifyContent: 'center',
-                                        boxShadow: '0 0 4px gray'
+                                        boxShadow: '0 0 4px gray',
                                     }} direction="column" spacing={0}
                                         justifyContent="center">
                                         <React.Fragment>
@@ -281,7 +281,7 @@ export default function Exchange() {
                                                         Select Timeshare
                                                     </Typography>
 
-                                                    <Box sx={{ overflowX: 'hidden' }}>
+                                                    <Box sx={{ overflowX: 'hidden' , width:'600px'}}>
                                                         <Grid container spacing={2} sx={{ overflowX: 'hidden' }}>
                                                             {myPosts.map((post: any, index: number) => (
                                                                 <Grid key={index} xs={12} sm={6}>

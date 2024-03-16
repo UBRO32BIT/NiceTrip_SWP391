@@ -123,17 +123,20 @@ function formatDate(dateString?: string): string {
 
 function RowMenu(props: any) {
     const [isLoading, setIsLoading] = React.useState(false);
+    const {enqueueSnackbar} = useSnackbar();
 
     const reservationData = props.reservationData; // Assuming you pass the reservation data to the component
     const [open, setOpen] = React.useState<boolean>(false);
-    const {enqueueSnackbar} = useSnackbar();
     async function HandleAcceptExchangeByOwner(exchangeId: any) {
         try {
+            const confirmed = window.confirm("Are you sure you want to accept this exchange request?");
+            if (confirmed) {
             setIsLoading(true);
             const data = await AcceptExchangeByOwner(exchangeId)
             if (data) {
                 enqueueSnackbar("Accept successfully", {variant: "success"});
             }
+        }
         } catch (err: any) {
             enqueueSnackbar("Accept successfully", {variant: "error"});
         } finally {
@@ -398,7 +401,14 @@ export default function RentRequestList(props: any) {
                 const rowIndex = index + 1;
 
                     return (
-                        <tr key={row._id}>
+                        
+                        <tr key={row._id} style={{
+                            backgroundColor:
+                                row?.status === 'Canceled' ? '#FFEBE5' :
+                                        row?.status === 'Completed' ? '#C8E6C9' : 'inherit',
+                            filter: row.pending ? 'brightness(70%)' : 'none',  // Darken the row if pending is true
+                            pointerEvents: row.pending ? 'none' : 'auto',  // Disable interaction if pending is true
+                        }}>
                             <td>
                             {rowIndex}                            
                             </td>
@@ -423,9 +433,19 @@ export default function RentRequestList(props: any) {
 
                             <td>
                                 { row?.myTimeshareId?.is_bookable === false || row?.timeshareId?.is_bookable === false|| row?.status === 'Canceled' || row?.status === 'Expired'? (
-                                    <Box sx={{ textAlign:'center' ,width: 'fit-content', fontSize: '15px', border: '1px', backgroundColor: 'gray', color: 'white', padding: '8px', borderRadius: '5px' }}>
+                                    <>
+                                    {row?.status !== 'Completed' ? (
+                                        <Box sx={{  fontWeight: 500, fontSize:'12px', textAlign:'center', width: 'fit-content', border: '1px',  color: "#8d2925" }}>
                                         {row?.status}
                                     </Box>
+                                    ) : (
+                                        <Box sx={{ fontWeight: 500, fontSize:'12px', textAlign:'center' , width: 'fit-content', border: '1px',  color: "#14813d" }}>
+                                        {row?.status}
+                                    </Box>
+                                    )}
+
+                                    </>
+                                    
                                 ) : (
                                     <>
                                         <Button 
@@ -458,7 +478,7 @@ export default function RentRequestList(props: any) {
                                                 </Box>
                                             )}
                                             Accept
-</Button>
+                                            </Button>
 
                                             <Button sx={{ margin: 1 }} variant="solid" color="danger" onClick={() => {
                                                 const isConfirmed = window.confirm('You sure about that????');
@@ -467,7 +487,7 @@ export default function RentRequestList(props: any) {
                                                     setOpen(false);
                                                 }
                                             }}>
-                                                Denied
+                                                Deny
                                             </Button>
 
                                         
