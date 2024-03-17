@@ -118,7 +118,7 @@ export default function MyBilling(props: any) {
     const [amount, setAmount] = useState("100000");
     const [amount1, setAmount1] = useState(null);
     const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-
+    const [selectedServicePack, SetSelectedServicePack] = useState<string | null>(null);
     const [language, setLanguage] = useState("vn");
     const [selectedService, setSelectedService] = useState("BASIC");
     const handleAmountChange = (amount: number) => {
@@ -146,6 +146,7 @@ export default function MyBilling(props: any) {
   const handlePayNowClick = (servicePack: ServicePack) => {
     const { _id, amount } = servicePack;
     setSelectedAmount(amount);
+    SetSelectedServicePack(_id);
     if (user?.servicePack?.role === 'member-fullservice') {
       alert(`You are already a ${user?.servicePack?.name} and cannot upgrade further.`);
       navigate(''); // Redirect to homepage using navigate
@@ -188,6 +189,7 @@ export default function MyBilling(props: any) {
         )} 
         <form onSubmit={handleSubmit}>
         <input type='hidden' name='userId' value={user?._id} />
+        <input type='hidden' name='servicePackId' value={selectedServicePack ?? ''} />
         <input type="hidden" name="amount" value={selectedAmount ?? ''} />
         <div className="mb-3" style={{ display: 'none' }} >
             <FormLabel component="legend" >Choose Payment Method:</FormLabel>
