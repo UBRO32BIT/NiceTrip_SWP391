@@ -10,7 +10,9 @@ import {useSelector} from 'react-redux';
 import {UpdateUser} from '../../services/auth.service';
 import {GetReservationOfUser} from '../../services/booking.service';
 import {GetExchangeOfUser} from '../../services/booking.service';
-import {DeleteExchange} from '../../services/booking.service';
+import {CancelMyExchangeRequest} from '../../services/booking.service';
+import {CancelMyRentalRequest} from '../../services/booking.service';
+import {DeleteMyExchangeRequest} from '../../services/booking.service';
 import {Routes, Route, Navigate, useNavigate, NavLink, Link} from "react-router-dom";
 import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
@@ -67,19 +69,40 @@ export default function OrderList() {
     const {enqueueSnackbar} = useSnackbar();
     const [reservationModalStates, setReservationModalStates] = React.useState<boolean[]>([]);
     const [exchangeModalStates, setExchangeModalStates] = React.useState<boolean[]>([]);
+    const [isLoading, setIsLoading] = React.useState(false);
     
-async function handleDeleteExchange (exchangeId: string) {
-    try {
-        const success = await DeleteExchange(exchangeId);
-        if (success) {
-            enqueueSnackbar("Cancel success", { variant: "success" });
-        } else {
-            enqueueSnackbar("ERROR: Cancel failed", { variant: "error" });
+    async function handleCancelExchange (exchangeId: string) {
+        try {
+            const confirmed = window.confirm("Are you sure you want to cancel this exchange request?");
+            if (confirmed) {
+            const success = await CancelMyExchangeRequest(exchangeId);
+            if (success) {
+                enqueueSnackbar("Cancel success", { variant: "success" });
+            } else {
+                enqueueSnackbar("ERROR: Cancel failed", { variant: "error" });
+                }
+            }    
+        } catch(error) {
+            enqueueSnackbar("Error deleting exchange", { variant: "error" });
         }
-    } catch(error) {
-        enqueueSnackbar("Error deleting exchange", { variant: "error" });
+    };
+    
+    async function DeleteExchange(exchangeId: any) {
+        try {
+            setIsLoading(true);
+            const confirmed = window.confirm("Are you sure you want to delete this exchange request?");
+            if (confirmed) {
+                const exchange = await DeleteMyExchangeRequest(exchangeId);
+                if (exchange) {
+                    enqueueSnackbar("Delete successfully", {variant: "success"});
+                }
+            }
+        } catch (err: any) {
+            enqueueSnackbar("Delete Failed", {variant: "error"});
+        } finally {
+            setIsLoading(false);
+        }
     }
-};
     
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
@@ -159,97 +182,14 @@ async function handleDeleteExchange (exchangeId: string) {
                     </Select>
                 </FormControl>
             </Grid>
-            {myReservations.map((item: any, index: number) => {
-                return (<>
-                    <OrderDetailModal item={item} open={reservationModalStates[index]} setOpen={() => toggleReservationModal(index)}/>
-                    <Grid xs={12} md={6} lg={4}>
-                        <Card key={index} variant="outlined" sx={{}}>
-                            <CardOverflow>
-                                <AspectRatio ratio="2">
-                                    <img
-                                        src={item?.timeshareId?.resortId?.image_urls}
-                                        // srcSet="https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318&dpr=2 2x"
-                                        loading="lazy"
-                                        alt=""
-                                    />
-                                    {/*{item?.status === "Canceled" && (*/}
-                                    {/*    <h2 style={{opacity: 0.9, color: "#fff"}}>Expired</h2>)}*/}
-                                </AspectRatio>
-                            </CardOverflow>
-                            <CardContent>
-                                {item?.status === "Canceled" ? (<Typography sx={{display: 'inline-flex', gap: 1}}>
-                                        <Chip
-                                            variant="soft"
-                                            color="danger"
-                                            size="sm"
-                                            startDecorator={<BlockIcon/>}
-                                        >
-                                            Canceled
-                                        </Chip>
-                                    </Typography>) :
-                                    (<Typography sx={{display: 'inline-flex', gap: 1}}>
-                                        {item?.isPaid === true ? <Chip
-                                                variant="soft"
-                                                color="success"
-                                                size="sm"
-                                                startDecorator={<CheckRoundedIcon/>}
-                                            >
-                                                Paid
-                                            </Chip> :
-                                            <Chip
-                                                variant="soft"
-                                                color="danger"
-                                                size="sm"
-                                                startDecorator={<BlockIcon/>}
-                                            >
-                                                Paid
-                                            </Chip>}
-                                        {item?.is_accepted_by_owner ? <Chip
-                                                variant="soft"
-                                                color="success"
-                                                size="sm"
-                                                startDecorator={<CheckRoundedIcon/>}
-                                            >
-                                                Owner confirmed, go to payment phase
-                                            </Chip> :
-                                            <Chip
-                                                variant="soft"
-                                                color="danger"
-                                                size="sm"
-                                                startDecorator={<BlockIcon/>}
-                                            >
-                                                Wait for accept
-                                            </Chip>}
-                                    </Typography>)}
-                                <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
-                                <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
-                                <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                                    <Button variant="soft" color="primary" onClick={() => toggleReservationModal(index)}>View</Button>
-                                    {item?.status === "Canceled" ?
-                                        (<Button variant="plain" color="danger">Remove</Button>) :
-                                        (<Button variant="plain" color="danger" onClick={() => setOpen(true)}>Cancel</Button>)}
-                                </Box>
-                            </CardContent>
-                            <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
-                                <Divider inset="context"/>
-                                <CardContent orientation="horizontal">
-                                    <Typography level="body-md" fontWeight="md" textColor="text.secondary">
-                                        ${item?.amount}
-                                    </Typography>
-                                    <Divider orientation="vertical"/>
-                                    <Typography level="body-md" fontWeight="md" textColor="text.secondary">
-                                        {formatDate(item?.createdAt)}
-                                    </Typography>
-                                </CardContent>
-                            </CardOverflow>
-                        </Card>
-                    </Grid>
-                </>)
-            })}
             {myExchanges.map((item: any, index: number) => {
-                return (<>
+                
+                return (
+                   
+                <>
                     <OrderDetailModal item={item} open={exchangeModalStates[index]} setOpen={() => toggleExchangeModal(index)}/>
-                    <Grid xs={12} md={6} lg={4}>
+                    {item?.deleted !== true ? 
+                    ( <Grid xs={12} md={6} lg={4}>
                         <Card key={index} variant="outlined" sx={{}}>
                             <CardOverflow>
                                 <AspectRatio ratio="2">
@@ -279,7 +219,7 @@ async function handleDeleteExchange (exchangeId: string) {
                                         >
                                             {item?.status === 'Agreement phase' ? ('Wait for accept') : (
                                             <>
-                                                {(item?.deleted === false ? (
+                                                {(item?.is_canceled === false ? (
                                                 `Canceled by Owner`
 
                                                 ) : ( 
@@ -295,8 +235,8 @@ async function handleDeleteExchange (exchangeId: string) {
                                 <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
                                     <Button variant="soft" color="primary" onClick={() => toggleExchangeModal(index)}>View</Button>
                                     {item?.status === "Canceled" ?
-                                        (<Button variant="plain" color="danger">Remove</Button>) :
-                                        (<Button variant="plain" color="danger" onClick={() => handleDeleteExchange(item?._id)}>Cancel</Button>
+                                        (<Button variant="plain" color="danger"  onClick={() => DeleteExchange(item?._id)}>Remove</Button>) :
+                                        (<Button variant="plain" color="danger" onClick={() => handleCancelExchange(item?._id)}>Cancel</Button>
                                         )}
                                 </Box>
                             </CardContent>
@@ -310,7 +250,7 @@ async function handleDeleteExchange (exchangeId: string) {
                                 </CardContent>
                             </CardOverflow>
                         </Card>
-                    </Grid>
+                    </Grid>): ('')}
                 </>)
             })}
         </Grid>

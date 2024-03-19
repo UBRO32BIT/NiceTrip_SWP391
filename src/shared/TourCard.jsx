@@ -38,12 +38,14 @@ const TourCard = ({ props }) => {
     return <div className='tour__card'>
         <Link to={`/timeshare-details/${post.id}`} style={{ textDecoration: 'none' }}>
             <Card>
-                <div className="tour__img">
-                    <img src={post.image} alt="tour-img" />
-                    {checkNewDate(post.timestamp) && (
-                        <span><b>New</b></span>
-                    )}
-                </div>
+            <div className="tour__img">
+                <img src={post.image} alt="tour-img" />
+                {checkNewDate(post.timestamp) && (
+                    <span className="top"><b>New</b></span>
+                )}
+                <span className="bottom"><b>{post?.type}</b></span>
+
+            </div>
 
                 <CardBody>
                     <div className='card__top d-flex align-items-center justify-content-between'>
@@ -64,7 +66,12 @@ const TourCard = ({ props }) => {
                             </Typography>
                             <Stack direction="row">
                                 {post.unit.map(u => (
-                                    <Chip color="success" label={u} size="small" variant="outlined" />
+                                    <Chip 
+                                        label={u} 
+                                        size="small" 
+                                        variant="outlined" 
+                                        sx={{ marginRight: '5px',borderRadius: '5px', width: '100%', height: '30px' }} // Set width and height to create square shape
+                                    />
                                 ))}
                             </Stack>
                         </Box>

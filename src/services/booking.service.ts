@@ -202,8 +202,51 @@ const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
         })
 }
 
-const DeleteExchange = (exchangeId: any) => {
-    return api.delete(`/exchange/deleted/${exchangeId}`)
+const CancelMyExchangeRequest = (exchangeId: any) => {
+    return api.put(`/exchange/canceled/${exchangeId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+const CancelMyRentalRequest = (reservationId: any) => {
+    return api.put(`/reservation/canceled/${reservationId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+
+const DeleteTimeshareByOwner = (timeshareId: any) => {
+    return api.delete(`/timeshare/${timeshareId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+
+const DeleteMyExchangeRequest = (exchangeId: any) => {
+    return api.delete(`/exchange/${exchangeId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching resort by ID:', error);
+            throw error;
+        })
+}
+
+const DeleteMyRentalRequest = (reservationId: any) => {
+    return api.delete(`/reservation/${reservationId}`)
         .then((res) => {
             return res.data.data
         })
@@ -234,5 +277,9 @@ export {
     AcceptExchangeByOwner,
     CancelExchangeByOwner,
     GetExchangeOfUser,
-    DeleteExchange
+    CancelMyExchangeRequest,
+    DeleteTimeshareByOwner,
+    CancelMyRentalRequest,
+    DeleteMyExchangeRequest,
+    DeleteMyRentalRequest
 }

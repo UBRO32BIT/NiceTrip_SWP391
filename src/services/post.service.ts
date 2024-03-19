@@ -84,6 +84,16 @@ const GetReviewByResortId = async (resortId: string) => {
         })
 }
 
+const CountUploadTimeshareByUser = async(userId: string) => {
+    return api.get(`/servicePack/${userId}`)
+    .then((res) => {
+        return res.data.data
+    })
+    .catch((error) => {
+        throw Error(error.response.data)
+    })
+}
+
 export {
     UploadPost,
     GetPost,
@@ -91,5 +101,6 @@ export {
     GetPostBelongToOwner,
     GetTimeshareExchangeByCurrentOwner,
     UploadReview,
-    GetReviewByResortId
+    GetReviewByResortId,
+    CountUploadTimeshareByUser
 }

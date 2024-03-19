@@ -19,7 +19,8 @@ import { styled, Grid } from '@mui/joy';
 import { useSelector } from 'react-redux';
 import { UpdateUser } from '../../services/auth.service';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
-import OrderList from './OrderList';
+import RentalOrders from './RentalOrders';
+import ExchangeOrders from './ExchangeOrders';
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -99,9 +100,14 @@ export default function MyOrders() {
                             },
                         }}
                     >
-                        <NavLink to="/me/my-posting/post-list" style={{ textDecoration: 'none' }}>
+                        <NavLink to="/me/my-orders/rental" style={{ textDecoration: 'none' }}>
                             <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={0}>
-                                Order list
+                                Rental orders
+                            </Tab>
+                        </NavLink>
+                        <NavLink to="/me/my-orders/exchange" style={{ textDecoration: 'none' }}>
+                            <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={1}>
+                                Exchange orders
                             </Tab>
                         </NavLink>
                     
@@ -109,7 +115,8 @@ export default function MyOrders() {
                 </Tabs>
                 <Routes>
                     <Route>
-                    <Route path="/" element={<OrderList />} />
+                    <Route path="/rental" element={<RentalOrders />} />
+                    <Route path="/exchange" element={<ExchangeOrders/>} />
                     </Route>
                 </Routes>
             </Box>

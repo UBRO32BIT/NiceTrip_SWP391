@@ -22,6 +22,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import Stack from '@mui/joy/Stack';
 import Divider from '@mui/material/Divider';
+import {DeleteTimeshareByOwner} from '../../services/booking.service'
+import {useSnackbar} from 'notistack';
 
 interface RootState {
     auth: {
@@ -34,6 +36,8 @@ export default function TimeshareList() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [myPosts, setMyPosts] = React.useState([]);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = React.useState(false);
+    const {enqueueSnackbar} = useSnackbar();
 
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
@@ -44,7 +48,24 @@ export default function TimeshareList() {
         };
         return new Date(dateString).toLocaleDateString('en-US', options);
     }
-
+    async function DeleteTimeshare(timeshareId: any) {
+        try {
+            setIsLoading(true);
+            const confirmed = window.confirm("Are you sure you want to delete this timeshare?");
+            const timeshare = await DeleteTimeshareByOwner(timeshareId);
+            if (confirmed) {
+                if (timeshare) {
+                    enqueueSnackbar("Delete successfully", {variant: "success"});
+                } else {
+                    enqueueSnackbar("Delete failed" , {variant: "error"});
+                }
+            }
+        } catch (err: any) {
+            enqueueSnackbar("Delete Failed", {variant: "error"});
+        } finally {
+            setIsLoading(false);
+        }
+    }
     async function GetMyPosts(userId: string) {
         const postsData = await GetPostBelongToOwner(userId);
         if (postsData && postsData.length > 0) {
@@ -106,8 +127,9 @@ export default function TimeshareList() {
             </Grid>
             <Grid container spacing={2} sx={{flexGrow: 1}}>
                 {myPosts.length > 0 && myPosts.map((post: any) => {
+                    if (!post?.deleted) {
                 return (<Grid xs={12} md={6} lg={4} >
-                    <Card sx={{}}>
+                        <Card sx={{}}>
                         <div>
                             <Typography level="title-lg" noWrap>{post?.resortId?.name}</Typography>
                             <Typography level="body-sm"
@@ -194,7 +216,11 @@ export default function TimeshareList() {
                                     }}>
                                 <EditIcon/>
                             </Button>
-                            <Button color="danger" variant='outlined' sx={{width: '20px'}}>
+                            <Button color="danger" variant='outlined' sx={{width: '20px'}}
+                            onClick={() => {
+                                DeleteTimeshare(post?._id)
+                            }} >
+                            
                                 <DeleteOutlineIcon/>
                             </Button>
                             <IconButton
@@ -226,52 +252,13 @@ export default function TimeshareList() {
                                 Manage
                             </Button>
                         </CardContent>
-                    </Card>
-                </Grid>)
-            })}
+                        </Card>
+                        </Grid>
+                        );
+                    }
+                    return null; 
+                })}
             </Grid>
-
-
-            {/* <Card sx={{ width: 320 }}>
-                <div>
-                    <Typography level="title-lg">Yosemite National Park</Typography>
-                    <Typography level="body-sm">April 24 to May 02, 2021</Typography>
-                    <IconButton
-                        aria-label="bookmark Bahamas Islands"
-                        variant="plain"
-                        color="neutral"
-                        size="sm"
-                        sx={{ position: 'absolute', top: '0.875rem', right: '0.5rem' }}
-                    >
-                        <BookmarkAdd />
-                    </IconButton>
-                </div>
-                <AspectRatio minHeight="120px" maxHeight="200px">
-                    <img
-                        src="https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286"
-                        srcSet="https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286&dpr=2 2x"
-                        loading="lazy"
-                        alt=""
-                    />
-                </AspectRatio>
-                <CardContent orientation="horizontal">
-                    <div>
-                        <Typography level="body-xs">Total price:</Typography>
-                        <Typography fontSize="lg" fontWeight="lg">
-                            $2,900
-                        </Typography>
-                    </div>
-                    <Button
-                        variant="solid"
-                        size="md"
-                        color="primary"
-                        aria-label="Explore Bahamas Islands"
-                        sx={{ ml: 'auto', alignSelf: 'center', fontWeight: 600 }}
-                    >
-                        Explore
-                    </Button>
-                </CardContent>
-            </Card> */}
         </Grid>
 
     );

@@ -24,7 +24,8 @@ import CardContent from '@mui/joy/CardContent';
 import { isValidDateRange } from '../../utils/date';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
-
+import { DialogContent, DialogTitle, Grid, Modal, ModalClose, ModalDialog, styled } from "@mui/joy";
+import {CountUploadTimeshareByUser} from '../../services/post.service'
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -40,6 +41,7 @@ function sleep(duration: number): Promise<void> {
     });
 }
 export default function MyProfile() {
+    const [remainingUploads, setRemainingUploads] = React.useState(0);
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [imageFiles, setImageFiles] = React.useState<File[]>([]);
     const [startDate, setStartDate] = React.useState<string>('');
@@ -86,9 +88,9 @@ export default function MyProfile() {
             setUploading(true)
             e.preventDefault();
             const formData = new FormData(e.currentTarget)
-            if (!formData.get('price')) {
-                throw Error('Price is required')
-            }
+            if (!formData.get(`price`)) {
+            throw Error(`price required`)
+        }
             imageFiles.forEach((file, index) => {
                 formData.append('imageFiles', file);
             });
@@ -122,9 +124,36 @@ export default function MyProfile() {
         }
         return '0.00';
     };
+    React.useEffect(() => {
+        const fetchRemainingUploads = async () => {
+            try {
+                const userId = user?._id;
+                const count = await CountUploadTimeshareByUser(userId);
+                setRemainingUploads(count);
+            } catch (error) {
+                console.error('Error fetching remaining uploads:', error);
+            }
+        };
+
+        fetchRemainingUploads();
+
+        return () => {
+        };
+    }, [user?._id]);
+    
+    const servicePackId = user && user.servicePack ? user.servicePack._id : null;
+    const totalUploads = user && user.servicePack ? user.servicePack.numberPosts : null;
+
+    let remaining;
+
+    if (totalUploads !== null) {
+        remaining = totalUploads - remainingUploads;
+    } else {
+        remaining = servicePackId !== null ? 'Unlimited' : 0;
+    }
 
     return (
-        <Box sx={{ flex: 1, width: '100%' }}>
+        <Box sx={{  flex: 1, width: '100%' }}>
             <Stack
                 spacing={4}
                 sx={{
@@ -141,7 +170,11 @@ export default function MyProfile() {
                         <Typography level="body-sm">
                             Let people enjoy at your resort and more.
                         </Typography>
+                        <Typography level="body-sm">
+                            Remaining Uploads: {remaining.toString()} 
+                        </Typography>
                     </Box>
+                    
                     <Divider />
                     <Stack
                         direction="row"
@@ -291,6 +324,7 @@ export default function MyProfile() {
 
                                 </FormControl>
 
+
                             </Stack>
 
                         </Stack>
@@ -298,8 +332,19 @@ export default function MyProfile() {
                     </Stack>
 
                 </Card>
-
-
+            </Stack>
+            <Stack
+                spacing={4}
+                sx={{
+                    display: 'flex',
+                    maxWidth: 'calc(50% - 20px)',
+                    // mx: 'auto',
+                    px: { xs: 2, md: 6 },
+                    py: { xs: 2, md: 3 },
+                    marginLeft: 'auto',
+                    
+                }}
+            >
             </Stack>
         </Box>
     );
