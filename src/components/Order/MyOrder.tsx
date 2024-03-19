@@ -100,7 +100,7 @@ export default function MyOrders() {
                             },
                         }}
                     >
-                        <NavLink to="/me/my-orders/rental" style={{ textDecoration: 'none' }}>
+                        <NavLink to="/me/my-orders/" style={{ textDecoration: 'none' }}>
                             <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={0}>
                                 Rental orders
                             </Tab>
@@ -115,7 +115,7 @@ export default function MyOrders() {
                 </Tabs>
                 <Routes>
                     <Route>
-                    <Route path="/rental" element={<RentalOrders />} />
+                    <Route path="/" element={<RentalOrders />} />
                     <Route path="/exchange" element={<ExchangeOrders/>} />
                     </Route>
                 </Routes>

@@ -1,0 +1,54 @@
+/* styles.module.css */
+
+.table-container {
+	margin: 20px;
+  }
+  
+  table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid #ddd;
+  }
+  
+  th, td {
+	padding: 8px;
+	text-align: left;
+  }
+  
+  th {
+	background-color: #f2f2f2;
+  }
+  
+  tr:nth-child(even) {
+	background-color: #f2f2f2;
+  }
+  
+  .post-item {
+	border-bottom: 1px solid #ddd;
+  }
+  
+  button {
+	margin-right: 5px; /* Ngăn cách giữa các button */
+	border-radius: 5px; /* Bo tròn các góc của button */
+  }
+  
+  .edit {
+	background-color: #ffd700; /* Màu vàng cho nút Edit */
+  }
+  
+  .delete {
+	background-color: #ff0000; /* Màu đỏ cho nút Delete */
+  }
+  
+  .manage {
+	background-color: #00bfff; /* Màu nước biển cho nút Manage */
+  }
+  
+  .verified {
+	color: green; /* Màu cho trạng thái Verified */
+  }
+  
+  .not-verified {
+	color: red; /* Màu cho trạng thái Not Verified */
+  }
+  
