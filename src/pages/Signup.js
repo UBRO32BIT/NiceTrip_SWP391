@@ -68,11 +68,11 @@ export default function SignUp() {
       .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
     username: yup.string()
       .required("Username is required!")
-      .min(3, 'Username must be at least 3 characters long')
+      .min(3, 'Use 3 characters or more for your username')
       .matches(/^[a-zA-Z0-9]*$/, 'Username cannot contain special characters'),
     password: yup.string()
       .required("Password is required!")
-      .min(8, 'Password must be at least 8 characters long')
+      .min(8, 'Use 8 characters or more for your password')
       .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
       .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
     repeatPassword: yup.string()

@@ -10,6 +10,7 @@ import Stack from "@mui/joy/Stack";
 import Chip from '@mui/material/Chip';
 import { convertDate } from '../utils/date';
 import stringToArray from '../utils/stringToArray';
+import { checkNewDate } from '../utils/date';
 
 const TourCard = ({ props }) => {
     useEffect(() => {
@@ -28,6 +29,7 @@ const TourCard = ({ props }) => {
         endDate: convertDate(props.end_date),
         type: props.type,
         reviews: [3, 4, 5],
+        timestamp: props.timestamp,
     };
     //const { _id, title, city, photo, price, price2, time, newrental, reviews } = tour;
 
@@ -38,7 +40,9 @@ const TourCard = ({ props }) => {
             <Card>
                 <div className="tour__img">
                     <img src={post.image} alt="tour-img" />
-                    <span><b>New</b></span>
+                    {checkNewDate(post.timestamp) && (
+                        <span><b>New</b></span>
+                    )}
                 </div>
 
                 <CardBody>

@@ -60,3 +60,13 @@ export function formatMessageTime(timestamp: Date | string): string {
     }
     return 'Invalid';
 }
+export function checkNewDate(timestamp: string) {
+    const date = new Date(timestamp);
+
+    var currentDate = new Date();
+    // Calculate the date 3 days ago
+    var threeDaysAgo = new Date(currentDate);
+    threeDaysAgo.setDate(currentDate.getDate() - 3);
+    console.log(date.getTime() + " " + threeDaysAgo.getTime())
+    return date.getTime() > threeDaysAgo.getTime();
+}

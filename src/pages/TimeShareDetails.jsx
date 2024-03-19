@@ -15,7 +15,7 @@ import convertImageArray from '../utils/convertImageArray'
 import { Box } from '@mui/material';
 import { useSelector } from "react-redux";
 import { useSnackbar } from 'notistack';
-import { Typography } from '@mui/joy'
+import { calculateAvgReviews } from '../utils/reviews'
 import Rating from '@mui/material/Rating';
 import { UploadReview } from '../services/post.service'
 
@@ -111,9 +111,8 @@ const TimeShareDetails = () => {
                                             <span className='d-flex align-items-center gap-1'>
                                                 <span className='tour__rating d-flex align-items-center gap-1'>
                                                     <i class="ri-star-s-fill" style={{ 'color': "var(--secondary-color)" }}></i>
-                                                    {avgRating === 0 ? null : avgRating}
-                                                    {totalRating === 0 ? 'Not rated' : <span>({'reviews?.length'})</span>
-                                                    }
+                                                    {calculateAvgReviews(reviews)}
+                                                    {reviews?.length <= 0 ? 'Not yet rated' : <span>({reviews?.length})</span>}
                                                 </span>
                                             </span>
                                             <span>
