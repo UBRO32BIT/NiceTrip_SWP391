@@ -73,7 +73,7 @@ export default function SignUp() {
     password: yup.string()
       .required("Password is required!")
       .min(8, 'Use 8 characters or more for your password')
-      .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
+      .matches(/[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/, 'Password must have at least one special character!')
       .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
     repeatPassword: yup.string()
       .required("Repeat password is required!")
@@ -179,7 +179,7 @@ export default function SignUp() {
                     maxLength: 20, // Set the maximum number of characters
                   }}
                   error={!!errors.username}
-                  helperText={errors.username ? errors.username.message : "Must be at least 3 characters long, only allows alphanumberic characters"}
+                  helperText={errors.username ? errors.username.message : "Must contain at least 3 characters, only allows alphanumberic characters"}
                   {...register("username")}
                 />
               </Grid>
@@ -208,7 +208,7 @@ export default function SignUp() {
                   id="password"
                   autoComplete="new-password"
                   error={!!errors.password}
-                  helperText={errors.password ? errors.password.message : ["Must be at least 8 characters long, has uppercase and lowercase characters and has special characters like !@#$%..."]}
+                  helperText={errors.password ? errors.password.message : ["The password must contain at least 8 characters, has uppercase and lowercase characters and has special characters like !@#$%..."]}
                   {...register("password")}
                 />
               </Grid>

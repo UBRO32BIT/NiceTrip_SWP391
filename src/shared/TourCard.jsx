@@ -24,7 +24,7 @@ const TourCard = ({ props }) => {
         price: props.price,
         pricePerNight: props.pricePerNight,
         numberOfNights: props.numberOfNights,
-        unit: stringToArray(props.unitId.details),
+        unit: props.unitId,
         startDate: convertDate(props.start_date),
         endDate: convertDate(props.end_date),
         type: props.type,
@@ -60,11 +60,15 @@ const TourCard = ({ props }) => {
                     </div>
                     <h5 className='tour__title'>{post.title}</h5>
                     <Stack sx={{ width: 1, display: 'flex', justifyContent: 'center' }} direction="column" spacing={0} justifyContent="center">
-                        <Box>
+                        <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
                             <Typography fontWeight={500} fontSize={14}>
                                 Unit:
                             </Typography>
-                            <Stack direction="row">
+                            <Typography fontWeight={400} fontSize={14}>
+                                {post.unit.name}
+                            </Typography>
+                            {/* <Stack direction="row">
+                                
                                 {post.unit.map(u => (
                                     <Chip 
                                         label={u} 
@@ -73,7 +77,7 @@ const TourCard = ({ props }) => {
                                         sx={{ marginRight: '5px',borderRadius: '5px', width: '100%', height: '30px' }} // Set width and height to create square shape
                                     />
                                 ))}
-                            </Stack>
+                            </Stack> */}
                         </Box>
                         <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
                             <Typography fontWeight={500} fontSize={14}>
