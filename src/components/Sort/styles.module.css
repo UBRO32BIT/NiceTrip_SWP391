@@ -1,0 +1,39 @@
+.container {
+	margin-top: 15px;
+	display: flex;
+}
+
+.sort_by {
+	margin-top: 5px;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.select {
+	width: 80px;
+	height: fit-content;
+	border: 1px solid var(--black);
+	outline: none;
+	cursor: pointer;
+	padding: 5px;
+}
+
+.arrow_btn {
+	margin-top: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	outline: none;
+	border: 1px solid var(--black);
+	border-radius: 4px;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.up_arrow,
+.down_arrow {
+	font-size: 18px;
+	font-weight: bold;
+	color: var(--black);
+}

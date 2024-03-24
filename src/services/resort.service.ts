@@ -20,7 +20,18 @@ const GetResortById = async (id: string) => {
     }
 }
 
+const UploadResort = async (data: FormData) => {
+    return api.post('/resort', data)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            throw Error(error.response.data.message)
+        })
+}
+
 export {
     GetResort,
-    GetResortById
+    GetResortById,
+    UploadResort
 }

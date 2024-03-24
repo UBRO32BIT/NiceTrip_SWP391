@@ -89,7 +89,7 @@ const Home = () => {
                             <Subtitle subtitle={'Explore'}/>
                             <h2 className='featured__tour-title'> Our featured timeshares</h2>
                         </Col>
-                        {posts.length > 0 && <FeaturedTourList posts={posts}/>}
+                        {<FeaturedTourList posts={posts}/>}
                     </Row>
                 </Container>
             </section>

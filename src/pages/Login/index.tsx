@@ -79,9 +79,16 @@ const emailSchema = yup.object().shape({
     .required("Email is required!")
     .email("Email is invalid!"),
 })
+const loginSchema = yup.object().shape({
+  username: yup.string()
+    .required("Username is required!"),
+  password: yup.string()
+    .required("Password is required!")
+})
 
 export default function JoySignInSideTemplate() {
   const isAuthenticated = useSelector((state: RootState) => state?.auth?.isAuthenticated);
+  const isAuthLoaded = useSelector((state: RootState) => state.auth.isLoaded);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -94,10 +101,21 @@ export default function JoySignInSideTemplate() {
   } = useForm({
     resolver: yupResolver(emailSchema),
   })
+  const {
+    register: registerLogin,
+    handleSubmit: handleLoginSubmit,
+    formState: {errors: loginErrors}
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+  })
 
-  const Login = async (data: LoginData) => {
+  const login = async (e: any) => {
     try {
       setUploading(true);
+      const data = {
+        username: e.username,
+        password: e.password,
+      }
       const login = await LoginWithUsernameAndPassword(data);
       if (login?.data) {
         const loginData = login.data;
@@ -105,8 +123,8 @@ export default function JoySignInSideTemplate() {
       }
       setUploading(false);
     }
-    catch (err) {
-      enqueueSnackbar(`${err}`, { variant: "error" });
+    catch (err: any) {
+      enqueueSnackbar(`${err.response.data.status.message}`, { variant: "error" });
       setUploading(false);
     }
   }
@@ -122,15 +140,15 @@ export default function JoySignInSideTemplate() {
       //Print success message
       enqueueSnackbar(`${result.message}`, { variant: "success" });
     }
-    catch (error) {
-      enqueueSnackbar(`Error while changing password: ${error}`, { variant: "error" });
+    catch (error: any) {
+      enqueueSnackbar(`Error while processing: ${error.response.data.message}`, { variant: "error" });
     }
   }
   React.useEffect(() => {
-    if (isAuthenticated === true) {
-      navigate('/me');
+    if (isAuthenticated && isAuthLoaded) {
+      navigate('/home');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAuthLoaded]);
   return (
     <CssVarsProvider defaultMode="dark" disableTransitionOnChange>
       <CssBaseline />
@@ -246,24 +264,15 @@ export default function JoySignInSideTemplate() {
             </Divider>
             <Stack gap={4} sx={{ mt: 2 }}>
               <form
-                onSubmit={(event: React.FormEvent<SignInFormElement>) => {
-                  event.preventDefault();
-                  const formElements = event.currentTarget.elements;
-                  const data = {
-                    username: formElements.username.value,
-                    password: formElements.password.value,
-                    // persistent: formElements.persistent.checked,
-                  };
-                  Login(data);
-                }}
+                onSubmit={handleLoginSubmit(login)}
               >
                 <FormControl required>
                   <FormLabel>Username</FormLabel>
-                  <Input type="text" name="username" />
+                  <Input type="text" {...registerLogin("username")} />
                 </FormControl>
                 <FormControl required>
                   <FormLabel>Password</FormLabel>
-                  <Input type="password" name="password" />
+                  <Input type="password" {...registerLogin("password")} />
                 </FormControl>
                 <Stack gap={4} sx={{ mt: 2 }}>
                   <Box

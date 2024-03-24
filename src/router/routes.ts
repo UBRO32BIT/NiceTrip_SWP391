@@ -8,7 +8,6 @@ import ThankYou from "../pages/ThankYou";
 import Home from "../pages/Home/Home";
 import TimeShareList from "../pages/TimeShareList";
 import TimeShareDetails from "../pages/TimeShareDetails";
-import PostTimeshare from "../pages/PostTimeshare";
 import About from "../pages/About";
 import SignUp from "../pages/Signup";
 import Exchange from "../pages/Exchange";
@@ -92,10 +91,6 @@ const publicRoutes: Route[] = [
     {
         path: '/timeshare-details/:id',
         page: TimeShareDetails
-    },
-    {
-        path: '/yourtimeshare',
-        page: PostTimeshare
     },
     {
         path: '/about',

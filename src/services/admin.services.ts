@@ -60,9 +60,8 @@ const BanUser = async (id: string) => {
         return res.data.data
     })
     .catch((error) => {
-        // Handle errors here, you might want to log or show a user-friendly message
-        console.error('Error fetching posts: ', error);
-        throw error; // Re-throw the error to let the caller handle it if needed
+        console.error(error);
+        throw Error(error.response.data.message);
     })
 }
 const UnbanUser = async (id: string) => {

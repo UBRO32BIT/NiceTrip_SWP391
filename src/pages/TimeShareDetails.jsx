@@ -15,9 +15,23 @@ import convertImageArray from '../utils/convertImageArray'
 import { Box } from '@mui/material';
 import { useSelector } from "react-redux";
 import { useSnackbar } from 'notistack';
-import { Typography } from '@mui/joy'
+import { calculateAvgReviews } from '../utils/reviews'
 import Rating from '@mui/material/Rating';
 import { UploadReview } from '../services/post.service'
+import ReadMoreArea from '@foxeian/react-read-more'
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import ShowerIcon from '@mui/icons-material/Shower';
+import KitchenIcon from '@mui/icons-material/Kitchen';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import { Typography } from '@mui/joy'
+
+const buttonStyle = {
+    color: "DarkCyan",
+    textDecoration: "none",
+    // Add any other CSS styles as needed
+  };
 
 const TimeShareDetails = () => {
     const user = useSelector((state) => state?.auth?.user);
@@ -57,8 +71,6 @@ const TimeShareDetails = () => {
     }
     //destructure properties from tour object
     //const { photo, title, desc, price, address, reviews, city, distance, maxGroupSize, time } = tour
-
-    const { totalRating, avgRating } = calculateAvgRating([1, 2, 3]);
 
     //format date
     const options = { day: 'numeric', month: 'long', year: 'numeric' };
@@ -111,9 +123,8 @@ const TimeShareDetails = () => {
                                             <span className='d-flex align-items-center gap-1'>
                                                 <span className='tour__rating d-flex align-items-center gap-1'>
                                                     <i class="ri-star-s-fill" style={{ 'color': "var(--secondary-color)" }}></i>
-                                                    {avgRating === 0 ? null : avgRating}
-                                                    {totalRating === 0 ? 'Not rated' : <span>({'reviews?.length'})</span>
-                                                    }
+                                                    {calculateAvgReviews(reviews)}
+                                                    {reviews?.length <= 0 ? 'Not yet rated' : <span>({reviews?.length})</span>}
                                                 </span>
                                             </span>
                                             <span>
@@ -125,18 +136,43 @@ const TimeShareDetails = () => {
                                         </div>
                                         <div className='tour__extra-details'>
                                             <span>
-                                                <i class="ri-map-pin-range-line"></i>{post?.resortId.location}
+                                                <LocationOnIcon/>{post?.resortId.location}
                                             </span>
                                             <span>
-                                                <i class="ri-money-dollar-circle-line"></i>{post?.price}
+                                                <AttachMoneyIcon/>{post?.price}
                                             </span>
                                             <span>
-                                                <i class="ri-time-line"></i> {convertDate(post?.start_date)} - {convertDate(post?.end_date)}
+                                                <AccessTimeFilledIcon/> {convertDate(post?.start_date)} - {convertDate(post?.end_date)}
                                             </span>
                                         </div>
                                         <div>
                                             <h5>Description</h5>
-                                            <p>{post?.resortId.description}</p>
+                                            <p><ReadMoreArea wordsLimit={250} expandLabel="Read more »" buttonStyle={buttonStyle}>
+                                                {post?.resortId.description}    
+                                            </ReadMoreArea></p>
+                                        </div>
+                                        <div>
+                                            <h5>Room details</h5>
+                                            <div className="d-lg-flex">
+                                                <div className="col-lg-4 col-12">
+                                                    <img src={post?.unitId.image} />
+                                                </div>
+                                                <div className="col-lg-8 col-12 px-lg-4">
+                                                    <h6>{post?.unitId.name}</h6>
+                                                    <div className="d-flex align-items-center">
+                                                        <PeopleAltIcon/>
+                                                        <Typography sx={{mx: 1}}>Sleep {post?.unitId.sleeps}</Typography>
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <ShowerIcon/>
+                                                        <Typography sx={{mx: 1}}>{post?.unitId.bathrooms} Bathrooms</Typography>
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <KitchenIcon/>
+                                                        <Typography sx={{mx: 1}}>{post?.unitId.kitchenType} kitchen</Typography>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: '5px', marginTop: 10, marginBottom: 10 }}>
                                             <img style={{ borderRadius: "50%", margin: 0, width: 40, height: 40 }} src={post?.current_owner?.profilePicture} />

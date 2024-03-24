@@ -35,7 +35,7 @@ const RegisterWithCredentials = (data: RegisterData) => {
         })
         
 }
-const LoginWithUsernameAndPassword = (data: LoginData) => {
+const LoginWithUsernameAndPassword = async (data: LoginData) => {
     return api.post('/auth/login', data)
         .then((res) => {
             const responseData = res.data;
@@ -47,15 +47,7 @@ const LoginWithUsernameAndPassword = (data: LoginData) => {
             }
         })
         .catch((error) => {
-            if (error.response) {
-                if (error.response.status === 401) {
-                    throw Error("Wrong username or password!")
-                }
-                else if (error.response.status > 500) {
-                    throw Error("Server Error");
-                }
-            }
-            
+            console.error(error);
             throw error;
         })
 }
