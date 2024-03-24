@@ -51,15 +51,16 @@ const schema = yup.object().shape({
         .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
     email: yup.string()
         .required("Email is required!")
-        .email("Email is invalid!"),
+        .matches(/^[^\.\s][\w\-\.{2,}]+@([\w-]+\.)+[\w-]{2,}$/, "Email is invalid!"),
     phone: yup.string()
+        .matches(/^0\d{9}$/, "Invalid phone number")
 })
 const passwordSchema = yup.object().shape({
     currentPassword: yup.string()
         .required("Current password is required!"),
     newPassword: yup.string()
         .required("Password is required!")
-        .min(8, 'Password must be at least 8 characters long')
+        .min(8, 'Use 8 characters or more for your password')
         .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
         .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
     repeatPassword: yup.string()
@@ -116,22 +117,23 @@ export default function UserSetting() {
             console.log(formData);
             const result = await UpdateUser(user._id, formData);
             if (result) {
-                setUploading(false)
                 enqueueSnackbar("Updated successully", { variant: "success" });
+                window.location.reload();
             }
         }
-        catch (error) {
+        catch (error: any) {
             if (error instanceof ValidationError) {
                 console.log(error.inner)
                 error.inner.forEach((err) => {
                     enqueueSnackbar(err.message, { variant: "error" });
+                    setUploading(false)
                 });
                 //enqueueSnackbar(error.inner[0].message, { variant: "error" });
             } else {
-                enqueueSnackbar(`Error while updating information: ${error}`, { variant: "error" });
+                enqueueSnackbar(`Error while updating information: ${error.response.data.message}`, { variant: "error" });
+                setUploading(false)
             }
         }
-        //window.location.reload();
     }
     const handlePasswordChange = async (e: any) => {
         console.log(e);
@@ -147,8 +149,8 @@ export default function UserSetting() {
             //Print success message
             enqueueSnackbar(`${result.message}`, { variant: "success" });
         }
-        catch (error) {
-            enqueueSnackbar(`Error while changing password: ${error}`, { variant: "error" });
+        catch (error: any) {
+            enqueueSnackbar(`Error while changing password: ${error.response.data.message}`, { variant: "error" });
         }
     }
     const {
@@ -225,13 +227,15 @@ export default function UserSetting() {
                                             top: 170,
                                             boxShadow: 'sm',
                                         }}
-                                    ><VisuallyHiddenInput type="file" onChange={(e) => {
+                                    ><VisuallyHiddenInput 
+                                        type="file"
+                                        accept="image/*"  
+                                        onChange={(e) => {
                                         //console.log('update image');
                                         if (e?.target?.files) {
                                             //console.log(e.target.files[0])
                                             setSelectedImage(e?.target?.files[0]);
                                         }
-
                                     }} />
                                         <EditRoundedIcon />
                                     </IconButton>
@@ -278,6 +282,7 @@ export default function UserSetting() {
                                                     defaultValue={formData.phone}
                                                     sx={{ flexGrow: 1 }}
                                                 />
+                                                {errors.phone && <p>{errors.phone.message}</p>}
                                                 {/* Add more form fields as needed */}
                                                 {/* <CountrySelector
                                                 value={formData.country}

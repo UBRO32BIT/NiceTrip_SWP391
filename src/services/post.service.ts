@@ -7,8 +7,8 @@ const UploadPost = async (data: any) => {
         })
         .catch((error) => {
             // Handle errors here, you might want to log or show a user-friendly message
-            console.error('Error fetching resort by ID:', error.response.data.status.message);
-            throw Error(error.response.data.status.message); // Re-throw the error to let the caller handle it if needed
+            console.error('Error uploading post:', error.response.data.message);
+            throw Error(error.response.data.message); // Re-throw the error to let the caller handle it if needed
         })
 }
 const GetPost = async () => {

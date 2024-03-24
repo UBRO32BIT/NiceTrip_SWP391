@@ -5,35 +5,86 @@ import Link from '@mui/joy/Link';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import { styled, Grid, TabPanel, Button, FormLabel, Input, CardOverflow, CardContent, Card, Divider, Stack, FormControl, CardActions, Textarea, Chip } from '@mui/joy';
+import { styled, Grid, TabPanel, Button, FormLabel, Input, CardOverflow, CardContent, Card, Divider, Stack, FormControl, CardActions, Textarea, Chip, AspectRatio, FormHelperText } from '@mui/joy';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { Add } from '@mui/icons-material';
+import { Add, InfoOutlined } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import * as yup from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import { UploadResort } from '../../services/resort.service';
 
 interface Unit {
     name: string,
     sleeps: number,
-    beds: number,
+    roomType: string,
     bathrooms: number,
     kitchenType: string,
+    image: File,
     features: string[],
 }
+const unitSchema = yup.object().shape({
+    name: yup.string()
+        .required("Unit name is required!")
+        .max(100, "Unit name cannot exceed 100 characters!"),
+    sleeps: yup.number()
+        .required("Number of sleeps is required!")
+        .min(1, "Must be a positive number"),
+    bathrooms: yup.number()
+        .required("Number of bathrooms is required!")
+        .min(0, "Must not less than 0!"),
+    kitchenType: yup.string()
+        .required("Kitchen type is required!")
+        .max(50, "Kitchen type cannot exceed 50 characters"),
+    roomType: yup.string()
+        .required("Room type is required")
+        .max(50, "Room type cannot exceed 50 characters")
+})
+const resortSchema = yup.object().shape({
+    name: yup.string()
+        .required("Resort name is required!")
+        .max(100, "Unit name cannot exceed 100 characters"),
+    description: yup.string()
+        .required("Description is required!")
+        .max(1000, "Kitchen type cannot exceed 1000 characters"),
+    location: yup.string()
+        .required("Location is required!")
+        .max(150, "Location cannot exceed 150 characters"),
+})
 
 export default function CreateResort() {
     const [facilities, setFacilities] = React.useState<string[]>([]);
     const [attractions, setAttractions] = React.useState<string[]>([]);
     const [policies, setPolicies] = React.useState<string[]>([]);
-    const [images, setImages] = React.useState<string[]>([]);
+    const [images, setImages] = React.useState<File[]>([]);
     const [units, setUnits] = React.useState<Unit[]>([]);
+    const [unitImage, setUnitImage] = React.useState<File>();
     const [newFacility, setNewFacility] = React.useState<string>('');
     const [newAttraction, setNewAttraction] = React.useState<string>('');
     const [newPolicy, setNewPolicy] = React.useState<string>('');
-    //const [imageFiles, setImageFiles] = React.useState<File[]>([]);
+    const [newImage, setNewImage] = React.useState<string>('')
+    // States for add unit form
+    const [features, setFeatures] = React.useState<string[]>([]);
+    const [newFeature, setNewFeature] = React.useState<string>('')
     const [uploading, setUploading] = React.useState<boolean>();
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
+    const {
+        register: registerUnit,
+        handleSubmit: handleUnitSubmit,
+        formState: { errors: unitErrors }
+    } = useForm({
+        resolver: yupResolver(unitSchema),
+    })
+    const {
+        register: registerResort,
+        handleSubmit: handleResortSubmit,
+        formState: { errors: resortErrors }
+    } = useForm({
+        resolver: yupResolver(resortSchema),
+    })
 
     const addAttraction = () => {
         console.log(newAttraction)
@@ -70,6 +121,94 @@ export default function CreateResort() {
         const updatedFacilities = [...facilities];
         updatedFacilities.splice(index, 1);
         setFacilities(updatedFacilities);
+    }
+    const addFeature = () => {
+        if (newFeature.trim() !== '') {
+            setFeatures([...features, newFeature]);
+            setNewFeature('');
+        }
+    }
+    const deleteFeature = (index: number) => {
+        const updatedFeatures = [...features];
+        updatedFeatures.splice(index, 1);
+        setFeatures(updatedFeatures);
+    }
+    async function addUnit(e: any) {
+        try {
+            if (!unitImage) {
+                throw Error("Unit image is required!")
+            }
+            if (!(features && features.length > 0)) {
+                throw Error("At least one feature is required!");
+            }
+            const unit: Unit = {
+                name: e.name,
+                sleeps: e.sleeps,
+                roomType: e.roomType,
+                bathrooms: e.bathrooms,
+                kitchenType: e.kitchenType,
+                image: unitImage,
+                features: features,
+            }
+            console.log(unit);
+            setUnits([...units, unit]);
+        }
+        catch (error: any) {
+            if (error.response) {
+                enqueueSnackbar(`${error.response.data.message}`, { variant: "error" });
+            }
+            else enqueueSnackbar(`${error}`, { variant: "error" });
+        }
+    }
+    async function uploadResort(e: any) {
+        try {
+            setUploading(true);
+            if (!(facilities && facilities.length > 0)) {
+                throw Error("At least one facility is required");
+            }
+            if (!(policies && policies.length > 0)) {
+                throw Error("At least one policy is required");
+            }
+            if (!(images && images.length > 0)) {
+                throw Error("At least one resort image is required")
+            }
+            const formData = new FormData();
+            formData.append('name', e.name);
+            formData.append('description', e.description);
+            formData.append('location', e.location);
+            formData.set('facilities', [] as any);
+            facilities.forEach(function(facility) {
+                formData.append('facilities', facility);
+            });
+            attractions.forEach(function(attraction) {
+                formData.append('attractions', attraction);
+            });
+            policies.forEach(function(policy) {
+                formData.append('policies', policy);
+            });
+            images.forEach(function(image) {
+                formData.append('images', image);
+            });
+            console.log(JSON.stringify(units))
+            // Serialize the object to JSON
+            formData.append('units', JSON.stringify(units));
+            // Append unit images
+            units.forEach((unit, index) => {
+                formData.append(`unitImages`, unit.image);
+            });            
+            const data = await UploadResort(formData);
+            setUploading(false);
+            enqueueSnackbar("Upload successully", { variant: "success" });
+            navigate('/admin/resort-list');
+        }
+        catch (error: any) {
+            console.log(error);
+            if (error.message) {
+                enqueueSnackbar(`${error.message}`, { variant: "error" });
+            }
+            else enqueueSnackbar(`${error}`, { variant: "error" });
+            setUploading(false);
+        }
     }
     return (<>
         <Box sx={{ flex: 1, width: '100%', padding: '10px' }}>
@@ -170,23 +309,48 @@ export default function CreateResort() {
                                 </Stack>
                                 <Stack spacing={2} sx={{ flexGrow: 1, gap: 2, display: { sm: 'flex-column', md: 'flex-row' } }}>
                                     <Stack spacing={1}>
-                                        <FormControl
+                                        <Box
                                             sx={{ display: { sm: 'flex-column', md: 'flex-row' }, gap: 2 }}
                                         >
-                                            <form>
+                                            <form onSubmit={handleResortSubmit(uploadResort)} id="upload-resort">
                                                 <FormLabel sx={{ mt: 2 }}>Name</FormLabel>
                                                 <Input
                                                     type="text"
                                                     size="sm"
                                                     placeholder="Name of the resort"
-                                                    name="name"
+                                                    {...registerResort("name")}
                                                 />
+                                                {resortErrors.name &&
+                                                    <FormHelperText>
+                                                        <InfoOutlined />
+                                                        {resortErrors.name.message}
+                                                    </FormHelperText>
+                                                }
                                                 <FormLabel sx={{ mt: 2 }}>Description</FormLabel>
                                                 <Textarea
                                                     size="sm"
                                                     placeholder="Details of the resort"
-                                                    name="descripiton"
+                                                    {...registerResort("description")}
                                                 />
+                                                {resortErrors.description &&
+                                                    <FormHelperText>
+                                                        <InfoOutlined />
+                                                        {resortErrors.description.message}
+                                                    </FormHelperText>
+                                                }
+                                                <FormLabel sx={{ mt: 2 }}>Location</FormLabel>
+                                                <Input
+                                                    type="text"
+                                                    size="sm"
+                                                    placeholder="Location of the resort"
+                                                    {...registerResort("location")}
+                                                />
+                                                {resortErrors.location &&
+                                                    <FormHelperText>
+                                                        <InfoOutlined />
+                                                        {resortErrors.location.message}
+                                                    </FormHelperText>
+                                                }
                                                 <FormLabel sx={{ mt: 2 }}>Facilities</FormLabel>
                                                 <Box sx={{
                                                     display: "flex",
@@ -220,7 +384,7 @@ export default function CreateResort() {
                                                                     >
                                                                         {facility}
                                                                     </Chip>
-                                                                    <Button size="sm" color='danger' variant='soft' onClick={() => deleteFacility(index)}><DeleteIcon/></Button>
+                                                                    <Button size="sm" color='danger' variant='soft' onClick={() => deleteFacility(index)}><DeleteIcon /></Button>
                                                                 </Box>
                                                             </Box>
                                                         )
@@ -259,7 +423,7 @@ export default function CreateResort() {
                                                                     >
                                                                         {attraction}
                                                                     </Chip>
-                                                                    <Button size="sm" color='danger' variant='soft' onClick={() => deleteAttraction(index)}><DeleteIcon/></Button>
+                                                                    <Button size="sm" color='danger' variant='soft' onClick={() => deleteAttraction(index)}><DeleteIcon /></Button>
                                                                 </Box>
                                                             </Box>
                                                         )
@@ -298,15 +462,15 @@ export default function CreateResort() {
                                                                     >
                                                                         {policy}
                                                                     </Chip>
-                                                                    <Button size="sm" color='danger' variant='soft' onClick={() => deletePolicy(index)}><DeleteIcon/></Button>
+                                                                    <Button size="sm" color='danger' variant='soft' onClick={() => deletePolicy(index)}><DeleteIcon /></Button>
                                                                 </Box>
                                                             </Box>
                                                         )
                                                     })}
                                                 </Box>
 
-                                                <FormLabel sx={{ mt: 2 }}>Add image</FormLabel>
-                                                {/* <Input
+                                                <FormLabel sx={{ mt: 2 }}>Resort images</FormLabel>
+                                                <Input
                                                     size="sm"
                                                     type="file"
                                                     slotProps={{
@@ -318,22 +482,22 @@ export default function CreateResort() {
                                                     onChange={(e) => {
                                                         const files = e?.target?.files;
                                                         if (files) {
-                                                            if (imageFiles.length < 5) {
-                                                                setImageFiles((prev) => [...prev, ...Array.from(files)]);
+                                                            if (images.length < 15) {
+                                                                setImages((prev) => [...prev, ...Array.from(files)]);
                                                             }
-                                                            else enqueueSnackbar(`You can only upload up to five images!`, { variant: "error" });
+                                                            else enqueueSnackbar(`You can only upload up to 15 images!`, { variant: "error" });
                                                         }
                                                     }}
-                                                /> */}
-                                                {/* {imageFiles?.length !== 0 && (
+                                                />
+                                                {images?.length !== 0 && (
                                                     <Box sx={{ display: 'flex', width: 1, flexWrap: 'wrap', mt: 2 }}>
-                                                        {imageFiles.map(function (url, imageIndex) {
+                                                        {images.map(function (url, imageIndex) {
                                                             return (<div style={{ position: "relative" }}>
                                                                 <img src={URL.createObjectURL(url)} alt="Pasted Image" height={90} style={{ borderRadius: "5px", margin: '2px' }} />
                                                                 <button
                                                                     onClick={(e) => {
                                                                         e.preventDefault()
-                                                                        setImageFiles((prev) => prev.filter((_, index) => index !== imageIndex));
+                                                                        setImages((prev) => prev.filter((_, index) => index !== imageIndex));
                                                                     }}
                                                                     style={{
                                                                         position: 'absolute',
@@ -344,73 +508,217 @@ export default function CreateResort() {
                                                                     <DeleteForeverIcon />
                                                                 </button>
                                                             </div>
-
                                                             )
                                                         })}
                                                     </Box>
-                                                )} */}
-                                                <FormLabel sx={{ mt: 2 }}>Price</FormLabel>
-                                                <Input
-                                                    type="text"
-                                                    size="sm"
-                                                    placeholder="Total cost"
-                                                    name="price"
-                                                />
-
-                                                <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 2, }}>
-                                                    <CardContent orientation="horizontal">
-                                                        <div>
-                                                            <Typography level="body-xs">Total price:</Typography>
-                                                            <Typography fontSize="lg" fontWeight="lg">
-
-                                                                $13131
-                                                            </Typography>
-                                                        </div>
-                                                        <div>
-                                                            <Typography level="body-xs">Number of nights:</Typography>
-                                                            <Typography fontSize="lg" fontWeight="lg">
-                                                                <input type='hidden'
-                                                                    name='numberOfNights'
-                                                                    value={131}
-                                                                >
-                                                                </input>
-                                                                {131313}
-                                                            </Typography>
-                                                        </div>
-                                                        <div>
-                                                            <Typography level="body-xs">Price per night:</Typography>
-                                                            <Typography fontSize="lg" fontWeight="lg">
-                                                                <input type='hidden'
-                                                                    name='pricePerNight'
-                                                                    value={413331}
-                                                                ></input>
-                                                                ${1413112}
-                                                            </Typography>
-                                                        </div>
-                                                    </CardContent>
-                                                    <CardActions sx={{ alignSelf: 'flex-end', pt: 2 }}>
-                                                        <Button size="sm" variant="outlined" color="neutral">
-                                                            Cancel
-                                                        </Button>
-                                                        {uploading ? (<Button loading size="sm" variant="solid" type='submit'>
-                                                            Save
-                                                        </Button>) : <Button size="sm" variant="solid" type='submit'>
-                                                            Save
-                                                        </Button>}
-
-                                                    </CardActions>
-                                                </CardOverflow>
+                                                )}
+                                                <FormLabel sx={{ mt: 2 }}>Units</FormLabel>
                                             </form>
-
-
-                                        </FormControl>
-
+                                        </Box>
+                                        <Card variant="soft" sx={{ maxWidth: '75%' }}>
+                                            <form onSubmit={handleUnitSubmit(addUnit)}>
+                                                <CardContent>
+                                                    <Typography level="title-md">Create a unit</Typography>
+                                                </CardContent>
+                                                <FormControl required>
+                                                    <FormLabel sx={{ mt: 2 }}>Name</FormLabel>
+                                                    <Input
+                                                        type="text"
+                                                        size="sm"
+                                                        placeholder="Name of the unit"
+                                                        {...registerUnit("name")}
+                                                    />
+                                                    {unitErrors.name &&
+                                                        <FormHelperText>
+                                                            <InfoOutlined />
+                                                            {unitErrors.name.message}
+                                                        </FormHelperText>
+                                                    }
+                                                </FormControl>
+                                                <FormControl required>
+                                                    <FormLabel sx={{ mt: 2 }}>Room type</FormLabel>
+                                                    <Input
+                                                        type="text"
+                                                        size="sm"
+                                                        placeholder="Room type"
+                                                        {...registerUnit("roomType")}
+                                                    />
+                                                    {unitErrors.roomType &&
+                                                        <FormHelperText>
+                                                            <InfoOutlined />
+                                                            {unitErrors.roomType.message}
+                                                        </FormHelperText>
+                                                    }
+                                                </FormControl>
+                                                <FormControl required>
+                                                    <FormLabel sx={{ mt: 2 }}>Kitchen type</FormLabel>
+                                                    <Input
+                                                        type="text"
+                                                        size="sm"
+                                                        placeholder="Kitchen type"
+                                                        {...registerUnit("kitchenType")}
+                                                    />
+                                                    {unitErrors.kitchenType &&
+                                                        <FormHelperText>
+                                                            <InfoOutlined />
+                                                            {unitErrors.kitchenType.message}
+                                                        </FormHelperText>
+                                                    }
+                                                </FormControl>
+                                                <Box sx={{
+                                                    display: "flex",
+                                                    gap: 2
+                                                }}>
+                                                    <FormControl required>
+                                                        <FormLabel sx={{ mt: 2 }}>Sleeps</FormLabel>
+                                                        <Input
+                                                            type="number"
+                                                            size="sm"
+                                                            placeholder="Sleeps"
+                                                            {...registerUnit("sleeps")}
+                                                        />
+                                                        {unitErrors.sleeps &&
+                                                        <FormHelperText>
+                                                            <InfoOutlined />
+                                                            {unitErrors.sleeps.message}
+                                                        </FormHelperText>
+                                                    }
+                                                    </FormControl>
+                                                    <FormControl required>
+                                                        <FormLabel sx={{ mt: 2 }}>Bathrooms</FormLabel>
+                                                        <Input
+                                                            type="number"
+                                                            size="sm"
+                                                            placeholder="Bathrooms"
+                                                            {...registerUnit("bathrooms")}
+                                                        />
+                                                        {unitErrors.bathrooms &&
+                                                        <FormHelperText>
+                                                            <InfoOutlined />
+                                                            {unitErrors.bathrooms.message}
+                                                        </FormHelperText>
+                                                    }
+                                                    </FormControl>
+                                                </Box>
+                                                <FormControl>
+                                                    <FormLabel sx={{ mt: 2 }}>Image</FormLabel>
+                                                    <Input 
+                                                    type="file"
+                                                    slotProps={{
+                                                        input: {
+                                                            accept: "image/*",
+                                                        }
+                                                    }}
+                                                    onChange={(e) => {
+                                                    //console.log('update image');
+                                                    if (e?.target?.files) {
+                                                        //console.log(e.target.files[0])
+                                                        setUnitImage(e?.target?.files[0]);
+                                                    }
+                                                }} />
+                                                </FormControl>
+                                                <FormLabel sx={{ mt: 2 }}>Features</FormLabel>
+                                                <Box sx={{
+                                                    display: "flex",
+                                                    gap: 1,
+                                                }}>
+                                                    <Input
+                                                        type="text"
+                                                        size="sm"
+                                                        placeholder="Features"
+                                                        name="features"
+                                                        value={newFeature}
+                                                        onChange={(e: any) => setNewFeature(e.target.value)}
+                                                    />
+                                                    <Button variant="soft" size="sm" onClick={addFeature}><Add /></Button>
+                                                </Box>
+                                                <Box sx={{
+                                                    mt: 2
+                                                }}>
+                                                    {features && features.map && features.map((feature: string, index: number) => {
+                                                        return (
+                                                            <Box key={index}>
+                                                                <Box sx={{
+                                                                    display: "flex",
+                                                                    gap: 1,
+                                                                    my: 1
+                                                                }}>
+                                                                    <Chip
+                                                                        color="neutral"
+                                                                        size="md"
+                                                                        variant="soft"
+                                                                    >
+                                                                        {feature}
+                                                                    </Chip>
+                                                                    <Button size="sm" color='danger' variant='soft' onClick={() => deleteFeature(index)}><DeleteIcon /></Button>
+                                                                </Box>
+                                                            </Box>
+                                                        )
+                                                    })}
+                                                </Box>
+                                                <Button size="sm" variant="solid" type="submit">
+                                                    Add
+                                                </Button>
+                                            </form>
+                                        </Card>
+                                        <Box sx={{
+                                            display: "flex",
+                                            gap: 2,
+                                            mt: 1
+                                        }}>
+                                            {units && units.map && units.map((unit: Unit, index: number) => {
+                                                return (
+                                                    <Card variant="outlined" sx={{ width: 320 }}>
+                                                        <CardOverflow>
+                                                            <AspectRatio ratio="2">
+                                                                <img
+                                                                    src={URL.createObjectURL(unit.image)}
+                                                                    loading="lazy"
+                                                                    alt="Pasted image"
+                                                                />
+                                                            </AspectRatio>
+                                                        </CardOverflow>
+                                                        <CardContent>
+                                                            <Typography level="title-md">{unit.name}</Typography>
+                                                            <Typography level="body-sm">{unit.roomType}</Typography>
+                                                        </CardContent>
+                                                        <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1' }}>
+                                                            <Divider inset="context" />
+                                                            <CardContent orientation="horizontal">
+                                                                <Typography level="body-xs" fontWeight="md" textColor="text.secondary">
+                                                                    Bathrooms: {unit.bathrooms}
+                                                                </Typography>
+                                                                <Divider orientation="vertical" />
+                                                                <Typography level="body-xs" fontWeight="md" textColor="text.secondary">
+                                                                    Sleeps: {unit.sleeps}
+                                                                </Typography>
+                                                            </CardContent>
+                                                        </CardOverflow>
+                                                    </Card>
+                                                )
+                                            })}
+                                        </Box>
+                                        <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 2, }}>
+                                            <CardContent orientation="horizontal">
+                                                <div>
+                                                    <Typography level="body-xs">Total units:</Typography>
+                                                    <Typography fontSize="lg" fontWeight="lg">
+                                                        {units.length}
+                                                    </Typography>
+                                                </div>
+                                            </CardContent>
+                                            <CardActions sx={{ alignSelf: 'flex-end', pt: 2 }}>
+                                                <Button size="sm" variant="outlined" color="neutral">
+                                                    Cancel
+                                                </Button>
+                                                <Button form="upload-resort" loading={uploading} size="sm" variant="solid" type='submit'>
+                                                    Save
+                                                </Button>
+                                            </CardActions>
+                                        </CardOverflow>
                                     </Stack>
-
                                 </Stack>
-
                             </Stack>
-
                         </Card>
                     </Box>
                 </Box>

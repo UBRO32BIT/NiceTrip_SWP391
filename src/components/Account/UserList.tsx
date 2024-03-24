@@ -26,6 +26,7 @@ import Dropdown from '@mui/joy/Dropdown';
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
+import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
@@ -37,8 +38,13 @@ import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import { BanUser, GetAllAccount, UnbanUser } from '../../services/admin.services';
 import { useParams } from 'react-router-dom';
 import { convertDateTime } from '../../utils/date';
-import { DialogActions, DialogContent, DialogTitle } from '@mui/joy';
+import { AspectRatio, CardActions, CardOverflow, DialogActions, DialogContent, DialogTitle, FormHelperText } from '@mui/joy';
 import { useSnackbar } from 'notistack';
+import { InfoOutlined } from '@mui/icons-material';
+import * as yup from "yup";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { UpdateUser } from '../../services/auth.service';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -80,7 +86,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-function RowMenu({user, setOpenBan, setOpenUnban}: any) {
+function RowMenu({ user, setOpenBan, setOpenUnban, setOpenEdit, setUserModal }: any) {
   return (
     <Dropdown>
       <MenuButton
@@ -90,17 +96,40 @@ function RowMenu({user, setOpenBan, setOpenUnban}: any) {
         <MoreHorizRoundedIcon />
       </MenuButton>
       <Menu size="sm" sx={{ minWidth: 140 }}>
-        <MenuItem>Edit</MenuItem>
+        <MenuItem onClick={() => {
+          setUserModal(user);
+          setOpenEdit(true)
+        }}>Edit</MenuItem>
         <Divider />
         {!user.isBanned ? (
-          <MenuItem color="danger" onClick={() => setOpenBan(true)}>Ban</MenuItem>
+          <MenuItem color="danger" onClick={() => {
+            setUserModal(user);
+            setOpenBan(true);
+          }}>Ban</MenuItem>
         ) : (
-          <MenuItem color="warning" onClick={() => setOpenUnban(true)}>Unban</MenuItem>
+          <MenuItem color="warning" onClick={() => {
+            setUserModal(user);
+            setOpenUnban(true);
+          }}>Unban</MenuItem>
         )}
       </Menu>
     </Dropdown>
   );
 }
+
+const userEditSchema = yup.object().shape({
+  firstname: yup.string()
+    .required("First Name is required!")
+    .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
+  lastname: yup.string()
+    .required("Last Name is required!")
+    .matches(/^[a-zA-Z]+$/, 'Field cannot have numeric or special characters'),
+  email: yup.string()
+    .required("Email is required!")
+    .matches(/^[^\.\s][\w\-\.{2,}]+@([\w-]+\.)+[\w-]{2,}$/, "Email is invalid!"),
+  phone: yup.string()
+    .matches(/^0\d{9}$/, "Invalid phone number")
+})
 
 export default function UserList() {
   const [page, setPage] = React.useState(1);
@@ -115,16 +144,28 @@ export default function UserList() {
   const [openBan, setOpenBan] = React.useState(false);
   const [openUnban, setOpenUnban] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
+  const [banUploading, setbanUploading] = React.useState(false);
+  const [unbanUploading, setUnbanUploading] = React.useState(false);
+  const [editUploading, setEditUploading] = React.useState(false);
+  const [userModal, setUserModal] = React.useState<any>(null);
+  const [roleSelect, setRoleSelect] = React.useState(null);
+  const {
+    register: registerUserEdit,
+    handleSubmit: handleUserEditSubmit,
+    formState: { errors: userEditErrors }
+  } = useForm({
+    resolver: yupResolver(userEditSchema),
+  })
   const { pageString } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   async function getAllAccounts() {
     const data = await GetAllAccount(search, page, role);
     if (data && data.results) {
-        console.log(data);
-        setUsers(data.results);
-        if (data.totalPages > 0) {
-          setTotalPage(data.totalPages);
-        }
+      console.log(data);
+      setUsers(data.results);
+      if (data.totalPages > 0) {
+        setTotalPage(data.totalPages);
+      }
     }
   }
   const handleSearch = (e: any) => {
@@ -152,6 +193,26 @@ export default function UserList() {
       enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
     }
   }
+  const handleUserEdit = async (userId: string, event: any) => {
+    try {
+      const data = {
+        firstname: userModal.firstname,
+        lastname: userModal.lastname,
+        email: userModal.email,
+        phone: userModal.phone,
+        role: (roleSelect ? roleSelect : userModal.role)
+      }
+      const result = await UpdateUser(userId, data);
+      if (result) {
+        enqueueSnackbar("Updated successully", { variant: "success" });
+        setOpenEdit(false);
+        setUserModal(null);
+      }
+    }
+    catch (error: any) {
+      enqueueSnackbar(`Error while updating information: ${error.response.data.message}`, { variant: "error" });
+    }
+  }
   React.useEffect(() => {
     getAllAccounts();
   }, [page, role, search])
@@ -160,6 +221,10 @@ export default function UserList() {
       setPage(parseInt(pageString));
     }
   }, []);
+  React.useEffect(() => {
+    console.log(userModal)
+  }, [userModal])
+
   const renderFilters = () => (
     <React.Fragment>
       <FormControl size="sm">
@@ -246,13 +311,13 @@ export default function UserList() {
         <form onSubmit={handleSearch}>
           <FormControl sx={{ flex: 1 }} size="sm">
             <FormLabel>Search for user</FormLabel>
-            <Input size="sm" 
-            placeholder="Search" 
-            startDecorator={<SearchIcon />} 
-            value={searchTemp}
-            onChange={(e) => {
-              setSearchTemp(e.target.value)
-            }}/>
+            <Input size="sm"
+              placeholder="Search"
+              startDecorator={<SearchIcon />}
+              value={searchTemp}
+              onChange={(e) => {
+                setSearchTemp(e.target.value)
+              }} />
           </FormControl>
         </form>
         {renderFilters()}
@@ -331,7 +396,7 @@ export default function UserList() {
                 </td>
                 <td>
                   <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Avatar size="sm" src={user.profileImage} alt={user.username}/>
+                    <Avatar size="sm" src={user.profilePicture} alt={user.username} />
                     <div>
                       <Typography level="body-xs">{user.username}</Typography>
                       <Typography level="body-xs">{user.email}</Typography>
@@ -349,20 +414,20 @@ export default function UserList() {
                     <Chip
                       variant="soft"
                       size="sm"
-                      startDecorator={<CheckRoundedIcon />}
+                      startDecorator={<BlockIcon />}
                       color="danger"
-                      >
+                    >
                       Banned
                     </Chip>
                   ) : (
                     <Chip
-                    variant="soft"
-                    size="sm"
-                    startDecorator={<CheckRoundedIcon />}
-                    color="success"
-                  >
-                    Active
-                  </Chip>
+                      variant="soft"
+                      size="sm"
+                      startDecorator={<CheckRoundedIcon />}
+                      color="success"
+                    >
+                      Active
+                    </Chip>
                   )}
                 </td>
                 <td>
@@ -370,53 +435,167 @@ export default function UserList() {
                     <Link level="body-xs" component="button">
                       Download
                     </Link>
-                    <RowMenu user={user} setOpenBan={setOpenBan} setOpenUnban={setOpenUnban}/>
+                    <RowMenu
+                      user={user}
+                      setOpenBan={setOpenBan}
+                      setOpenUnban={setOpenUnban}
+                      setOpenEdit={setOpenEdit}
+                      setUserModal={setUserModal}
+                    />
                   </Box>
                 </td>
-                <Modal open={openBan} onClose={() => setOpenBan(false)}>
-                  <ModalDialog variant="outlined" role="alertdialog">
-                    <DialogTitle>
-                      <WarningRoundedIcon />
-                      Confirmation
-                    </DialogTitle>
-                    <Divider />
-                    <DialogContent>
-                      Are you sure you want to ban {user.username}?
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="solid" color="danger" onClick={() => banUser(user._id)}>
-                        Yes
-                      </Button>
-                      <Button variant="plain" color="neutral" onClick={() => setOpenBan(false)}>
-                        No
-                      </Button>
-                    </DialogActions>
-                  </ModalDialog>
-                </Modal>
-                <Modal open={openUnban} onClose={() => setOpenUnban(false)}>
-                  <ModalDialog variant="outlined" role="alertdialog">
-                    <DialogTitle>
-                      <WarningRoundedIcon />
-                      Confirmation
-                    </DialogTitle>
-                    <Divider />
-                    <DialogContent>
-                      Are you sure you want to unban {user.username}?
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="solid" color="warning" onClick={() => unbanUser(user._id)}>
-                        Yes
-                      </Button>
-                      <Button variant="plain" color="neutral" onClick={() => setOpenUnban(false)}>
-                        No
-                      </Button>
-                    </DialogActions>
-                  </ModalDialog>
-                </Modal>
               </tr>
             ))}
           </tbody>
         </Table>
+        <Modal open={openBan} onClose={() => setOpenBan(false)}>
+          <ModalDialog variant="outlined" role="alertdialog">
+            <DialogTitle>
+              <WarningRoundedIcon />
+              Confirmation
+            </DialogTitle>
+            <Divider />
+            <DialogContent>
+              Are you sure you want to ban {userModal?.username}?
+            </DialogContent>
+            <DialogActions>
+              <Button variant="solid" color="danger" onClick={() => banUser(userModal?._id)}>
+                Yes
+              </Button>
+              <Button variant="plain" color="neutral" onClick={() => setOpenBan(false)}>
+                No
+              </Button>
+            </DialogActions>
+          </ModalDialog>
+        </Modal>
+        <Modal open={openUnban} onClose={() => setOpenUnban(false)}>
+          <ModalDialog variant="outlined" role="alertdialog">
+            <DialogTitle>
+              <WarningRoundedIcon />
+              Confirmation
+            </DialogTitle>
+            <Divider />
+            <DialogContent>
+              Are you sure you want to unban {userModal?.username}?
+            </DialogContent>
+            <DialogActions>
+              <Button variant="solid" color="warning" onClick={() => unbanUser(userModal?._id)}>
+                Yes
+              </Button>
+              <Button variant="plain" color="neutral" onClick={() => setOpenUnban(false)}>
+                No
+              </Button>
+            </DialogActions>
+          </ModalDialog>
+        </Modal>
+        <Modal open={openEdit} onClose={() => {
+          setOpenEdit(false)
+          setUserModal(null)
+        }}>
+          {userModal && (
+          <ModalDialog variant="outlined" role="alertdialog">
+            <DialogTitle>
+              <WarningRoundedIcon />
+              Edit user
+            </DialogTitle>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Avatar
+                variant="outlined"
+                size="sm"
+                src={userModal?.profilePicture}
+              />
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography level="title-sm">{userModal?.username}</Typography>
+                <Typography level="body-xs">{userModal?.email}</Typography>
+              </Box>
+            </Box>
+            <Divider />
+            <form onSubmit={handleUserEditSubmit((e: any) => { handleUserEdit(userModal?._id, e) })}>
+              <FormControl disabled error={!!userEditErrors.firstname}>
+                <FormLabel>First name</FormLabel>
+                <Input
+                  size="sm"
+                  placeholder="First name"
+                  defaultValue={userModal.firstname}
+                />
+                {userEditErrors.firstname &&
+                  <FormHelperText>
+                    <InfoOutlined />
+                    {userEditErrors.firstname.message}
+                  </FormHelperText>
+                }
+              </FormControl>
+              <FormControl disabled error={!!userEditErrors.lastname}>
+                <FormLabel sx={{ mt: 2 }}>Last name</FormLabel>
+                <Input
+                  size="sm"
+                  placeholder="Last name"
+                  defaultValue={userModal.lastname}
+                  sx={{ flexGrow: 1 }}
+                />
+                {userEditErrors.lastname &&
+                  <FormHelperText>
+                    <InfoOutlined />
+                    {userEditErrors.lastname.message}
+                  </FormHelperText>
+                }
+              </FormControl>
+              <FormControl disabled error={!!userEditErrors.email}>
+                <FormLabel sx={{ mt: 2 }}>Email</FormLabel>
+                <Input
+                  size="sm"
+                  type="email"
+                  startDecorator={<EmailRoundedIcon />}
+                  placeholder="email"
+                  key={`email:${userModal.email}`}
+                  defaultValue={userModal.email}
+                  sx={{ flexGrow: 1 }}
+                />
+                {userEditErrors.email &&
+                  <FormHelperText>
+                    <InfoOutlined />
+                    {userEditErrors.email.message}
+                  </FormHelperText>
+                }
+              </FormControl>
+              <FormControl disabled error={!!userEditErrors.firstname}>
+                <FormLabel sx={{ mt: 2 }}>Phone</FormLabel>
+                <Input
+                  size="sm"
+                  placeholder="Phone"
+                  defaultValue={userModal.phone}
+                  sx={{ flexGrow: 1 }}
+                />
+                {userEditErrors.phone &&
+                  <FormHelperText>
+                    <InfoOutlined />
+                    {userEditErrors.phone.message}
+                  </FormHelperText>
+                }
+              </FormControl>
+              <FormControl>
+                <FormLabel sx={{ mt: 2 }}>Role</FormLabel>
+                <Select defaultValue={userModal.role} onChange={(event: any, newValue: any) => setRoleSelect(newValue)}>
+                  <Option value="admin">Admin</Option>
+                  <Option value="user">User</Option>
+                </Select>
+              </FormControl>
+              <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 2 }}>
+                <CardActions sx={{ alignSelf: 'flex-end', pt: 2 }}>
+                <Button 
+                  size="sm" 
+                  variant="outlined" 
+                  color="neutral"
+                  onClick={() => setOpenEdit(false)}>
+                    Cancel
+                </Button>
+                <Button loading={editUploading} size="sm" variant="solid" type='submit'>Save</Button>
+                </CardActions>
+              </CardOverflow>
+            </form>
+          </ModalDialog>
+          )}
+        </Modal>
       </Sheet>
       <Box
         className="Pagination-laptopUp"
@@ -434,23 +613,23 @@ export default function UserList() {
           size="sm"
           variant="outlined"
           color="neutral"
-          disabled={page<=1}
-          onClick={() => setPage(page-1)}
+          disabled={page <= 1}
+          onClick={() => setPage(page - 1)}
           startDecorator={<KeyboardArrowLeftIcon />}
         >
           Previous
         </Button>
 
         <Box sx={{ flex: 1 }} />
-        <Typography>Page {page} of {totalPage}</Typography>
+          <Typography>Page {page} of {totalPage}</Typography>
         <Box sx={{ flex: 1 }} />
 
         <Button
           size="sm"
           variant="outlined"
           color="neutral"
-          disabled={page>=totalPage}
-          onClick={() => setPage(page+1)}
+          disabled={page >= totalPage}
+          onClick={() => setPage(page + 1)}
           endDecorator={<KeyboardArrowRightIcon />}
         >
           Next
