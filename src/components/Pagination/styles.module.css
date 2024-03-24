@@ -1,0 +1,32 @@
+.container {
+	left: 0;
+	width: calc(100% - 20px);
+	height: 45px;
+	display: flex;
+	align-items: center;
+	z-index: 999;
+}
+
+.page_btn {
+	outline: none;
+	border: none;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 5px;
+	outline: none;
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 5px;
+	box-shadow: var(--box-shadow);
+	cursor: pointer;
+}
+
+.active {
+	background-color: var(--blue);
+	color: rgb(255, 255, 255);
+	background-color: rgb(0, 0, 0);
+
+}
