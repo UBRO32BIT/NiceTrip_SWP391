@@ -191,16 +191,15 @@ export default function Sidebar() {
             '--ListItem-radius': (theme) => theme.vars.radius.sm,
           }}
         >
-
-
-          {/* <NavLink to="/me/dashboard" style={{ textDecoration: 'none' }}>
+          
+          <NavLink to="/me/dashboard" style={{ textDecoration: 'none' }}>
             <ListItemButton>
               <DashboardRoundedIcon />
               <ListItemContent>
                 <Typography level="title-sm">Dashboard</Typography>
               </ListItemContent>
             </ListItemButton>
-          </NavLink> */}
+          </NavLink>
 
           <NavLink to="/me/my-profile" style={{ textDecoration: 'none' }}>
             <ListItemButton>

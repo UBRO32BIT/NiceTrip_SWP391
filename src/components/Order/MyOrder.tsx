@@ -116,6 +116,9 @@ export default function MyOrders() {
                 <Routes>
                     <Route>
                     <Route path="/" element={<RentalOrders />} />
+
+                    <Route path="/rental" element={<RentalOrders />} />
+
                     <Route path="/exchange" element={<ExchangeOrders/>} />
                     </Route>
                 </Routes>

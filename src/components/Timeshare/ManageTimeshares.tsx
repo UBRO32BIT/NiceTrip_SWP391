@@ -8,20 +8,21 @@ import Link from '@mui/joy/Link';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import BookmarkAdd from '@mui/icons-material/BookmarkAddOutlined';
-import {styled, Grid} from '@mui/joy';
+import { styled, Grid } from '@mui/joy';
 import Modal from '@mui/joy/Modal';
 import ModalClose from '@mui/joy/ModalClose';
-import {GetPostBelongToOwner, GetPostById} from '../../services/post.service';
-import {useSelector} from 'react-redux';
-import {NavLink, useNavigate, useParams} from 'react-router-dom';
+import { GetPostBelongToOwner, GetPostById } from '../../services/post.service';
+import { useSelector } from 'react-redux';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import Stack from '@mui/joy/Stack';
 import Chip from '@mui/joy/Chip';
-import {GetReservationOfPost, ConfirmReservation} from '../../services/booking.service';
+import Avatar from '@mui/joy/Avatar';
+import { GetReservationOfPost, ConfirmReservation } from '../../services/booking.service';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import Sheet from "@mui/joy/Sheet";
 import RentRequestList from "./RentRequestList";
 import ExchangeRequestList from "./ExchangeRequestList";
-import {GetExchangeRequestOfTimeshare} from "../../services/booking.service";
+import { GetExchangeRequestOfTimeshare } from "../../services/booking.service";
 
 interface RootState {
     auth: {
@@ -37,13 +38,13 @@ export default function ManageTimeshares() {
 
     const [post, setPost] = React.useState<any>([]);
     const [reservationList, setReservationList] = React.useState<any>([]);
-    let {timeshareId} = useParams();
+    let { timeshareId } = useParams();
     const navigate = useNavigate()
-    const row = { 
-        _id: "some_id", 
-        myTimeshareId: { 
-            is_bookable: false 
-        } 
+    const row = {
+        _id: "some_id",
+        myTimeshareId: {
+            is_bookable: false
+        }
     };
     React.useEffect(() => {
         Load();
@@ -57,7 +58,6 @@ export default function ManageTimeshares() {
                 if (postData) {
                     setPost(postData);
                 }
-                
                 // Fetch rent requests based on timeshareId
                 const response = await GetExchangeRequestOfTimeshare(timeshareId);
                 if (response) {
@@ -83,112 +83,128 @@ export default function ManageTimeshares() {
         console.log(response);
         if (response?.code === 200) window.location.reload();
     }
- 
+
     return (
         <Grid container spacing={1}
-              sx={{flexGrow: 1, mx: {xs: 2, md: 6}, mt: 2, flexWrap: 'wrap', gap: 1}}>
+            sx={{ flexGrow: 1, mx: { xs: 2, md: 6 }, mt: 2, flexWrap: 'wrap', gap: 1 }}>
             <Grid xs={12} md={12}>
-            <Card
-                variant="outlined"
-                orientation="horizontal"
-                sx={{
-                    width: 1,
-                    '&:hover': {boxShadow: 'lg', borderColor: 'neutral.outlinedHoverBorder'},
-                }}
-            >
-                <AspectRatio ratio="1" sx={{width: 240}}>
-                    <img
-                        src={post?.resortId?.image_urls}
-                        loading="lazy"
-                        alt=""
-                    />
-                </AspectRatio>
-                <CardContent>
-                    <Typography level="title-lg" id="card-description">
-                        {post?.resortId?.name}
-                    </Typography>
-                    <Typography level="body-sm" aria-describedby="card-description" mb={1}>
-                        <Link
-                            overlay
-                            underline="none"
-                            href="#interactive-card"
-                            sx={{color: 'text.tertiary'}}
-                        >
-                            {post?.resortId?.location}
-                        </Link>
-                    </Typography>
-                    {requestList.length > 0 &&
-                        <Chip
-                            key={requestList[0]._id} // Add a unique key
-                            variant="outlined"
-                            color="primary"
-                            sx={{ pointerEvents: 'none', mr: 1, mb: 1 }} // Adjust styling as needed
-                        >
+                <Card
+                    variant="outlined"
+                    orientation="horizontal"
+                    sx={{
+                        width: 1,
+                        '&:hover': { boxShadow: 'lg', borderColor: 'neutral.outlinedHoverBorder' },
+                    }}
+                >
+                    <AspectRatio ratio="1" sx={{ width: 240 }}>
+                        <img
+                            src={post?.resortId?.image_urls}
+                            loading="lazy"
+                            alt=""
+                        />
+                    </AspectRatio>
+                    <CardContent>
+                        <Typography level="title-lg" id="card-description">
+                            {post?.resortId?.name}
+                        </Typography>
+                        <Typography level="body-sm" aria-describedby="card-description" mb={1}>
+                            <Link
+                                overlay
+                                underline="none"
+                                href="#interactive-card"
+                                sx={{ color: 'text.tertiary' }}
+                            >
+                                {post?.resortId?.location}
+                            </Link>
+                        </Typography>
+                        {(post?.is_bookable === true) && (
+                            <>
+                                <Chip
+                                    variant="soft"
+                                    color="warning"
+                                    sx={{ pointerEvents: 'none', mr: 1, mb: 1 }} // Adjust styling as needed
+                                >
+                                    Pending
+                                </Chip>
+                            </>
+                        )}
 
-                            {post?.is_bookable === false ? "Completed" : "Pending"}
-                        </Chip>
-                    }
+                        {(post?.renterId && post?.is_bookable === false) && (
+                            <>
+                                <Chip
+                                    variant="soft"
+                                    color="success"
+                                    sx={{ pointerEvents: 'none', mr: 1, mb: 1 }} // Adjust styling as needed
+                                >
+                                    Completed
+                                </Chip>
+                                <Typography sx={{display: 'inline-flex', gap: 1}}>                                 
+                                    <Avatar size="sm" 
+                                        src={post?.renterId?.profilePicture}>{post?.renterId?.firstname?.charAt(0)}</Avatar>
+                                    <p style={{margin: 0}}>Rented by: {post?.renterId?.username}</p>
+                                </Typography>
+                            </>
+                        )}
+                        <Grid container spacing={2} sx={{ flexGrow: 1, mt: 1 }}>
+                            <Grid xs={12} md={4}>
+                                <Typography fontWeight={700} fontSize={16} >
+                                    Resort info
+                                </Typography>
+                                <Stack sx={{ mt: 1 }} direction="column" spacing={0} justifyContent="center">
+                                    <Typography fontWeight={400} fontSize={16}>
+                                        <b>Name:</b> {post?.resortId?.name}
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={16}>
+                                        <b>Location:</b> {post?.resortId?.location}
+                                    </Typography>
 
-                    <Grid container spacing={2} sx={{flexGrow: 1, mt: 1}}>
-                        <Grid xs={12} md={4}>
-                            <Typography fontWeight={700} fontSize={16} >
-                                Resort info
-                            </Typography>
-                            <Stack sx={{mt: 1}} direction="column" spacing={0} justifyContent="center">
-                                <Typography fontWeight={400} fontSize={16}>
-                                    <b>Name:</b> {post?.resortId?.name}
+                                </Stack>
+                            </Grid>
+                            <Grid xs={12} md={4}>
+                                <Typography fontWeight={700} fontSize={16} >
+                                    Room type
                                 </Typography>
-                                <Typography fontWeight={400} fontSize={16}>
-                                    <b>Location:</b> {post?.resortId?.location}
+                                <Stack sx={{ mt: 1 }} direction="column" spacing={0} justifyContent="center">
+                                    <Typography fontWeight={400} fontSize={16} >
+                                        <b>Unit</b> {post?.unitId?.name}
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={16} >
+                                        <b>Detail</b> {post?.unitId?.details}
+                                    </Typography>
+                                </Stack>
+                            </Grid>
+                            <Grid xs={12} md={4}>
+                                <Typography fontWeight={700} fontSize={16} >
+                                    Time & price
                                 </Typography>
-
-                            </Stack>
+                                <Stack sx={{ mt: 1 }} direction="column" spacing={0} justifyContent="center">
+                                    <Typography fontWeight={400} fontSize={16}>
+                                        <b>Check-in:</b>  {formatDate(post?.start_date)}
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={16}>
+                                        <b>Check-out:</b>  {formatDate(post?.end_date)}
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={16} >
+                                        <b>Night:</b>  {post?.numberOfNights}
+                                    </Typography>
+                                    <Typography fontWeight={400} fontSize={16} >
+                                        <b>Price:</b>  ${post?.price} (${post?.pricePerNight}/night)
+                                    </Typography>
+                                </Stack>
+                            </Grid>
                         </Grid>
-                        <Grid xs={12} md={4}>
-                            <Typography fontWeight={700} fontSize={16} >
-                                Room type
-                            </Typography>
-                            <Stack sx={{mt: 1}} direction="column" spacing={0} justifyContent="center">
-                                <Typography fontWeight={400} fontSize={16} >
-                                    <b>Unit</b> {post?.unitId?.name}
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={16} >
-                                    <b>Detail</b> {post?.unitId?.details}
-                                </Typography>
-                            </Stack>
-                        </Grid>
-                        <Grid xs={12} md={4}>
-                            <Typography fontWeight={700} fontSize={16} >
-                                Time & price
-                            </Typography>
-                            <Stack sx={{mt: 1}} direction="column" spacing={0} justifyContent="center">
-                                <Typography fontWeight={400} fontSize={16}>
-                                    <b>Check-in:</b>  {formatDate(post?.start_date)}
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={16}>
-                                    <b>Check-out:</b>  {formatDate(post?.end_date)}
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={16} >
-                                    <b>Night:</b>  {post?.numberOfNights}
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={16} >
-                                    <b>Price:</b>  ${post?.price} (${post?.pricePerNight}/night)
-                                </Typography>
-                            </Stack>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
             </Grid>
             <Grid xs={12} md={12}>
                 <Typography fontWeight={700} fontSize={16} >
                     Renting request
                 </Typography>
-                <RentRequestList timeshareId={timeshareId}/>
+                <RentRequestList timeshareId={timeshareId} />
                 <Typography fontWeight={700} fontSize={16} >
                     Exchange request
                 </Typography>
-                <ExchangeRequestList timeshareId={timeshareId}/>
+                <ExchangeRequestList timeshareId={timeshareId} />
             </Grid>
             {/*<Grid xs={12} md={8} sx={{ p: 1, boxShadow: '0 0 2px gray' }}>*/}
 
@@ -365,7 +381,7 @@ export default function ManageTimeshares() {
                 aria-describedby="modal-desc"
                 open={open}
                 onClose={() => setOpen(false)}
-                sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             >
                 <Sheet
                     variant="outlined"
@@ -376,7 +392,7 @@ export default function ManageTimeshares() {
                         boxShadow: 'lg',
                     }}
                 >
-                    <ModalClose variant="plain" sx={{m: 1}}/>
+                    <ModalClose variant="plain" sx={{ m: 1 }} />
                     <Typography
                         component="h2"
                         id="modal-title"

@@ -118,6 +118,7 @@ export default function MyTimeshares() {
                 <Routes>
                     <Route>
                         <Route path="/timeshares-list/:timeshareId" element={<ManageTimeshares />} />
+                        <Route path="/" element={<TimeshareList />} />
                         <Route path="/timeshares-list" element={<TimeshareList />} />
                         <Route path="/" element={<TimeshareList />} />
                         <Route path="/update/:timeshareId" element={<UpdateTimeshare />} />
