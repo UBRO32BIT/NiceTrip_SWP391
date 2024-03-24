@@ -119,7 +119,7 @@ export default function OrderPaymentInfoModal(props: any) {
                                         <strong>Paid at:</strong> {formatDate(paymentInfo.timestamp)}
                                     </p>
                                     <p>
-                                        <strong>User ID:</strong> {paymentInfo.userId}
+                                        <strong>User ID:</strong> {paymentInfo?.sender?._id}
                                     </p>
                                     <img src={paymentInfo.method?.logoImg} alt="Logo" style={{ width: '50px', height: 'auto' }} />
                                     {/* Add other payment details as needed */}
