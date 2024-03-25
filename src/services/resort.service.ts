@@ -6,7 +6,8 @@ const GetResort = () => {
             return res.data.data.results
         })
         .catch((error) => {
-
+            console.error(error);
+            throw error;
         })
 }
 const GetResortById = async (id: string) => {

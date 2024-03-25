@@ -45,7 +45,7 @@ const TimeshareList = () => {
     return <>
         <Container>
             <Row>
-				<TourCard myPosts={myPosts} />
+                <TourCard myPosts={myPosts} />
             </Row>
         </Container>
     </>

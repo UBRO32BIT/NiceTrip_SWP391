@@ -24,8 +24,8 @@ import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import LuggageIcon from '@mui/icons-material/Luggage';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import PostAddIcon from '@mui/icons-material/PostAdd';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ForestIcon from '@mui/icons-material/Forest';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { closeSidebar } from '../utils';
@@ -186,14 +186,14 @@ export default function Sidebar() {
         >
 
 
-          {/* <NavLink to="/me/dashboard" style={{ textDecoration: 'none' }}>
+          <NavLink to="/admin" style={{ textDecoration: 'none' }}>
             <ListItemButton>
-              <DashboardRoundedIcon />
+              <DashboardIcon />
               <ListItemContent>
                 <Typography level="title-sm">Dashboard</Typography>
               </ListItemContent>
             </ListItemButton>
-          </NavLink> */}
+          </NavLink>
 
           <NavLink to="/admin/account-list" style={{ textDecoration: 'none' }}>
             <ListItemButton>
@@ -217,9 +217,17 @@ export default function Sidebar() {
 
           <NavLink to="/admin/resort-list" style={{ textDecoration: 'none' }}>
             <ListItemButton>
-              <LuggageIcon />
+              <ForestIcon />
               <ListItemContent>
                 <Typography level="title-sm">Resorts</Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </NavLink>
+          <NavLink to="/admin/timeshare-list" style={{ textDecoration: 'none' }}>
+            <ListItemButton>
+              <LuggageIcon />
+              <ListItemContent>
+                <Typography level="title-sm">Timeshares</Typography>
               </ListItemContent>
             </ListItemButton>
           </NavLink>

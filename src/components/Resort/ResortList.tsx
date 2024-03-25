@@ -26,6 +26,7 @@ import Dropdown from '@mui/joy/Dropdown';
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
@@ -34,7 +35,9 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import { GetAllResort } from '../../services/admin.services';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import { DialogActions, DialogContent, DialogTitle } from '@mui/joy';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -76,7 +79,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-function RowMenu() {
+function RowMenu({resort, setOpenDelete, navigate, setResortModal}: any) {
   return (
     <Dropdown>
       <MenuButton
@@ -86,11 +89,12 @@ function RowMenu() {
         <MoreHorizRoundedIcon />
       </MenuButton>
       <Menu size="sm" sx={{ minWidth: 140 }}>
-        <MenuItem>Edit</MenuItem>
-        <MenuItem>Rename</MenuItem>
-        <MenuItem>Move</MenuItem>
+        <MenuItem onClick={() => navigate(`/admin/resort-list/edit/${resort._id}`)}>Edit</MenuItem>
         <Divider />
-        <MenuItem color="danger">Delete</MenuItem>
+        <MenuItem color="danger" onClick={() => {
+          setResortModal(resort);
+          setOpenDelete(true);
+        }}>Delete</MenuItem>
       </Menu>
     </Dropdown>
   );
@@ -105,7 +109,11 @@ export default function ResortList() {
   const [order, setOrder] = React.useState<Order>('desc');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const [resortModal, setResortModal] = React.useState<any>(null);
   const { pageString } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   async function getAllResorts() {
     const data = await GetAllResort(search, page);
     if (data && data.results) {
@@ -120,6 +128,10 @@ export default function ResortList() {
     e.preventDefault()
     console.log(searchTemp);
     setSearch(searchTemp);
+  }
+  const deleteResort = async (resortId: string) => {
+    console.log("hello world");
+    setOpenDelete(false);
   }
   React.useEffect(() => {
     getAllResorts();
@@ -330,13 +342,33 @@ export default function ResortList() {
                     <Link level="body-xs" component="button">
                       View details
                     </Link>
-                    <RowMenu />
+                    <RowMenu resort={resort} navigate={navigate} setOpenDelete={setOpenDelete} setResortModal={setResortModal}/>
                   </Box>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
+        <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
+          <ModalDialog variant="outlined" role="alertdialog">
+            <DialogTitle>
+              <WarningRoundedIcon />
+              Confirmation
+            </DialogTitle>
+            <Divider />
+            <DialogContent>
+              Are you sure you want to delete {resortModal?.name}?
+            </DialogContent>
+            <DialogActions>
+              <Button variant="solid" color="warning" onClick={() => deleteResort(resortModal?._id)}>
+                Yes
+              </Button>
+              <Button variant="plain" color="neutral" onClick={() => setOpenDelete(false)}>
+                No
+              </Button>
+            </DialogActions>
+          </ModalDialog>
+        </Modal>
       </Sheet>
       <Box
         className="Pagination-laptopUp"

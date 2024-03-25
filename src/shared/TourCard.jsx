@@ -95,10 +95,12 @@ const post = {
                     <h5 className='tour__title'>{post?.resortId?.name}</h5>
                     <Stack >
                       <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography fontWeight={500} fontSize={14}>
-                          Unit: {post?.unitId?.name}
-                        </Typography>
-                        <Stack direction="row"></Stack>
+                          <Typography fontWeight={500} fontSize={14}>
+                              Unit:
+                          </Typography>
+                          <Typography fontWeight={400} fontSize={14}>
+                              {post.unitId.name}
+                          </Typography>
                       </Box>
                       <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography fontWeight={500} fontSize={14}>

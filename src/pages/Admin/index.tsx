@@ -14,6 +14,10 @@ import userEvent from '@testing-library/user-event';
 import ResortList from '../../components/Resort/ResortList';
 import CreateResort from '../../components/Resort/CreateResort';
 import PaymentDashboard from '../../components/Payment';
+import AdminOverview from '../../components/AdminOverview';
+import TimeshareAdmin from '../../components/TimeshareAdmin';
+import EditResort from '../../components/Resort/EditResort';
+import TimeshareDetails from '../../components/TimeshareAdmin/TimeshareDetails';
 
 export default function JoyOrderDashboardTemplate() {
   const navigate = useNavigate();
@@ -55,10 +59,14 @@ export default function JoyOrderDashboardTemplate() {
             >
               <Routes>
                 <Route>
+                    <Route path="/" element={<AdminOverview/>}/>
                     <Route path="/account-list/*" element={<AccountManagement />} />
                     <Route path="/request-list/*" element={<RequestManagement />} />
                     <Route path="/resort-list/" element={<ResortManagement/>} />
                     <Route path="/resort-list/create" element={<CreateResort/>} />
+                    <Route path="/resort-list/edit/:id" element={<EditResort/>}/>
+                    <Route path="/timeshare-list/" element={<TimeshareAdmin/>} />
+                    <Route path="/timeshare-list/:id" element={<TimeshareDetails/>} />
                     <Route path="/payment-list" element={<PaymentDashboard/>}/>
                 </Route>
               </Routes>

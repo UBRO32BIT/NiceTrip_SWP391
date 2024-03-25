@@ -92,7 +92,9 @@ const Home = () => {
                             <Subtitle subtitle={'Explore'}/>
                             <h2 className='featured__tour-title'> Our featured timeshares</h2>
                         </Col>
-                        {<FeaturedTourList posts={posts}/>}
+                        <Col lg='12'>
+                            {<FeaturedTourList posts={posts}/>}
+                        </Col>
                     </Row>
                     <div className="d-flex justify-content-center">
                         <Link to="/timeshare" className="btn btn-primary bg-white " style={{ color: 'orange', borderColor: 'orange', marginTop: ' 30px' }}>View more timeshares...</Link>
