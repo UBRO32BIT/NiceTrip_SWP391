@@ -12,7 +12,7 @@ import IconButton from '@mui/joy/IconButton';
 import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
 import MenuItem from '@mui/joy/MenuItem';
-import MoreVert from '@mui/icons-material/MoreVert';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import { CssVarsProvider } from '@mui/joy';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import PersonIcon from '@mui/icons-material/Person';
@@ -95,18 +95,29 @@ const Header = () => {
                           </ListItemDecorator>{' '}
                           Dashboard
                         </MenuItem>
-                        <MenuItem onClick={() => navigate('/me/my-timeshares')}>
-                          <ListItemDecorator>
-                            <DeckIcon />
-                          </ListItemDecorator>{' '}
-                          My timeshare
-                        </MenuItem>
-                        <MenuItem onClick={() => navigate('/me/my-trips')}>
-                          <ListItemDecorator>
-                            <ConfirmationNumberIcon />
-                          </ListItemDecorator>{' '}
-                          My trips
-                        </MenuItem>
+                        {userInfo.role === 'admin' ? (
+                          <MenuItem onClick={() => navigate('/admin')}>
+                            <ListItemDecorator>
+                              <DashboardIcon />
+                            </ListItemDecorator>{' '}
+                            Admin Dashboard
+                          </MenuItem>
+                        ) : (
+                          <>
+                            <MenuItem onClick={() => navigate('/me/my-timeshares')}>
+                              <ListItemDecorator>
+                                <DeckIcon />
+                              </ListItemDecorator>{' '}
+                              My timeshare
+                            </MenuItem>
+                            <MenuItem onClick={() => navigate('/me/my-trips')}>
+                              <ListItemDecorator>
+                                <ConfirmationNumberIcon />
+                              </ListItemDecorator>{' '}
+                              My trips
+                            </MenuItem>
+                          </>
+                        )}
                         <MenuItem onClick={logout}>
                           <ListItemDecorator>
                             <LogoutIcon />
