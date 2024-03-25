@@ -44,14 +44,8 @@ const TimeshareList = () => {
     }, [sort, page]);
     return <>
         <Container>
-            <Row className="d-flex align-items-center justify-content-center">
-            </Row>
-            <Row className="text-center my-3">
-            </Row>
             <Row>
-                    <Col lg='3' md='6' className='mb-4 position-relative'>
-						<TourCard myPosts={myPosts} />
-                    </Col>
+                <TourCard myPosts={myPosts} />
             </Row>
         </Container>
     </>

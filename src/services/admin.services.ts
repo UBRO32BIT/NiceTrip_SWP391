@@ -174,6 +174,47 @@ const ReportBalance = () => {
         throw error; // Re-throw the error to let the caller handle it if needed
     })
 }
+const GetAllTimeshare = async (search: string, page: any, sortField: any, sortOrder: any) => {
+    return api.get(`/timeshare?search=${search}&page=${page}&sort=${sortField},${sortOrder}`)
+    .then((res) => {
+        return res.data.data
+    })
+    .catch((error) => {
+        // Handle errors here, you might want to log or show a user-friendly message
+        console.error('Error fetching posts: ', error);
+        throw error; // Re-throw the error to let the caller handle it if needed
+    })
+}
+const VerifyTimeshare = async (timeshareId: string) => {
+    return api.patch(`/timeshare/verify/${timeshareId}`)
+    .then((res) => {
+        return res.data.data
+    })
+    .catch((error) => {
+        console.error(error);
+        throw Error(error.response.data.message);
+    })
+}
+const DeleteTimeshare = async (timeshareId: any) => {
+    return api.delete(`/timeshare/${timeshareId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error(error);
+            throw Error(error.response.data.message);
+        })
+}
+const GetAllPayment = async () => {
+    return api.get('/payment/rental-transaction')
+    .then((res) => {
+        return res.data.data
+    })
+    .catch((error) => {
+        console.error(error);
+        throw error;
+    })
+}
 export{
     GetAllAccount,
     GetAllRequest,
@@ -190,5 +231,9 @@ export{
     AcceptRequest,
     ShowPendingRequest,
     CancelRequest,
-    ReportBalance
+    ReportBalance,
+    GetAllPayment,
+    GetAllTimeshare,
+    VerifyTimeshare,
+    DeleteTimeshare,
 }

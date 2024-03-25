@@ -48,7 +48,7 @@ useEffect(() => {
     return new Date(dateString).toLocaleDateString("en-US", options);
   }
   return (
-    <Grid container spacing={2} minWidth={'70rem'} className="all__card">
+    <Grid container spacing={2} minWidth={'25%'} className="all__card">
     {myPosts.length > 0 ? (
       myPosts.map((post) => {
         const { totalRating, avgRating } = calculateAvgRating(post.reviews);
@@ -87,7 +87,7 @@ useEffect(() => {
                               Unit:
                           </Typography>
                           <Typography fontWeight={400} fontSize={14}>
-                              {post.unit.name}
+                              {post.unitId.name}
                           </Typography>
                           {/* <Stack direction="row">
                                 

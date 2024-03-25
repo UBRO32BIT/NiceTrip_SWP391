@@ -89,7 +89,9 @@ const Home = () => {
                             <Subtitle subtitle={'Explore'}/>
                             <h2 className='featured__tour-title'> Our featured timeshares</h2>
                         </Col>
-                        {<FeaturedTourList posts={posts}/>}
+                        <Col lg='12'>
+                            {<FeaturedTourList posts={posts}/>}
+                        </Col>
                     </Row>
                 </Container>
             </section>
