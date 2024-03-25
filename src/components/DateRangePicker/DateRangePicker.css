@@ -1,0 +1,25 @@
+/* DateRangePicker.css */
+
+.date-range-picker {
+    padding: 10px;
+    display: flex; /* Use flexbox */
+    flex-direction: column; /* Stack elements vertically */
+    align-items: flex-start; /* Align items to the left */
+}
+
+.date-range-picker h6 {
+    margin: 10px 0; /* Adjust margin */
+}
+
+.date-range-picker input[type="date"] {
+    margin-right: 0; /* Remove margin-right */
+    margin-bottom: 10px; /* Add margin-bottom for spacing between inputs */
+    border-radius: 5px;
+    border: 1px solid #858585;
+    padding: 5px;
+    outline: none;
+}
+
+.date-range-picker input[type="date"]:focus {
+    border-color: #929292;
+}

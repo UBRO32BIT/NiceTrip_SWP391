@@ -236,7 +236,7 @@ export default function Sidebar() {
               </ListItemContent>
             </ListItemButton>
           </NavLink>
-
+{/* 
           <NavLink to="/me/my-resorts" style={{ textDecoration: 'none' }}>
             <ListItemButton>
               <FavoriteIcon />
@@ -244,7 +244,7 @@ export default function Sidebar() {
                 <Typography level="title-sm">My resorts</Typography>
               </ListItemContent>
             </ListItemButton>
-          </NavLink>
+          </NavLink> */}
 
           <NavLink to="/me/my-messages" style={{ textDecoration: 'none' }}>
             <ListItemButton>
@@ -269,7 +269,7 @@ export default function Sidebar() {
             mb: 2,
           }}
         >
-          <NavLink to="/me/support" style={{ textDecoration: 'none' }}>
+          {/* <NavLink to="/me/support" style={{ textDecoration: 'none' }}>
             <ListItemButton>
               <SupportRoundedIcon />
               Support
@@ -281,7 +281,7 @@ export default function Sidebar() {
               <SettingsRoundedIcon />
               Settings
             </ListItemButton>
-          </NavLink>
+          </NavLink> */}
         </List>
         
         <Card
@@ -301,12 +301,11 @@ export default function Sidebar() {
   ) : (
     <>
       <Typography level="body-xs">
-        Bạn muốn đăng timeshare để cho thuê hoặc trao đổi ?
+        Do you want to post your timeshare for rental or exchange ?
       </Typography>
-      <LinearProgress variant="outlined" value={80} determinate sx={{ my: 1 }} />
       <Link to="/me/my-profile/billing">
       <Button size="sm" variant="solid">
-        Trở thành member
+        Upgrade now
       </Button>
     </Link>
     </>
