@@ -19,12 +19,13 @@ import CardOverflow from '@mui/joy/CardOverflow';
 import { useSelector } from 'react-redux';
 import ResortInput from './ResortInput'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { UploadPost } from '../../services/post.service';
+import { UploadPost, UpdateTimeshare } from '../../services/post.service';
 import CardContent from '@mui/joy/CardContent';
 import { Routes, Route, useParams } from 'react-router-dom';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { GetPostById } from '../../services/post.service';
-
+import {isValidDateRange} from "../../utils/date";
+import {enqueueSnackbar, useSnackbar} from 'notistack';
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -38,7 +39,7 @@ function sleep(duration: number): Promise<void> {
         }, duration);
     });
 }
-export default function UpdateTimeshare() {
+export default function UpdateTimeshareForm() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [imageFiles, setImageFiles] = React.useState<any[]>([]);
     const [startDate, setStartDate] = React.useState<string>('');
@@ -64,31 +65,68 @@ export default function UpdateTimeshare() {
         }
     }
     const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStartDate(e.target.value);
+        let isValid = true;
+        if (endDate !== '') {
+            isValid = isValidDateRange(e.target.value, endDate)
+        }
+        if (isValid) {
+            setStartDate(e.target.value);
+        }
+        else enqueueSnackbar("Invalid date range", { variant: "error" });
     };
 
     const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEndDate(e.target.value);
+        let isValid = true;
+        if (startDate !== '') {
+            isValid = isValidDateRange(startDate, e.target.value)
+        }
+        if (isValid) {
+            setEndDate(e.target.value);
+        }
+        else enqueueSnackbar("Invalid date range", { variant: "error" });
     };
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPrice(e.target.value);
+        if (e.target.value) {
+            if (parseInt(e.target.value) > 0) {
+                setPrice(e.target.value);
+            }
+            else enqueueSnackbar("Price must be a positive number!", { variant: "error" });
+        }
+        else setPrice('');
     };
 
     async function handleSubmit(e: any) {
-        setUploading(true);
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget)
-        imageFiles.forEach((file, index) => {
-            formData.append('imageFiles', file);
-        });
-        const formJson = Object.fromEntries((formData as any).entries());
-        console.log(formJson)
-        const result = await UploadPost(formData);
-        if (result) {
+        try{
+            setUploading(true);
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget)
+            if(imageFiles.length == 0){
+                throw new Error('Image required')
+            }
+            if(imageFiles.length > 5){
+                throw new Error('Image files cannot exceed 5 files')
+            }
+
+            imageFiles.forEach((file, index) => {
+                formData.append('imageFiles', file);
+            });
+            const formJson = Object.fromEntries((formData as any).entries());
+            if(formJson.start_date > formJson.end_date){
+                throw new Error('Start date can not be after end date')
+            }
+            const result = await UpdateTimeshare(postId, formData);
+            if (result) {
+                setUploading(false)
+                enqueueSnackbar("Update timeshare successfully", { variant: "success" });
+            }
+            // window.location.reload();
+        }catch(err: any){
+            enqueueSnackbar(err.message, { variant: "error" });
+        }finally {
             setUploading(false)
         }
-        window.location.reload();
+
     }
     const calculateNumberOfNights = () => {
         if (startDate && endDate) {
