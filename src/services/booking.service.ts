@@ -192,12 +192,12 @@ const CancelExchangeByOwner = (exchangeId: any) => {
 }
 
 const GetOrderPaymentInfo = (userId: string, reservationId: string) => {
-    return api.get(`/payment/${userId}/${reservationId}`)
+    return api.get(`/payment/?sender=${userId}&reservationId=${reservationId}`)
         .then((res) => {
             return res.data.data
         })
         .catch((error) => {
-            console.error('Error fetching resort by ID:', error);
+            console.error('Error fetching payment info:', error);
             throw error;
         })
 }

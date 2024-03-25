@@ -13,7 +13,8 @@ import {GetExchangeOfUser} from '../../services/booking.service';
 import {CancelMyExchangeRequest} from '../../services/booking.service';
 import {CancelMyRentalRequest} from '../../services/booking.service';
 import {DeleteMyExchangeRequest} from '../../services/booking.service';
-import {Routes, Route, Navigate, useNavigate, NavLink, Link} from "react-router-dom";
+import Link from '@mui/joy/Link';
+import {Routes, Route, Navigate, useNavigate, NavLink} from "react-router-dom";
 import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
 import Divider from '@mui/joy/Divider';
@@ -43,6 +44,7 @@ import {InfoOutlined} from "@mui/icons-material";
 import Checkbox from "@mui/joy/Checkbox";
 import OrderDetailModal from "./OrderDetailModal";
 import {useSnackbar} from 'notistack';
+import {CreateConversation} from "../../services/chat.service";
 
 interface RootState {
     auth: {
@@ -242,11 +244,23 @@ export default function OrderList() {
                             </CardContent>
                             <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
                                 <Divider inset="context"/>
-                                <CardContent orientation="horizontal">
-                                    <Typography level="body-md" fontWeight="md" textColor="text.secondary">
-                                        ${item?.amount}
-                                    </Typography>
-                                    <Divider orientation="vertical"/>
+                                <CardContent orientation="horizontal" sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                    <Box sx={{display: 'flex', gap: 2}}>
+                                        <Typography level="body-md" fontWeight="md" textColor="text.secondary">
+                                            ${item?.amount}
+                                        </Typography>
+                                        <Divider orientation="vertical"/>
+                                        <Typography level="body-md" fontWeight="md" textColor="text.secondary">
+                                            {formatDate(item?.createdAt)}
+                                        </Typography>
+                                    </Box>
+                                    <Link sx={{float: 'right', mx: '14px'}} level="body-xs" component="button"
+                                          onClick={()=>{
+                                              CreateConversation(user?._id, item?._id)
+                                              navigate('/me/my-messages')
+                                          }}>
+                                        Contact
+                                    </Link>
                                 </CardContent>
                             </CardOverflow>
                         </Card>

@@ -4,6 +4,7 @@ import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Sidebar from '../../components/Profile/Sidebar';
 import Header from '../../components/Profile/Header';
+import Dashboard from '../../components/Dashboard';
 import MyProfile from '../../components/Profile/MyProfile';
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import MyOrder from '../../components/Order/MyOrder';
@@ -48,6 +49,7 @@ export default function JoyOrderDashboardTemplate() {
               <Routes>
                 <Route>
                   <Route path="/" element={<MyProfile />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/my-profile/*" element={<MyProfile />} />
                   <Route path="/my-timeshares/*" element={<MyTimeshares />} />
                   <Route path="/my-trips/*" element={<MyTrip />} />

@@ -57,32 +57,35 @@ interface Resort {
 export default function ReviewOrder() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [post, setPost] = React.useState<any>([]);
-    let [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
+    let [searchParams, setSearchParams] = useSearchParams();
     let {postId, reservationId} = useParams();
     let paymentId = searchParams.get('paymentId');
-    let PayerID = searchParams.get('PayerID');
+    let payerID = searchParams.get('PayerID');
     const [uploading, setUploading] = React.useState<boolean>(false);
 
     async function handleAccept(e: any) {
         setUploading(true)
         e.preventDefault();
         const reservationData = await GetReservationById(reservationId);
-        const totalAmount = reservationData?.amount
-        const postId = reservationData?.postId?._id
+        const amount = reservationData?.amount
+        const owner = reservationData?.timeshareId?.current_owner?._id
+        const timeshareId = reservationData?.timeshareId?._id
         const userId = user?._id
         const data = {
-            userId,
-            postId,
             reservationId,
-            paymentId,
-            PayerID,
-            totalAmount
+            timeshareId: timeshareId, 
+            sender: userId,
+            receiver: owner,
+            payerID: payerID,
+            paymentId: paymentId,
+            method: 'paypal',
+            amount: amount,
         }
         const executed = await ExecutePayPalPayment(data);
         if (executed) {
             setUploading(false)
-            if (executed?.state === "approved") navigate('/thank-you', executed)
+            if (executed) navigate('/thank-you', executed)
         }
     }
 

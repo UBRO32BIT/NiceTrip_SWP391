@@ -11,16 +11,9 @@ const quick_link = [
   },
   {
     path: '/about',
-    display: 'About'
+    display: 'About us'
   },
-  {
-    path: '/yourtimeshare',
-    display: 'Timeshare Your Timeshare'
-  },
-  {
-    path: '/tours',
-    display: 'Timeshare Rentals'
-  },
+
 ];
 
 
@@ -31,11 +24,11 @@ const Footer = () => {
   return <footer className='footer' >
     <Container>
       <Row>
-        <Col lg='3'>
+        <Col lg='3' >
           <div className="logo">
             <img src={logo} alt="" />
             <p></p>
-            <p>NiceTrip ASIA Luxury Resort Services Joint Stock Company</p>
+            <p>NiceTrip ASIA Luxury Resort</p>
             <div className='social__links d-flex align-items-center gap-4'>
               <span>
                 <Link to='#'><i class="ri-youtube-line"></i></Link>
@@ -49,8 +42,8 @@ const Footer = () => {
             </div>
           </div>
         </Col>
-        <Col lg='6'>
-          <h5 className='footer__link-title'>Discover</h5>
+        <Col lg='3'>
+          <h5 className='footer__link-title'>ABOUT</h5>
           <ListGroup className='footer__quick-links'>
             {
               quick_link.map((item, index) => (
@@ -62,37 +55,53 @@ const Footer = () => {
           </ListGroup>
         </Col>
         
-        <Col lg='2'>
-          <h5 className='footer__link-title'>Contacts</h5>
+        <Col lg='3'>
+          <h5 className='footer__link-title'>CONTACTS</h5>
           <ListGroup className='footer__quick-links'>
             <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
-              <h6>
-                <span className='mb-0 d-flex align-items-center gap-2'>
                   <i class="ri-map-pin-line"></i>
-                  Address:
-                </span>
-                <p className='mb-0'>Thành phố Hồ Chí Minh, Việt Nam </p>
-              </h6>
+                  <p className='mb-0'> Thu Duc, HCM City, VN </p>
+
             </ListGroupItem>
             <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
-              <h6>
                 <span className='mb-0 d-flex align-items-center gap-2'>
                   <i class="ri-mail-line"></i>
-                  Email:
                 </span>
                 <p className='mb-0'> nicetrip@gmail.com </p>
-              </h6>
             </ListGroupItem>
             <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
-              <h6>
                 <span className='mb-0 d-flex align-items-center gap-2'>
                   <i class="ri-phone-line"></i>
-                  Phone:
                 </span>
                 <p className='mb-0'> 0917497476 </p>
-              </h6>
             </ListGroupItem>
           </ListGroup>
+        </Col>
+        <Col lg='3'>
+          <h5 className='footer__link-title'>TIMESHARE RENTALS</h5>
+          <ListGroup className='footer__quick-links'>
+        <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
+            <a href='/timeshare' className='mb-0 d-flex align-items-center gap-2'>
+                Find a Timeshare to Rental
+            </a>
+        </ListGroupItem>
+        <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
+            <a href='/me/my-timeshares/upload-new-timeshare' className='mb-0 d-flex align-items-center gap-2'>
+                Rent My Timeshare
+            </a>
+        </ListGroupItem>
+        <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
+            <a href='/timeshare' className='mb-0 d-flex align-items-center gap-2'>
+                Find Timeshares for Exchange
+            </a>
+        </ListGroupItem>
+        <ListGroupItem className='ps-0 border-0 d-flex align-items-center gap-3'>
+            <a href='/me/my-timeshares/upload-new-timeshare' className='mb-0 d-flex align-items-center gap-2'>
+                Exchange My Timeshare
+            </a>
+        </ListGroupItem>
+    </ListGroup>
+
         </Col>
         <Col lg='12' className='text-center pt-5'>
           <p className='copyright'>Copyright By NiceTrip-{year}. All rights reserved</p>

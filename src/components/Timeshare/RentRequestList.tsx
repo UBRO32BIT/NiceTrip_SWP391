@@ -330,8 +330,7 @@ export default function RentRequestList(props: any) {
                             </td>
                             <td>
                                 <Typography level="body-xs">
-                                    {RenderAcceptDenyButtons(row)}
-                                
+                                    {row?.status !== 'Canceled' ? RenderAcceptDenyButtons(row): 'None'}
                                 </Typography>
                             </td>
                             <td>

@@ -107,7 +107,7 @@ export default function ThankYou() {
             <Grid container spacing={0} sx={{ flexGrow: 1, width: 1, pr: 4, pl: 4, mt: 2, gap: 1, flexWrap: { xs: 'wrap', md: 'nowrap', } }}>
                 <Sheet variant="outlined" color="neutral" sx={{ p: 4 }}>
                     Thanh toán thành công
-                    <NavLink to="/me/my-order"  >
+                    <NavLink to="/me/my-orders"  >
                     <Typography level="title-sm">Return to My orders</Typography>
                 </NavLink>
                 </Sheet>

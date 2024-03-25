@@ -1,18 +1,86 @@
-.search {
-	margin-right: 15px;
-	height: 40px;
-	align-self: center;
-	outline: none;
-	border: none;
-	width: 300px;
-	border-radius: 15px;
-	padding-left: 5px;
-	font-size: 15px;
-	background-color: #f0f2f5;
-	padding: 5px;
-	padding-left: 20px;
-	margin-left: 5px;
+.searchContainer {
+    display: flex;
+    align-items: center;
 }
-.search::placeholder {
-    text-align: left; /* Cài đặt text-align left cho placeholder */
+
+.searchInput {
+    height: 40px;
+    outline: none;
+    border: none;
+    width: 400px;
+    border-radius: 20px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #f0f2f5;
+    transition: background-color 0.3s ease;
+}
+
+.searchInput::placeholder {
+    color: #6c757d;
+}
+
+.searchButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: -40px;
+}
+
+.searchButton:focus {
+    outline: none;
+}
+
+.searchButton:hover {
+    color: #1a73e8;
+}
+
+/* styles.module.css */
+.searchContainer {
+    position: relative;
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 5px); /* Đặt vị trí của dropdown ở phía dưới ô tìm kiếm */
+    left: 0;
+    z-index: 1000; /* Đảm bảo dropdown hiển thị trên các phần tử khác */
+    background-color: #f0f2f5;;
+    border-radius: 10px;
+    padding: 5px;
+    width: 400px; /* Đặt độ rộng của dropdown bằng với thanh tìm kiếm */
+}
+
+.dropdown div {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.dropdown div:hover {
+    background-color: #f0f0f0;
+}
+.removeButton {
+    background-color: transparent;
+    color: #ff0000; /* Màu đỏ */
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+    padding: 0;
+    outline: none;
+}
+
+.removeButton:hover {
+    color: #ff6666; /* Màu đỏ nhạt khi hover */
+}
+.historyIcon {
+    margin-right: 5px; /* Đặt khoảng cách 5px giữa icon và nội dung */
+}
+.historyItem {
+    display: flex;
+    align-items: center;
+}
+
+.removeButton {
+    margin-left: auto;
 }
