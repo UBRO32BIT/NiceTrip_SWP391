@@ -14,6 +14,9 @@ import Pagination from "../components/Pagination";
 import { useSelector } from "react-redux";
 import Search from "../components/Search";
 import Type from "../components/Type";
+import Grid from '@mui/joy/Grid';
+import DateRangePicker from '../components/DateRangePicker';
+import { Box } from '@mui/joy';
 
 const TimeshareList = () => {
     const [obj, setObj] = useState({});
@@ -24,14 +27,16 @@ const TimeshareList = () => {
 	const [filterType, setfilterType] = useState([]);
     const [myPosts, setMyPosts] = useState([]); // Initialize myPosts as an empty array
     const [loading, setLoading] = useState(true); // State to track loading state
+    const [endDate, setEndDate] = useState(""); // State for end date filter
+    const [startDate, setStartDate] = useState(""); // State for start date filter
 
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-				const url = `http://localhost:8080/api/v2/timeshare?page=${page}&sort=${sort.sort},${
+				const url = `http://localhost:8080/api/v2/timeshare/query?page=${page}&sort=${sort.sort},${
 					sort.order
-				}&type=${filterType}&search=${search}`;
+				}&type=${filterType}&search=${search}&start_date=${startDate}&end_date=${endDate}`;
                 console.log(url);
 
                 const { data } = await axios.get(url);
@@ -43,35 +48,49 @@ const TimeshareList = () => {
 			}
         }
         fetchData();
-    }, [sort, filterType, page, search]);
-    return <>
-        <Header/>
-        <Container>
-            <Row className="d-flex align-items-center justify-content-center">
-            </Row>
-            
-            <Row className="text-center my-3">
-			<div style={{ display: 'flex', alignItems: 'center' }}>
-                <Search setSearch={(search) => setSearch(search)} />
-                <Sort sort={sort} setSort={(sort) => setSort(sort)} />
-            </div>
-            <Pagination
-							page={page}
-							limit={obj.limit ? obj.limit : 0}
-							total={obj.total ? obj.total : 0}
-							setPage={(page) => setPage(page)}
-						/>
-            </Row>
-            <Row>
-                    <Col lg='3' md='6' className='mb-4 position-relative'>
-						<TourCard myPosts={myPosts} />
+    }, [sort, filterType, page, search, , startDate, endDate]);
+    return (
+        <>
+            <Header/>
+            <Container mb={3}>
+                <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                    <Grid xs={2}>
+                        <Row className="text-center my-3">
+                            <Sort sort={sort} setSort={(sort) => setSort(sort)} />
+                            <Type 
+                                types={["rental", "exchange"]} 
+                                
+                                filterType={filterType} 
+                                setfilterType={setfilterType} 
+                            />
+                            <DateRangePicker
+                                startDate={startDate}
+                                endDate={endDate}
+                                setStartDate={setStartDate}
+                                setEndDate={setEndDate}
+                            />
+                            <Pagination
+                                page={page}
+                                limit={obj.limit ? obj.limit : 0}
+                                total={obj.total ? obj.total : 0}
+                                setPage={(page) => setPage(page)}
+                            />
 
-                    </Col>
-            </Row>
-            
-        </Container>
-        <Footer/>
-    </>
+                        </Row>
+                    </Grid>
+                    <Grid xs={10}>
+                        <div style={{marginBottom:'50px', marginTop:'25px'}}>
+                            <Search setSearch={(search) => setSearch(search)} />
+                        </div>
+                        <Col >
+                            <TourCard myPosts={myPosts} />
+                        </Col>
+                    </Grid>
+                </Grid>
+            </Container>
+            <Footer/>
+        </>
+    );
 }
 
 export default TimeshareList;

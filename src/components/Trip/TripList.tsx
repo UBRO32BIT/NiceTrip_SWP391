@@ -12,15 +12,17 @@ import { GetReservationOfUser, GetTripOfUser } from '../../services/booking.serv
 import { Routes, Route, Navigate, useNavigate, NavLink, Link } from "react-router-dom";
 import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
-import Divider from '@mui/joy/Divider';
 import Chip from '@mui/joy/Chip';
 import JsBarcode from 'jsbarcode';
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
+
+
 var { createCanvas } = require("canvas");
 // import Canvas
+
 interface RootState {
     auth: {
         isAuthenticated: boolean;
@@ -58,8 +60,10 @@ export default function TripList() {
             GetMyReservations(user?._id)
         }
     }, [user])
+
+ 
     return (
-        <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 5 }, mt: 2, }}>
+        <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 2, md: 5 }, mt: 2 }}>
             <Grid
                 md={12} xs={12}
                 sx={{
@@ -104,7 +108,7 @@ export default function TripList() {
                 </FormControl>
             </Grid>
                 {myTrips.length > 0 && myTrips.map((item: any) => {
-                    return (<Grid xs={12} md={6} lg={4} >
+                    return (<Grid xs={12} md={6} lg={6} >
                         <Card orientation="horizontal" variant="outlined" sx={{}}>
                             <CardOverflow>
                                 <AspectRatio ratio="0.6" sx={{ width: 120, height: 1 }}>
@@ -116,15 +120,52 @@ export default function TripList() {
                                     />
                                 </AspectRatio>
                             </CardOverflow>
-                            <CardContent>
-                                <Typography fontWeight="md" textColor="success.plainColor">
-                                    {item?.resortId?.name}
+                        <CardContent sx={{ overflow: 'hidden' }}>
+                            <Typography fontWeight="md" textColor="success.plainColor">
+                                {item?.resortId?.name}
+                            </Typography>
+                            <Typography level="body-sm">{item?.unitId?.name}</Typography>
+                            <Typography level="body-sm">
+                                <strong>Check-in: </strong>
+                                {formatDate(item?.check_in)}
+                            </Typography>
+                            <Typography level="body-sm">
+                                <strong>Check-out: </strong>
+                                {formatDate(item?.check_out)}
+                            </Typography>
+
+
+                        </CardContent>
+                        <CardOverflow
+                                sx={{
+                                    px: 0.2,
+                                    writingMode: 'vertical-rl',
+                                    justifyContent: 'center',
+                                    fontSize: 'xs',
+                                    fontWeight: 'xl',
+                                    letterSpacing: '1px',
+                                    textTransform: 'uppercase',
+                                    borderLeft: '1px solid',
+                                    borderColor: 'divider',
+                                }}
+                            >
+                                 <Typography sx={{marginLeft:'5px', writingMode: 'horizontal-tb',}}>
+                                <strong>Name: {item?.userId?.lastname}</strong>
                                 </Typography>
-                                <Typography level="body-sm">{item?.unitId?.name}</Typography>
-                                <Typography level="body-sm"><strong>Check-in:  </strong>{formatDate(item?.check_in)}</Typography>
-                                <Typography level="body-sm"><strong>Check-out:  </strong>{formatDate(item?.check_out)}</Typography>
-                                {/* <svg id="code"></svg> */}
-                            </CardContent>
+                                <Typography sx={{marginLeft:'5px',  writingMode: 'horizontal-tb',}}>
+                                <strong>Room Code: {item?.room_code}</strong>
+                                </Typography>        
+
+                                <Typography sx={{ width: '150px', height: '100%', display: 'block', margin: 'auto'}}>
+                                    <img
+                                        src={`https://barcodeapi.org/api/39/${item?.trip_code}`}
+                                        alt="Barcode"
+                                        style={{ width: '100%', display: 'block', margin: 'auto' }}
+                                    />
+                                
+                                </Typography>
+
+                            </CardOverflow>
                             <CardOverflow
                                 variant="soft"
                                 color="primary"
@@ -142,6 +183,8 @@ export default function TripList() {
                             >
                                 Ticket
                             </CardOverflow>
+
+
                         </Card>
                     </Grid>)
                 })}

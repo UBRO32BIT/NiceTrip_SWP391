@@ -23,10 +23,10 @@ import Switch from "@mui/joy/Switch";
 import calculateAvgRating from '../utils/avgRating';
 import { CardBody } from "reactstrap";
 import stringToArray from '../utils/stringToArray';
-import { checkNewDate } from '../utils/date';
 import { convertDate } from '../utils/date';
 import { useEffect } from 'react';
 import './tour-card.css';
+import { checkNewDate } from '../utils/date';
 
 function Table({ myPosts}) {
   const navigate = useNavigate();
@@ -37,6 +37,20 @@ function Table({ myPosts}) {
 useEffect(() => {
     console.log(myPosts);
 }, [])
+const post = {
+    id: myPosts._id,
+    title: myPosts.resortId,
+    location: myPosts.resortId,
+    image: myPosts.images,
+    price: myPosts.price,
+    pricePerNight: myPosts.pricePerNight,
+    numberOfNights: myPosts.numberOfNights,
+
+    type: myPosts.type,
+    reviews: [3, 4, 5],
+};
+    console.log('alo ' + myPosts?.data?.data)
+
 
   function formatDate(dateString) {
     if (!dateString) return "";
@@ -68,6 +82,7 @@ useEffect(() => {
                     {checkNewDate(post.timestamp) && (
                        <span className="top"><b>New</b></span>
                     )}
+
                     <span className="bottom"><b>{post?.type}</b></span>
                   </div>
                   <CardBody>
@@ -75,10 +90,7 @@ useEffect(() => {
                       <span className='tour__location d-flex align-items-center gap-1'>
                         <i class="ri-map-pin-line"></i> {post?.resortId?.location}
                       </span>
-                      <span className='tour__rating d-flex align-items-center gap-1'>
-                        <i class="ri-star-fill"></i> {avgRating === 0 ? null : avgRating}
-                        {totalRating === 0 ? 'Not rated' : <span>({post.reviews})</span>}
-                      </span>
+
                     </div>
                     <h5 className='tour__title'>{post?.resortId?.name}</h5>
                     <Stack >
@@ -89,17 +101,6 @@ useEffect(() => {
                           <Typography fontWeight={400} fontSize={14}>
                               {post.unitId.name}
                           </Typography>
-                          {/* <Stack direction="row">
-                                
-                                {post.unit.map(u => (
-                                    <Chip 
-                                        label={u} 
-                                        size="small" 
-                                        variant="outlined" 
-                                        sx={{ marginRight: '5px',borderRadius: '5px', width: '100%', height: '30px' }} // Set width and height to create square shape
-                                    />
-                                ))}
-                          </Stack> */}
                       </Box>
                       <Box sx={{ width: 1, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography fontWeight={500} fontSize={14}>

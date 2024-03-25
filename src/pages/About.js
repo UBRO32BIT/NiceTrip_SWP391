@@ -4,7 +4,7 @@ import "../styles/about.css";
 import heroImg02 from '../assets/images/hero-img02.jpg';
 import tourImg06 from '../assets/images/tour-img06.jpg';
 import tourImg04 from '../assets/images/tour-img04.jpg';
-import heroVideo from '../assets/images/hero-video.mp4';
+import heroVideo from '../assets/images/pexels-david-bartus-586687.jpg';
 import { Container, Row, Col } from 'reactstrap';
 
 
@@ -69,7 +69,7 @@ export default function About(props) {
             </Col>
             <Col lg='2'>
           <div className='hero__img-box mt-4'>
-            <video src={heroVideo} alt="" controls/>
+            <img src={heroVideo} alt="" controls/>
           </div>
             </Col> 
             <Col lg='2'>

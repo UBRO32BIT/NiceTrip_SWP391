@@ -7,15 +7,18 @@ import Footer from '../../components/Footer';
 import {Container, Row, Col} from 'reactstrap';
 import heroImg from '../../assets/images/hero-img01.jpg';
 import heroImg02 from '../../assets/images/hero-img02.jpg';
-import heroVideo from '../../assets/images/hero-video.mp4';
+import heroVideo from '../../assets/images/pexels-david-bartus-586687.jpg';
 import Subtitle from '../../shared/Subtitle';
 import worldImg from '../../assets/images/world.png';
 import SearchBar from '../../shared/SearchBar';
 import ServiceList from '../../components/services/ServiceList';
 import FeaturedTourList from '../../components/Featured-tours/FeaturedTourList';
-import experienceImg from '../../assets/images/experienceImg.jpg';
+import experienceImg from '../../assets/images/experienceImg.png';
 import Testimonial from '../../components/Testimonial/Testimonial';
 import {GetPost} from '../../services/post.service';
+import { Typography } from '@mui/joy';
+import { Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     const [posts, setPosts] = React.useState([]);
@@ -56,7 +59,7 @@ const Home = () => {
                         </Col>
                         <Col lg='2'>
                             <div className='hero__img-box mt-4'>
-                                <video src={heroVideo} alt="" controls/>
+                                <img src={heroVideo} alt="" controls/>
                             </div>
                         </Col>
                         <Col lg='2'>
@@ -64,12 +67,12 @@ const Home = () => {
                                 <img src={heroImg02} alt=""/>
                             </div>
                         </Col>
-                        <SearchBar/>
+                        {/* <SearchBar/> */}
                     </Row>
                 </Container>
             </section>
             {/*===============hero end ============*/}
-            <section>
+            {/* <section>
                 <Container>
                     <Row>
                         <Col lg='3'>
@@ -79,7 +82,7 @@ const Home = () => {
                         <ServiceList/>
                     </Row>
                 </Container>
-            </section>
+            </section> */}
 
             {/*===================== featured tour or timeshare start==============*/}
             <section>
@@ -93,6 +96,9 @@ const Home = () => {
                             {<FeaturedTourList posts={posts}/>}
                         </Col>
                     </Row>
+                    <div className="d-flex justify-content-center">
+                        <Link to="/timeshare" className="btn btn-primary bg-white " style={{ color: 'orange', borderColor: 'orange', marginTop: ' 30px' }}>View more timeshares...</Link>
+                    </div>
                 </Container>
             </section>
             {/*===================== featured tour or timeshare end==============*/}
@@ -126,15 +132,17 @@ const Home = () => {
                             </div>
                         </Col>
                         <Col lg='6'>
+                        <div className="d-flex justify-content-end">
                             <div className="experience__img">
-                                <img src={experienceImg} alt=""/>
+                                <img style={{ width: '600px' }} src={experienceImg} alt="" />
                             </div>
+                        </div>
                         </Col>
                     </Row>
                 </Container>
             </section>
             {/*===================== experience section tour or timeshare end==============*/}
-            <section>
+            {/* <section>
                 <Container>
                     <Row>
                         <Col lg='12'>
@@ -148,7 +156,7 @@ const Home = () => {
                         </Col>
                     </Row>
                 </Container>
-            </section>
+            </section> */}
 
             <Footer/>
         </>

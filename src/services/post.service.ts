@@ -11,6 +11,17 @@ const UploadPost = async (data: any) => {
             throw Error(error.response.data.message); // Re-throw the error to let the caller handle it if needed
         })
 }
+const UpdateTimeshare = async (timeshareId: any, data: any) => {
+    return api.put(`/timeshare/${timeshareId}`, data)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            // Handle errors here, you might want to log or show a user-friendly message
+            console.log(error)
+            throw Error(error.response.data.status.message); // Re-throw the error to let the caller handle it if needed
+        })
+}
 const GetPost = async () => {
     return api.get('/timeshare')
         .then((res) => {
@@ -113,5 +124,6 @@ export {
     UploadReview,
     DeleteReview,
     GetReviewByResortId,
-    CountUploadTimeshareByUser
+    CountUploadTimeshareByUser,
+    UpdateTimeshare
 }
