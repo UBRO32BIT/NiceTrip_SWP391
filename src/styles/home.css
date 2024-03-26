@@ -74,6 +74,7 @@
     width: 50px;
     height: 50px;
     margin: auto;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -88,4 +89,15 @@
 .testimonial__title {
     font-size: 2.3rem;
     margin-top: 1rem;
+}
+.circle {
+    display: inline-block;
+    width: 40px; /* Đường kính của hình tròn */
+    height: 40px; /* Đường kính của hình tròn */
+    border-radius: 50%; /* Tạo hình tròn */
+    background-color: orange; /* Màu nền của hình tròn */
+    text-align: center; /* Căn giữa nội dung trong hình tròn */
+    line-height: 40px; /* Căn giữa nội dung trong hình tròn */
+    color: white; /* Màu chữ */
+    font-weight: bold; /* Độ đậm của chữ */
 }

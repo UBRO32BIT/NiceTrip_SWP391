@@ -10,6 +10,17 @@ const GetAllAccount = async (search: any, pageNumber: any, role: any) => {
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
+
+const GetAllPaymentUpgrade = async () => {
+    return api.get(`/payment/all-payment-upgrade`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching accounts: ', error);
+            throw error; 
+        })
+}
 const GetAllRequest = () => {
     return api.get('/admin/request-list')
     .then((res) => {
@@ -247,4 +258,5 @@ export{
     VerifyTimeshare,
     DeleteTimeshare,
     RestoreTimeshare,
+    GetAllPaymentUpgrade,
 }
