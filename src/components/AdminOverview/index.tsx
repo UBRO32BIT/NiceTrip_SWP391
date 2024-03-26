@@ -13,6 +13,10 @@ import React from "react";
 import axios from "axios";
 import { GetPost } from "../../services/post.service";
 import { convertDateTime } from "../../utils/date";
+import CircularProgress from '@mui/joy/CircularProgress';
+import SvgIcon from '@mui/joy/SvgIcon';
+import  { useState, useEffect } from 'react';
+import LinearProgress from '@mui/joy/LinearProgress';
 
 const LatestTimeshare = () => {
     const [posts, setPosts] = React.useState([]);
@@ -31,6 +35,8 @@ const LatestTimeshare = () => {
 			}
         }
         fetchData();
+
+
     }, [])
     return (
         <Card>
@@ -146,16 +152,135 @@ const LatestTimeshare = () => {
                     View all
                 </Button>
             </CardActions>
+            
+
         </Card>
+        
     )
+    
 }
 export default function AdminOverview() {
+    const [countTimeshare, setCountTimeshare] = useState(0);
+    const [countAllTimeshare, setCountAllTimeshare] = useState(0);
+    const [countServicePack, setCountServicePack] = useState(0);
+    const [countAllPayment, setCountAllPayment] = useState(0);
+    const [countUser, setCountUser] = useState(0);
+
+    
+    const rounredUser = Math.round((countServicePack/countUser)*100)
+    const roundedCountTimeshare = Math.round(countTimeshare);
+    const roundedComplement = Math.round(100 - countTimeshare);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v2/timeshare/countTimeshare');
+                const newCount = response.data; 
+                setCountTimeshare(newCount);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+
+        fetchData();
+
+        const fetchDataTimeshare = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v2/timeshare/countAllTimeshare');
+                const CountAll = response.data; 
+                setCountAllTimeshare(CountAll);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+        fetchDataTimeshare()
+
+        const fetchDataPayment = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v2/payment/total-amount');
+                const CountAll = response.data; 
+                setCountAllPayment(CountAll);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+        fetchDataPayment()
+
+        const fetchDataServicePack = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v2/payment/total-servicePack');
+                const CountAll = response.data; 
+                setCountServicePack(CountAll);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+        fetchDataServicePack()
+
+        const fetchDataUser = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v2/payment/count-users');
+                const CountAll = response.data; 
+                setCountUser(CountAll);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+        fetchDataUser()
+        
+    }, []);
+
     return (
         <Grid container spacing={2} mx={2}>
-            <Grid lg={12} md={12} xs={12}>
-                <LatestTimeshare />
+            <Grid>
+            <LatestTimeshare />
             </Grid>
+            <Card sx={{height: "fit-content", marginLeft:"8px", marginTop:"8px"}}>
+            <Typography level="body-md" sx={{ textAlign:'center',  borderRadius:'5px', fontWeight:'bold'}}>Timeshare Type Analysis</Typography>
+                <CardActions>
 
+                <CircularProgress size="lg" determinate value={roundedComplement}>
+                        {roundedComplement}%
+                    </CircularProgress>
+                <Typography level="body-md" sx={{ textAlign:'center',  borderRadius:'5px'}}>Exchange
+                <p>{roundedComplement}%</p>
+                </Typography>
+                
+                </CardActions>
+                <CardActions>
+
+                <Typography level="body-md" sx={{ textAlign:'center',  borderRadius:'5px'}}>Rental
+                <p>{roundedCountTimeshare}%</p>
+                    </Typography>
+                <CircularProgress size="lg" determinate value={countTimeshare}>
+                        {roundedCountTimeshare}%
+                    </CircularProgress>
+
+                </CardActions>
+                <CardActions>
+
+                <Typography level="body-md" sx={{ textAlign:'center',  borderRadius:'5px'}}>
+                <h6>Total: {countAllTimeshare} timeshares</h6>
+                </Typography>
+
+
+                </CardActions>
+            </Card>
+            <Card sx={{height: "fit-content", marginLeft:"16px", marginTop:"8px"}}>
+            <Typography level="body-md" sx={{ textAlign:'center',  borderRadius:'5px', fontWeight:'bold'}}>Upgrade Success</Typography>
+                <CardActions style={{ display: 'flex', justifyContent: 'center' }}>
+                    <h2 style={{marginTop:'-15px', marginBottom:"-5px"}}>{countServicePack}</h2>
+                </CardActions>
+            <Typography level="body-md" >Customer: {countUser}</Typography>
+            
+                <LinearProgress determinate value={rounredUser} />
+                <Typography >Member: {rounredUser}%</Typography>
+                <CardActions>
+                            <Typography level="body-md" sx={{ textAlign:'center',  borderRadius:'5px'}}><h6>Total: {countAllPayment} VND</h6></Typography>
+                </CardActions>
+            </Card>
+
+
+            
         </Grid>
-    )
-}
+    );
+};
