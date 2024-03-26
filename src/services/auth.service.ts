@@ -48,7 +48,7 @@ const LoginWithUsernameAndPassword = async (data: LoginData) => {
         })
         .catch((error) => {
             console.error(error);
-            throw error;
+            throw Error(error.response.data.status.message)
         })
 }
 const UpdateUser = (id: string, data: any) => {

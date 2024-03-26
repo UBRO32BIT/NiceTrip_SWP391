@@ -6,6 +6,7 @@ import Router from './router/router';
 import { Loaded, LoginSuccess } from './features/auth/auth.slice';
 import { useSelector, useDispatch } from 'react-redux'
 import { api } from './api';
+import CloseIcon from '@mui/icons-material/Close';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { RootState } from './features/auth/auth.slice';
 import {
@@ -14,8 +15,7 @@ import {
   getToken,
   removeSessionCookies
 } from './utils/tokenCookies'
-import { SnackbarOrigin, SnackbarProvider, useSnackbar } from 'notistack';
-
+import { SnackbarOrigin, SnackbarProvider, closeSnackbar, useSnackbar } from 'notistack';
 
 function App() {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -48,7 +48,14 @@ function App() {
   }, []);
   return (
     <div className="App">
-      <SnackbarProvider maxSnack={3} anchorOrigin={customAnchorOrigin}>
+      <SnackbarProvider
+        maxSnack={3}
+        action={(snackbarId) => (
+          <CloseIcon fontSize='small' onClick={() => closeSnackbar(snackbarId)}>
+            Dismiss
+          </CloseIcon>
+        )}
+        anchorOrigin={customAnchorOrigin}>
         <Router />
       </SnackbarProvider>
     </div>

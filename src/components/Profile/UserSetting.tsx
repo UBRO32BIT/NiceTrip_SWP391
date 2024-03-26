@@ -59,10 +59,10 @@ const passwordSchema = yup.object().shape({
     currentPassword: yup.string()
         .required("Current password is required!"),
     newPassword: yup.string()
-        .required("Password is required!")
-        .min(8, 'Use 8 characters or more for your password')
-        .matches(/[*@!#%&()^~{}]+/, 'Password must have at least one special character!')
-        .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
+    .required("Password is required!")
+    .min(8, 'Use 8 characters or more for your password')
+    .matches(/[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/, 'Password must have at least one special character!')
+    .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter'),
     repeatPassword: yup.string()
         .required("Repeat password is required!")
         .oneOf([yup.ref('newPassword'), ''], 'Passwords must match'),
@@ -82,6 +82,7 @@ export default function UserSetting() {
     const [open, setOpen] = React.useState<boolean>(false);
     const [emailVerifyOpen, setEmailVerifyOpen] = React.useState<boolean>(false);
     const [uploading, setUploading] = React.useState<boolean>();
+    const [passwordUploading, setPasswordUploading] = React.useState<boolean>();
     const { enqueueSnackbar } = useSnackbar();
     React.useEffect(() => {
         setIsLoaded(false);
@@ -136,7 +137,7 @@ export default function UserSetting() {
         }
     }
     const handlePasswordChange = async (e: any) => {
-        console.log(e);
+        setPasswordUploading(true);
         const data = {
             oldPassword: e.currentPassword,
             newPassword: e.newPassword,
@@ -144,6 +145,7 @@ export default function UserSetting() {
         }
         try {
             const result = await ChangePassword(data);
+            setPasswordUploading(false);
             //Close the input tab
             setOpen(false);
             //Print success message
@@ -151,6 +153,7 @@ export default function UserSetting() {
         }
         catch (error: any) {
             enqueueSnackbar(`Error while changing password: ${error.response.data.message}`, { variant: "error" });
+            setPasswordUploading(false);
         }
     }
     const {
@@ -398,7 +401,7 @@ export default function UserSetting() {
                                             </FormHelperText>
                                         }
                                     </FormControl>
-                                    <Button type="submit">Submit</Button>
+                                    <Button type="submit" loading={passwordUploading}>Submit</Button>
                                 </Stack>
                             </form>
                         </ModalDialog>

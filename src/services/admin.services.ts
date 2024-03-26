@@ -22,7 +22,7 @@ const GetAllRequest = () => {
     })
 }
 const GetAllResort = async (search: string, page: any) => {
-    return api.get(`/resort?search=${search}&page=${page}`)
+    return api.get(`/resort/all?name=${search}&page=${page}`)
     .then((res) => {
         return res.data.data
     })
@@ -175,7 +175,7 @@ const ReportBalance = () => {
     })
 }
 const GetAllTimeshare = async (search: string, page: any, sortField: any, sortOrder: any) => {
-    return api.get(`/timeshare?search=${search}&page=${page}&sort=${sortField},${sortOrder}`)
+    return api.get(`/timeshare/all?search=${search}&page=${page}&sort=${sortField},${sortOrder}`)
     .then((res) => {
         return res.data.data
     })
@@ -197,6 +197,16 @@ const VerifyTimeshare = async (timeshareId: string) => {
 }
 const DeleteTimeshare = async (timeshareId: any) => {
     return api.delete(`/timeshare/${timeshareId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error(error);
+            throw Error(error.response.data.message);
+        })
+}
+const RestoreTimeshare = async (timeshareId: any) => {
+    return api.patch(`/timeshare/${timeshareId}/restore`)
         .then((res) => {
             return res.data.data
         })
@@ -236,4 +246,5 @@ export{
     GetAllTimeshare,
     VerifyTimeshare,
     DeleteTimeshare,
+    RestoreTimeshare,
 }
