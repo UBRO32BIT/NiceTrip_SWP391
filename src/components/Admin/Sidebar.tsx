@@ -206,11 +206,11 @@ export default function Sidebar() {
 
           
 
-          <NavLink to="/admin/request-list" style={{ textDecoration: 'none' }} >
+          <NavLink to="/admin/transaction-list" style={{ textDecoration: 'none' }} >
             <ListItemButton>
               <ShoppingCartRoundedIcon />
               <ListItemContent>
-                <Typography level="title-sm">Requests</Typography>
+                <Typography level="title-sm">Transaction</Typography>
               </ListItemContent>
             </ListItemButton>
           </NavLink>

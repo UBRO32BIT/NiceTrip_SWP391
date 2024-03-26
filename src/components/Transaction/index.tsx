@@ -1,34 +1,29 @@
 import * as React from 'react';
 import Box from '@mui/joy/Box';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
 import Typography from '@mui/joy/Typography';
 import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
-import Tab, { tabClasses } from '@mui/joy/Tab';
+import  { tabClasses } from '@mui/joy/Tab';
 import Breadcrumbs from '@mui/joy/Breadcrumbs';
 import Link from '@mui/joy/Link';
-import Card from '@mui/joy/Card';
-import CardActions from '@mui/joy/CardActions';
-import CardOverflow from '@mui/joy/CardOverflow';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import { styled, Grid } from '@mui/joy';
-import { useSelector } from 'react-redux';
-import { UpdateUser } from '../../services/auth.service';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
-import RequestList from './request-list';
+import RentalList from './request-list';
+import ExchangeList from './exchange-list';
+import { convertDateTime } from '../../utils/date';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Tab from '@mui/joy/Tab';
+
 interface RootState {
     auth: {
         isAuthenticated: boolean;
         user: any;
     };
 }
-export default function RequestManagement() {
-    const [imageFiles, setImageFiles] = React.useState([]);
-    const [imagePreview, setImagePreview] = React.useState([]);
+export default function TransactionManagement() {
+
     return (
         <Box sx={{ flex: 1, width: '100%' }}>
             <Box
@@ -64,50 +59,64 @@ export default function RequestManagement() {
                             Users
                         </Link>
                         <Typography color="primary" fontWeight={500} fontSize={12}>
-                            Request list
+                            Transaction
                         </Typography>
                     </Breadcrumbs>
 
                     <Typography level="h2" component="h1" sx={{ mt: 1, mb: 2 }}>
-                        Request list
+                    Transaction list
                     </Typography>
                 </Box>
                 <Tabs
-                    defaultValue={0}
-                    sx={{
-                        bgcolor: 'transparent',
-                    }}
-                >
-                    <TabList
-                        tabFlex={1}
-                        size="sm"
-                        sx={{
-                            pl: { xs: 0, md: 4 },
-                            justifyContent: 'left',
-                            [`&& .${tabClasses.root}`]: {
-                                fontWeight: '600',
-                                flex: 'initial',
-                                color: 'text.tertiary',
-                                [`&.${tabClasses.selected}`]: {
-                                    bgcolor: 'transparent',
-                                    color: 'text.primary',
-                                    '&::after': {
-                                        height: '2px',
-                                        bgcolor: 'primary.500',
-                                    },
-                                },
-                            },
-                        }}
-                    >
-                    
-                    </TabList>
-                </Tabs>
+          defaultValue={0}
+          sx={{
+            bgcolor: 'transparent',
+          }}
+        >
+          <TabList
+            tabFlex={1}
+            size="sm"
+            sx={{
+                marginBottom:'16px',
+              pl: { xs: 0, md: 4 },
+              justifyContent: 'left',
+              [`&& .${tabClasses.root}`]: {
+                fontWeight: '600',
+                flex: 'initial',
+                color: 'text.tertiary',
+                [`&.${tabClasses.selected}`]: {
+                  bgcolor: 'transparent',
+                  color: 'text.primary',
+                  '&::after': {
+                    height: '2px',
+                    bgcolor: 'primary.500',
+                  },
+                },
+              },
+            }}
+          >
+            <NavLink to="/admin/transaction-list" style={{ textDecoration: 'none' }}>
+            <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={0}>
+              Rental
+            </Tab>
+            </NavLink>
+            <NavLink to="/admin/transaction-list/exchange" style={{ textDecoration: 'none' }}>
+              <Tab sx={{ borderRadius: '6px 6px 0 0' }} indicatorInset value={3}>
+                Exchange
+              </Tab>
+            </NavLink>
+          </TabList>
+        </Tabs>
+
                 <Routes>
                     <Route>
-                    <Route path="/" element={<RequestList />} />
+                    <Route path="/" element={<RentalList />} />
+                    <Route path="/exchange" element={<ExchangeList />} />
                     </Route>
                 </Routes>
             </Box>
+        
         </Box>
+        
     );
 }
