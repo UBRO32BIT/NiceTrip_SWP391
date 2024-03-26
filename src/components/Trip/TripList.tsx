@@ -108,7 +108,7 @@ export default function TripList() {
                 </FormControl>
             </Grid>
                 {myTrips.length > 0 && myTrips.map((item: any) => {
-                    return (<Grid xs={12} md={6} lg={6} >
+                    return (<Grid xs={12} md={6} lg={5} >
                         <Card orientation="horizontal" variant="outlined" sx={{}}>
                             <CardOverflow>
                                 <AspectRatio ratio="0.6" sx={{ width: 120, height: 1 }}>
@@ -133,7 +133,14 @@ export default function TripList() {
                                 <strong>Check-out: </strong>
                                 {formatDate(item?.check_out)}
                             </Typography>
-
+                            <Typography level="body-sm">
+                                <strong>Name: </strong>
+                                {item?.userId?.firstname} {item?.userId?.lastname}
+                            </Typography>
+                            <Typography level="body-sm">
+                                <strong>Phone: </strong>
+                                {item?.phone}
+                            </Typography>
 
                         </CardContent>
                         <CardOverflow
@@ -149,20 +156,20 @@ export default function TripList() {
                                     borderColor: 'divider',
                                 }}
                             >
-                                 <Typography sx={{marginLeft:'5px', writingMode: 'horizontal-tb',}}>
-                                <strong>Name: {item?.userId?.lastname}</strong>
-                                </Typography>
-                                <Typography sx={{marginLeft:'5px',  writingMode: 'horizontal-tb',}}>
-                                <strong>Room Code: {item?.room_code}</strong>
-                                </Typography>        
 
-                                <Typography sx={{ width: '150px', height: '100%', display: 'block', margin: 'auto'}}>
-                                    <img
-                                        src={`https://barcodeapi.org/api/39/${item?.trip_code}`}
-                                        alt="Barcode"
-                                        style={{ width: '100%', display: 'block', margin: 'auto' }}
-                                    />
-                                
+                                <Typography sx={{ width: '80px', height: '100%', display: 'block'}}>
+                                <img
+                                    src={`https://barcodeapi.org/api/39/${item?.trip_code}`}
+                                    alt="Barcode"
+                                    style={{ 
+                                        width: '180px', 
+                                        display: 'block', 
+                                        transform: 'rotate(90deg)', 
+                                        margin: 'auto',
+                                        position: 'absolute', 
+                                        top: '0', bottom: '0', left: '0', right: '0'
+                                    }}
+                                />
                                 </Typography>
 
                             </CardOverflow>

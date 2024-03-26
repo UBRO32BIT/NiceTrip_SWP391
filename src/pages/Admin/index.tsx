@@ -8,7 +8,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../features/auth/auth.slice';
 import AccountManagement from '../../components/Account';
-import RequestManagement from '../../components/Request';
+import TransactionManagement from '../../components/Transaction';
 import ResortManagement from '../../components/Resort';
 import userEvent from '@testing-library/user-event';
 import ResortList from '../../components/Resort/ResortList';
@@ -61,7 +61,7 @@ export default function JoyOrderDashboardTemplate() {
                 <Route>
                     <Route path="/" element={<AdminOverview/>}/>
                     <Route path="/account-list/*" element={<AccountManagement />} />
-                    <Route path="/request-list/*" element={<RequestManagement />} />
+                    <Route path="/transaction-list/*" element={<TransactionManagement />} />
                     <Route path="/resort-list/" element={<ResortManagement/>} />
                     <Route path="/resort-list/create" element={<CreateResort/>} />
                     <Route path="/resort-list/edit/:id" element={<EditResort/>}/>
