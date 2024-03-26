@@ -5,16 +5,16 @@ import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import {styled, Grid, Button} from '@mui/joy';
-import {useSelector} from 'react-redux';
-import {UpdateUser} from '../../services/auth.service';
-import {GetReservationOfUser} from '../../services/booking.service';
-import {GetExchangeOfUser} from '../../services/booking.service';
-import {CancelMyExchangeRequest} from '../../services/booking.service';
-import {CancelMyRentalRequest} from '../../services/booking.service';
-import {DeleteMyRentalRequest} from '../../services/booking.service';
+import { styled, Grid, Button } from '@mui/joy';
+import { useSelector } from 'react-redux';
+import { UpdateUser } from '../../services/auth.service';
+import { GetReservationOfUser } from '../../services/booking.service';
+import { GetExchangeOfUser } from '../../services/booking.service';
+import { CancelMyExchangeRequest } from '../../services/booking.service';
+import { CancelMyRentalRequest } from '../../services/booking.service';
+import { DeleteMyRentalRequest } from '../../services/booking.service';
 import Link from '@mui/joy/Link';
-import {Routes, Route, Navigate, useNavigate, NavLink} from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
 import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
 import Divider from '@mui/joy/Divider';
@@ -23,7 +23,7 @@ import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import {Transition} from "react-transition-group";
+import { Transition } from "react-transition-group";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
 import DialogTitle from "@mui/joy/DialogTitle";
@@ -40,11 +40,15 @@ import ListItem from "@mui/joy/ListItem";
 import Radio from "@mui/joy/Radio";
 import ListDivider from "@mui/joy/ListDivider";
 import Input from "@mui/joy/Input";
-import {InfoOutlined} from "@mui/icons-material";
+import { InfoOutlined } from "@mui/icons-material";
 import Checkbox from "@mui/joy/Checkbox";
 import OrderDetailModal from "./OrderDetailModal";
-import {useSnackbar} from 'notistack';
-import {CreateConversation} from "../../services/chat.service";
+import { useSnackbar } from 'notistack';
+import { CreateConversation } from "../../services/chat.service";
+import Search from './Search';
+import Filters from './Filters';
+import SwitchView from './SwitchView';
+import OrderTable from './OrderTable';
 
 interface RootState {
     auth: {
@@ -62,15 +66,22 @@ export default function OrderList() {
     const user = useSelector((state: RootState) => state?.auth?.user);
     const [myReservations, setMyReservations] = React.useState([]);
     const [myExchanges, setMyExchanges] = React.useState([]);
-
+    console.log(myReservations)
     const navigate = useNavigate()
     const [open, setOpen] = React.useState<boolean>(false);
     const [paymentOpen, setPaymentOpen] = React.useState<boolean>(false);
     const [modalStates, setModalStates] = React.useState<boolean[]>([]);
-    const {enqueueSnackbar} = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const [reservationModalStates, setReservationModalStates] = React.useState<boolean[]>([]);
     const [exchangeModalStates, setExchangeModalStates] = React.useState<boolean[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
+
+    const [tableView, setTableView] = React.useState<boolean>(true);
+
+    const handleSwitchChange = (isChecked: boolean) => {
+        setTableView(isChecked);
+      console.log(tableView);
+    };
 
     async function handleCancelRental(reservationId: string) {
         try {
@@ -78,13 +89,13 @@ export default function OrderList() {
             if (confirmed) {
                 const success = await CancelMyRentalRequest(reservationId);
                 if (success) {
-                    enqueueSnackbar("Cancel success", {variant: "success"});
+                    enqueueSnackbar("Cancel success", { variant: "success" });
                 } else {
-                    enqueueSnackbar("ERROR: Cancel failed", {variant: "error"});
+                    enqueueSnackbar("ERROR: Cancel failed", { variant: "error" });
                 }
             }
         } catch (error) {
-            enqueueSnackbar("! ERROR: Cancel failed", {variant: "error"});
+            enqueueSnackbar("! ERROR: Cancel failed", { variant: "error" });
         }
     };
 
@@ -95,11 +106,11 @@ export default function OrderList() {
             if (confirmed) {
                 const exchange = await DeleteMyRentalRequest(reservationId);
                 if (exchange) {
-                    enqueueSnackbar("Delete successfully", {variant: "success"});
+                    enqueueSnackbar("Delete successfully", { variant: "success" });
                 }
             }
         } catch (err: any) {
-            enqueueSnackbar("Delete Failed", {variant: "error"});
+            enqueueSnackbar("Delete Failed", { variant: "error" });
         } finally {
             setIsLoading(false);
         }
@@ -148,48 +159,34 @@ export default function OrderList() {
             GetMyExchanges(user?._id)
         }
     }, [user])
+
+    const handleSearch = (searchTerm: string) => {
+        console.log('Search term:', searchTerm);
+    };
+    const handleApplyFilters = (filters: any) => {
+        console.log('Applied filters:', filters);
+    };
+
     return (
-        <Grid container spacing={2} sx={{flexGrow: 1, mx: {xs: 2, md: 5}, mt: 2,}}>
+        <Grid container spacing={2} sx={{ flexGrow: 1, mx: { xs: 1, md: 5 }, mt: 2, }}>
             <Grid
                 md={12} xs={12}
                 sx={{
-                    display: 'flex',
+                    display: 'inline-flex',
+                    alignItem: 'center',
                     gap: 3,
-                    // p: 0,
-                    mb: 2
+                    height: '15px',
+                    mb: 5
                 }}>
-                <FormControl size="sm">
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                        size="sm"
-                        placeholder="Filter by status"
-                        slotProps={{button: {sx: {whiteSpace: 'nowrap'}}}}
-                    >
-                        <Option value="paid">Paid</Option>
-                        <Option value="pending">Pending</Option>
-                        <Option value="refunded">Refunded</Option>
-                        <Option value="cancelled">Cancelled</Option>
-                    </Select>
-                </FormControl>
-                <FormControl size="sm">
-                    <FormLabel>Type</FormLabel>
-                    <Select size="sm" placeholder="All">
-                        <Option value="all">Rent</Option>
-                        <Option value="refund">Exchange</Option>
-                    </Select>
-                </FormControl>
-                <FormControl size="sm">
-                    <FormLabel>Customer</FormLabel>
-                    <Select size="sm" placeholder="All">
-                        <Option value="all">All</Option>
-                        <Option value="olivia">Olivia Rhye</Option>
-                    </Select>
-                </FormControl>
+                {/* <Search onSearch={handleSearch} /> */}
+                <Filters onApplyFilters={handleApplyFilters} />
+                <SwitchView checked={tableView} onSwitchChange={handleSwitchChange} />
             </Grid>
-            {myReservations.map((item: any, index: number) => {
+            {myReservations.length == 0 && <Typography sx={{ mt: 2, ml: 1 }}>You have no reservation</Typography>}
+             {tableView ? (<OrderTable orderList={myReservations}/>): (<>{myReservations.map((item: any, index: number) => {
                 return (<>
                     <OrderDetailModal item={item} open={reservationModalStates[index]}
-                                      setOpen={() => toggleReservationModal(index)}/>
+                        setOpen={() => toggleReservationModal(index)} />
                     {item?.deleted !== true ? (
                         <Grid xs={12} md={6} lg={4}>
                             <Card key={index} variant="outlined" sx={{}}>
@@ -206,85 +203,85 @@ export default function OrderList() {
                                     </AspectRatio>
                                 </CardOverflow>
                                 <CardContent>
-                                    {item?.status === "Canceled" ? (<Typography sx={{display: 'inline-flex', gap: 1}}>
-                                            <Chip
-                                                variant="soft"
-                                                color="danger"
-                                                size="sm"
-                                                startDecorator={<BlockIcon/>}
-                                            >
-                                                {(item?.is_canceled_by_renter === false ? (
-                                                    `Canceled by Owner`
+                                    {item?.status === "Canceled" ? (<Typography sx={{ display: 'inline-flex', gap: 1 }}>
+                                        <Chip
+                                            variant="soft"
+                                            color="danger"
+                                            size="sm"
+                                            startDecorator={<BlockIcon />}
+                                        >
+                                            {(item?.is_canceled_by_renter === false ? (
+                                                `Canceled by Owner`
 
-                                                ) : (
-                                                    'You are canceled'
-                                                ))}
-                                            </Chip>
-                                        </Typography>) :
-                                        (<Typography sx={{display: 'inline-flex', gap: 1}}>
+                                            ) : (
+                                                'You are canceled'
+                                            ))}
+                                        </Chip>
+                                    </Typography>) :
+                                        (<Typography sx={{ display: 'inline-flex', gap: 1 }}>
                                             {item?.isPaid === true ? <Chip
-                                                    variant="soft"
-                                                    color="success"
-                                                    size="sm"
-                                                    startDecorator={<CheckRoundedIcon/>}
-                                                >
-                                                    Paid
-                                                </Chip> :
+                                                variant="soft"
+                                                color="success"
+                                                size="sm"
+                                                startDecorator={<CheckRoundedIcon />}
+                                            >
+                                                Paid
+                                            </Chip> :
                                                 <Chip
                                                     variant="soft"
                                                     color="danger"
                                                     size="sm"
-                                                    startDecorator={<BlockIcon/>}
+                                                    startDecorator={<BlockIcon />}
                                                 >
                                                     Paid
                                                 </Chip>}
                                             {item?.is_accepted_by_owner ? <Chip
-                                                    variant="soft"
-                                                    color="success"
-                                                    size="sm"
-                                                    startDecorator={<CheckRoundedIcon/>}
-                                                >
-                                                    Owner confirmed, go to payment phase
-                                                </Chip> :
+                                                variant="soft"
+                                                color="success"
+                                                size="sm"
+                                                startDecorator={<CheckRoundedIcon />}
+                                            >
+                                                Owner confirmed, go to payment phase
+                                            </Chip> :
                                                 <Chip
                                                     variant="soft"
                                                     color="danger"
                                                     size="sm"
-                                                    startDecorator={<BlockIcon/>}
+                                                    startDecorator={<BlockIcon />}
                                                 >
                                                     Wait for accept
                                                 </Chip>}
                                         </Typography>)}
                                     <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
                                     <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
-                                    <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Button variant="soft" color="primary"
-                                                onClick={() => toggleReservationModal(index)}>View</Button>
+                                            onClick={() => toggleReservationModal(index)}>View</Button>
                                         {item?.status === "Canceled" ?
                                             (<Button variant="plain" color="danger"
-                                                     onClick={() => DeleteReservation(item?._id)}>Remove</Button>) :
+                                                onClick={() => DeleteReservation(item?._id)}>Remove</Button>) :
                                             (<Button variant="plain" color="danger"
-                                                     onClick={() => handleCancelRental(item?._id)}>Cancel</Button>)}
+                                                onClick={() => handleCancelRental(item?._id)}>Cancel</Button>)}
                                     </Box>
                                 </CardContent>
 
-                                <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
-                                    <Divider inset="context"/>
-                                    <CardContent orientation="horizontal" sx={{display: 'flex', justifyContent: 'space-between'}}>
-                                        <Box sx={{display: 'flex', gap: 2}}>
+                                <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1' }}>
+                                    <Divider inset="context" />
+                                    <CardContent orientation="horizontal" sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <Box sx={{ display: 'flex', gap: 2 }}>
                                             <Typography level="body-md" fontWeight="md" textColor="text.secondary">
                                                 ${item?.amount}
                                             </Typography>
-                                            <Divider orientation="vertical"/>
+                                            <Divider orientation="vertical" />
                                             <Typography level="body-md" fontWeight="md" textColor="text.secondary">
                                                 {formatDate(item?.createdAt)}
                                             </Typography>
                                         </Box>
-                                        <Link sx={{float: 'right', mx: '14px'}} level="body-xs" component="button"
-                                              onClick={()=>{
-                                                  CreateConversation(user?._id, item?._id)
-                                                  navigate('/me/my-messages')
-                                              }}>
+                                        <Link sx={{ float: 'right', mx: '14px' }} level="body-xs" component="button"
+                                            onClick={() => {
+                                                CreateConversation(user?._id, item?._id)
+                                                navigate('/me/my-messages')
+                                            }}>
                                             Contact
                                         </Link>
                                     </CardContent>
@@ -292,7 +289,9 @@ export default function OrderList() {
                             </Card>
                         </Grid>) : ('')}
                 </>)
-            })}
+            })}</>)}   
+            
+            
 
         </Grid>
     )
