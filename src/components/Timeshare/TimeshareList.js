@@ -11,6 +11,7 @@ function TimeshareList() {
   const [myPosts, setMyPosts] = useState([]); // Initialize myPosts as an empty array
   const [loading, setLoading] = useState(true); // State to track loading state
 
+
   useEffect(() => {
     const getAllTimeshares = async () => {
       try {

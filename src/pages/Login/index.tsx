@@ -30,6 +30,7 @@ import { useForm } from 'react-hook-form';
 import { InfoOutlined } from '@mui/icons-material';
 import * as yup from "yup";
 import { RequestPasswordReset } from '../../services/email.service';
+import { AxiosError } from 'axios';
 
 interface FormElements extends HTMLFormControlsCollection {
   username: HTMLInputElement;
@@ -93,7 +94,7 @@ export default function JoySignInSideTemplate() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = React.useState<boolean>(false);
-  const [uploading, setUploading] = React.useState<boolean>();
+  const [uploading, setUploading] = React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -104,6 +105,7 @@ export default function JoySignInSideTemplate() {
   const {
     register: registerLogin,
     handleSubmit: handleLoginSubmit,
+    setValue,
     formState: {errors: loginErrors}
   } = useForm({
     resolver: yupResolver(loginSchema),
@@ -120,11 +122,13 @@ export default function JoySignInSideTemplate() {
       if (login?.data) {
         const loginData = login.data;
         dispatch(LoginSuccess(loginData));
+        navigate('/home')
       }
       setUploading(false);
     }
     catch (err: any) {
-      enqueueSnackbar(`${err.response.data.status.message}`, { variant: "error" });
+      setValue("password", "");
+      enqueueSnackbar(`${err.message}`, { variant: "error" });
       setUploading(false);
     }
   }

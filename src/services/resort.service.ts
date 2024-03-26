@@ -31,8 +31,39 @@ const UploadResort = async (data: FormData) => {
         })
 }
 
+const UpdateResort = async (resortId: any, data: FormData) => {
+    return api.patch(`/resort/${resortId}`, data)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            throw Error(error.response.data.message)
+        })
+}
+const DeleteResort = async (resortId: string) => {
+    return api.delete(`/resort/${resortId}`)
+        .then((res) => {
+            return res;
+        })
+        .catch((error) => {
+            throw Error(error.response.data.message)
+        })
+}
+const RestoreResort = async (resortId: string) => {
+    return api.post(`/resort/${resortId}/restore`)
+        .then((res) => {
+            return res;
+        })
+        .catch((error) => {
+            throw Error(error.response.data.message)
+        })
+}
+
 export {
     GetResort,
     GetResortById,
-    UploadResort
+    UploadResort,
+    UpdateResort,
+    DeleteResort,
+    RestoreResort,
 }

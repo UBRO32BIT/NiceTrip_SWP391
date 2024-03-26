@@ -66,7 +66,7 @@ export default function PaymentDashboard() {
                   Dashboard
                 </Link>
                 <Typography color="primary" fontWeight={500} fontSize={12}>
-                  Users
+                  Payments
                 </Typography>
               </Breadcrumbs>
             </Box>
@@ -82,15 +82,8 @@ export default function PaymentDashboard() {
               }}
             >
               <Typography level="h2" component="h1">
-                Users
+                Payments
               </Typography>
-              <Button
-                color="primary"
-                startDecorator={<DownloadRoundedIcon />}
-                size="sm"
-              >
-                Download PDF
-              </Button>
             </Box>
             <PaymentList />
           </Box>
