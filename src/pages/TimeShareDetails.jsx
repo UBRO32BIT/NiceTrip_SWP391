@@ -1,11 +1,16 @@
 import React, { useRef, useState } from 'react'
 import '../styles/timeshare-details.css'
-import { GetPostById, GetReviewByResortId } from '../services/post.service'
+import { GetPostById, GetReviewByResortId, UploadReview, DeleteReview} from '../services/post.service'
 import { Container, Row, Col, Form, ListGroup } from 'reactstrap'
 import { useParams, useNavigate } from 'react-router-dom'
-import calculateAvgRating from '../utils/avgRating'
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
+import Divider from '@mui/joy/Divider';
 import Button from '@mui/material/Button';
-
+import IconButton from '@mui/joy/IconButton';
+import Modal from '@mui/joy/Modal';
+import ModalDialog from '@mui/joy/ModalDialog';
+import ModalClose from '@mui/joy/ModalClose';
+import { DialogActions, DialogContent, DialogTitle } from '@mui/joy';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { convertDate, convertDateTime } from '../utils/date'
@@ -17,7 +22,6 @@ import { useSelector } from "react-redux";
 import { useSnackbar } from 'notistack';
 import { calculateAvgReviews } from '../utils/reviews'
 import Rating from '@mui/material/Rating';
-import { UploadReview } from '../services/post.service'
 import ReadMoreArea from '@foxeian/react-read-more'
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ShowerIcon from '@mui/icons-material/Shower';
@@ -25,13 +29,17 @@ import KitchenIcon from '@mui/icons-material/Kitchen';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
-import { Typography } from '@mui/joy'
+import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
+import Menu from '@mui/joy/Menu';
+import MenuButton from '@mui/joy/MenuButton';
+import MenuItem from '@mui/joy/MenuItem';
+import { Dropdown, Typography } from '@mui/joy'
 
 const buttonStyle = {
     color: "DarkCyan",
     textDecoration: "none",
     // Add any other CSS styles as needed
-  };
+};
 
 const TimeShareDetails = () => {
     const user = useSelector((state) => state?.auth?.user);
@@ -40,6 +48,8 @@ const TimeShareDetails = () => {
     const reviewMsgRef = useRef('');
     const [post, setPost] = useState(null);
     const [rating, setRating] = useState(0);
+    const [isReviewed, setIsReviewed] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
     const [reviews, setReviews] = useState([]);
     const { enqueueSnackbar } = useSnackbar();
 
@@ -66,8 +76,25 @@ const TimeShareDetails = () => {
     const getReviews = async () => {
         console.log(post?.resortId?._id)
         const data = await GetReviewByResortId(post?.resortId?._id);
-        console.log(data);
+        data.forEach(review => {
+            if (review.userId._id === user._id) {
+                setIsReviewed(true);
+            }
+        });
         setReviews(data);
+    }
+    const deleteReview = async (id) => {
+        try {
+            await DeleteReview(id);
+            enqueueSnackbar("Delete successfully", { variant: "success" });
+            
+            await getReviews();
+            setIsReviewed(false);
+            setOpenDelete(false);
+        }
+        catch (error) {
+            enqueueSnackbar(`${error.message}`, { variant: "error" });
+        }
     }
     //destructure properties from tour object
     //const { photo, title, desc, price, address, reviews, city, distance, maxGroupSize, time } = tour
@@ -92,7 +119,7 @@ const TimeShareDetails = () => {
             else enqueueSnackbar(`Star rating is required!`, { variant: "error" });
         }
         catch (error) {
-            enqueueSnackbar(`${error}`, { variant: "error" });
+            enqueueSnackbar(`${error.message}`, { variant: "error" });
         }
     }
 
@@ -136,19 +163,19 @@ const TimeShareDetails = () => {
                                         </div>
                                         <div className='tour__extra-details'>
                                             <span>
-                                                <LocationOnIcon/>{post?.resortId.location}
+                                                <LocationOnIcon />{post?.resortId.location}
                                             </span>
                                             <span>
-                                                <AttachMoneyIcon/>{post?.price}
+                                                <AttachMoneyIcon />{post?.price}
                                             </span>
                                             <span>
-                                                <AccessTimeFilledIcon/> {convertDate(post?.start_date)} - {convertDate(post?.end_date)}
+                                                <AccessTimeFilledIcon /> {convertDate(post?.start_date)} - {convertDate(post?.end_date)}
                                             </span>
                                         </div>
                                         <div>
                                             <h5>Description</h5>
                                             <p><ReadMoreArea wordsLimit={250} expandLabel="Read more »" buttonStyle={buttonStyle}>
-                                                {post?.resortId.description}    
+                                                {post?.resortId.description}
                                             </ReadMoreArea></p>
                                         </div>
                                         <div>
@@ -160,16 +187,16 @@ const TimeShareDetails = () => {
                                                 <div className="col-lg-8 col-12 px-lg-4">
                                                     <h6>{post?.unitId.name}</h6>
                                                     <div className="d-flex align-items-center">
-                                                        <PeopleAltIcon/>
-                                                        <Typography sx={{mx: 1}}>Sleep {post?.unitId.sleeps}</Typography>
+                                                        <PeopleAltIcon />
+                                                        <Typography sx={{ mx: 1 }}>Sleep {post?.unitId.sleeps}</Typography>
                                                     </div>
                                                     <div className="d-flex align-items-center">
-                                                        <ShowerIcon/>
-                                                        <Typography sx={{mx: 1}}>{post?.unitId.bathrooms} Bathrooms</Typography>
+                                                        <ShowerIcon />
+                                                        <Typography sx={{ mx: 1 }}>{post?.unitId.bathrooms} Bathrooms</Typography>
                                                     </div>
                                                     <div className="d-flex align-items-center">
-                                                        <KitchenIcon/>
-                                                        <Typography sx={{mx: 1}}>{post?.unitId.kitchenType} kitchen</Typography>
+                                                        <KitchenIcon />
+                                                        <Typography sx={{ mx: 1 }}>{post?.unitId.kitchenType} kitchen</Typography>
                                                     </div>
                                                 </div>
                                             </div>
@@ -224,44 +251,96 @@ const TimeShareDetails = () => {
                             {/*===========tour review section first========== */}
                             <div className='tour__reviews mt-4'>
                                 <h4>Reviews ({reviews?.length} reviews)</h4>
-                                <Box>
-                                    <Form onSubmit={submitHandler}>
-                                        <Rating
-                                            name="simple-controlled"
-                                            size='large'
-                                            value={rating}
-                                            onChange={(event, newValue) => {
-                                                setRating(newValue);
-                                            }}
-                                        />
-                                        <div className="review__input">
-                                            <input
-                                                type="text"
-                                                name="description"
-                                                ref={reviewMsgRef}
-                                                placeholder='Share your thoughts'
-                                                required />
-                                            <button className='btn primary__btn text-white'
-                                                type='submit'>
-                                                Submit
-                                            </button>
-                                        </div>
-                                    </Form>
-                                </Box>
+                                {(user && !isReviewed) && (
+                                    <Box>
+                                        <Form onSubmit={submitHandler}>
+                                            <Rating
+                                                name="simple-controlled"
+                                                size='large'
+                                                value={rating}
+                                                onChange={(event, newValue) => {
+                                                    setRating(newValue);
+                                                }}
+                                            />
+                                            <div className="review__input">
+                                                <input
+                                                    type="text"
+                                                    name="description"
+                                                    ref={reviewMsgRef}
+                                                    placeholder='Share your thoughts'
+                                                    required />
+                                                <button className='btn primary__btn text-white'
+                                                    type='submit'>
+                                                    Submit
+                                                </button>
+                                            </div>
+                                        </Form>
+                                    </Box>
+                                )}
+                                {!user && (
+                                    <Typography>Login to post reviews</Typography>
+                                )}
                                 <ListGroup className='user__reviews'>
                                     {
                                         reviews?.map(review => (
                                             <div className="review__item">
                                                 <img src={review.userId.profilePicture} alt="" />
-
                                                 <div className="w-100">
                                                     <div className='d-flex align-items-center justify-content-between'>
                                                         <div>
-                                                            <h5>{review?.userId?.username}</h5>
+                                                            <div className="d-flex align-items-center">
+                                                                <h5>{review?.userId?.username}</h5>
+                                                                {(user && (user._id === review.userId._id)) && (
+                                                                    //     <Button
+                                                                    //     sx={{mx: 1}}
+                                                                    //     variant="contained"
+                                                                    //     color="error"
+                                                                    //     size="small"
+                                                                    //     onClick={() => { navigate(`/timeshare/${post?._id}/book`) }}
+                                                                    // >
+                                                                    //     Delete
+                                                                    // </Button>
+                                                                    <Box sx={{mx: 1}}>
+                                                                    <Dropdown>
+                                                                        <MenuButton
+                                                                            slots={{ root: IconButton }}
+                                                                            slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+                                                                        >
+                                                                            <MoreHorizRoundedIcon />
+                                                                        </MenuButton>
+                                                                        <Menu size="sm" sx={{ minWidth: 140 }}>
+                                                                            <MenuItem color="danger" onClick={() => {
+                                                                                setOpenDelete(true);
+                                                                            }}>Delete</MenuItem>
+                                                                        </Menu>
+                                                                    </Dropdown>
+                                                                    </Box>
+                                                                )}
+                                                                <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
+                                                                    <ModalDialog variant="outlined" role="alertdialog">
+                                                                        <DialogTitle>
+                                                                        <WarningRoundedIcon />
+                                                                        Confirmation
+                                                                        </DialogTitle>
+                                                                        <Divider />
+                                                                        <DialogContent>
+                                                                        Are you sure you want to delete your review?
+                                                                        </DialogContent>
+                                                                        <DialogActions>
+                                                                        <Button variant="solid" color="warning" onClick={() => deleteReview(review._id)}>
+                                                                            Yes
+                                                                        </Button>
+                                                                        <Button variant="plain" color="neutral" onClick={() => setOpenDelete(false)}>
+                                                                            No
+                                                                        </Button>
+                                                                        </DialogActions>
+                                                                    </ModalDialog>
+                                                                </Modal>
+                                                            </div>
                                                             <p>{convertDateTime(review?.timestamp)}</p>
                                                         </div>
                                                         <span className='d-flex align-items-center'>
-                                                        <Rating name="read-only" value={review.star} readOnly />
+                                                            <Rating name="read-only" value={review.star} readOnly />
                                                         </span>
                                                     </div>
                                                     <h6>{review.description}</h6>

@@ -230,6 +230,11 @@ export default function UpdateTimeshareForm() {
                                             size="sm"
                                             type="file"
                                             placeholder="Image"
+                                            slotProps={{
+                                                input: {
+                                                    accept: "image/*",
+                                                }
+                                            }}
                                             onChange={(e) => {
                                                 const files = e?.target?.files;
                                                 if (files) {

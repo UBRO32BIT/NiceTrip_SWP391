@@ -81,7 +81,17 @@ const UploadReview = async (data: any) => {
             return res.data.data
         })
         .catch((error) => {
-            throw Error(error.response.data)
+            throw Error(error.response.data.message)
+        })
+}
+
+const DeleteReview = async (id: string) => {
+    return api.delete(`/review/${id}`)
+        .then((res) => {
+            return res;
+        })
+        .catch((error) => {
+            throw Error(error.response.data.message)
         })
 }
 
@@ -112,6 +122,7 @@ export {
     GetPostBelongToOwner,
     GetTimeshareExchangeByCurrentOwner,
     UploadReview,
+    DeleteReview,
     GetReviewByResortId,
     CountUploadTimeshareByUser,
     UpdateTimeshare
