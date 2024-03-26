@@ -21,6 +21,7 @@ import { UpdateUser } from '../../services/auth.service';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
 import RentalOrders from './RentalOrders';
 import ExchangeOrders from './ExchangeOrders';
+
 interface RootState {
     auth: {
         isAuthenticated: boolean;

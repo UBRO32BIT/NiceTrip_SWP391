@@ -169,7 +169,7 @@ export default function ManageTimeshares() {
                                         <b>Unit</b> {post?.unitId?.name}
                                     </Typography>
                                     <Typography fontWeight={400} fontSize={16} >
-                                        <b>Detail</b> {post?.unitId?.details}
+                                        <b>Detail</b> {post?.unitId?.roomType}
                                     </Typography>
                                 </Stack>
                             </Grid>
