@@ -13,7 +13,8 @@ import {GetExchangeOfUser} from '../../services/booking.service';
 import {CancelMyExchangeRequest} from '../../services/booking.service';
 import {CancelMyRentalRequest} from '../../services/booking.service';
 import {DeleteMyRentalRequest} from '../../services/booking.service';
-import {Routes, Route, Navigate, useNavigate, NavLink, Link} from "react-router-dom";
+import Link from '@mui/joy/Link';
+import {Routes, Route, Navigate, useNavigate, NavLink} from "react-router-dom";
 import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
 import Divider from '@mui/joy/Divider';
@@ -43,6 +44,7 @@ import {InfoOutlined} from "@mui/icons-material";
 import Checkbox from "@mui/joy/Checkbox";
 import OrderDetailModal from "./OrderDetailModal";
 import {useSnackbar} from 'notistack';
+import {CreateConversation} from "../../services/chat.service";
 
 interface RootState {
     auth: {
@@ -54,7 +56,6 @@ interface RootState {
 function CreditCardIcon() {
     return null;
 }
-
 
 
 export default function OrderList() {
@@ -70,20 +71,20 @@ export default function OrderList() {
     const [reservationModalStates, setReservationModalStates] = React.useState<boolean[]>([]);
     const [exchangeModalStates, setExchangeModalStates] = React.useState<boolean[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
-    
-    async function handleCancelRental (reservationId: string) {
+
+    async function handleCancelRental(reservationId: string) {
         try {
             const confirmed = window.confirm("Are you sure you want to cancel this rental request?");
             if (confirmed) {
-            const success = await CancelMyRentalRequest(reservationId);
-            if (success) {
-                enqueueSnackbar("Cancel success", { variant: "success" });
-            } else {
-                enqueueSnackbar("ERROR: Cancel failed", { variant: "error" });
+                const success = await CancelMyRentalRequest(reservationId);
+                if (success) {
+                    enqueueSnackbar("Cancel success", {variant: "success"});
+                } else {
+                    enqueueSnackbar("ERROR: Cancel failed", {variant: "error"});
+                }
             }
-        }
-        } catch(error) {
-            enqueueSnackbar("! ERROR: Cancel failed", { variant: "error" });
+        } catch (error) {
+            enqueueSnackbar("! ERROR: Cancel failed", {variant: "error"});
         }
     };
 
@@ -103,8 +104,8 @@ export default function OrderList() {
             setIsLoading(false);
         }
     }
-    
-    
+
+
     function formatDate(dateString?: string): string {
         if (!dateString) return '';
         const options: Intl.DateTimeFormatOptions = {
@@ -121,12 +122,14 @@ export default function OrderList() {
             setMyReservations(ReservationsData)
         }
     }
+
     async function GetMyExchanges(userId: string) {
         const ExchangeData = await GetExchangeOfUser(userId);
         if (ExchangeData && ExchangeData.length > 0) {
             setMyExchanges(ExchangeData)
         }
     }
+
     const toggleReservationModal = (index: number) => {
         const newModalStates = [...reservationModalStates];
         newModalStates[index] = !newModalStates[index];
@@ -185,98 +188,112 @@ export default function OrderList() {
             </Grid>
             {myReservations.map((item: any, index: number) => {
                 return (<>
-                    <OrderDetailModal item={item} open={reservationModalStates[index]} setOpen={() => toggleReservationModal(index)}/>
+                    <OrderDetailModal item={item} open={reservationModalStates[index]}
+                                      setOpen={() => toggleReservationModal(index)}/>
                     {item?.deleted !== true ? (
-                    <Grid xs={12} md={6} lg={4}>
-                        <Card key={index} variant="outlined" sx={{}}>
-                            <CardOverflow>
-                                <AspectRatio ratio="2">
-                                    <img
-                                        src={item?.timeshareId?.resortId?.image_urls}
-                                        // srcSet="https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318&dpr=2 2x"
-                                        loading="lazy"
-                                        alt=""
-                                    />
-                                    {/*{item?.status === "Canceled" && (*/}
-                                    {/*    <h2 style={{opacity: 0.9, color: "#fff"}}>Expired</h2>)}*/}
-                                </AspectRatio>
-                            </CardOverflow>
-                            <CardContent>
-                                {item?.status === "Canceled" ? (<Typography sx={{display: 'inline-flex', gap: 1}}>
-                                        <Chip
-                                            variant="soft"
-                                            color="danger"
-                                            size="sm"
-                                            startDecorator={<BlockIcon/>}
-                                        >
-                                            {(item?.is_canceled_by_renter === false ? (
-                                                `Canceled by Owner`
+                        <Grid xs={12} md={6} lg={4}>
+                            <Card key={index} variant="outlined" sx={{}}>
+                                <CardOverflow>
+                                    <AspectRatio ratio="2">
+                                        <img
+                                            src={item?.timeshareId?.resortId?.image_urls}
+                                            // srcSet="https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318&dpr=2 2x"
+                                            loading="lazy"
+                                            alt=""
+                                        />
+                                        {/*{item?.status === "Canceled" && (*/}
+                                        {/*    <h2 style={{opacity: 0.9, color: "#fff"}}>Expired</h2>)}*/}
+                                    </AspectRatio>
+                                </CardOverflow>
+                                <CardContent>
+                                    {item?.status === "Canceled" ? (<Typography sx={{display: 'inline-flex', gap: 1}}>
+                                            <Chip
+                                                variant="soft"
+                                                color="danger"
+                                                size="sm"
+                                                startDecorator={<BlockIcon/>}
+                                            >
+                                                {(item?.is_canceled_by_renter === false ? (
+                                                    `Canceled by Owner`
 
-                                                ) : ( 
-                                                'You are canceled'
+                                                ) : (
+                                                    'You are canceled'
                                                 ))}
-                                        </Chip>
-                                    </Typography>) :
-                                    (<Typography sx={{display: 'inline-flex', gap: 1}}>
-                                        {item?.isPaid === true ? <Chip
-                                                variant="soft"
-                                                color="success"
-                                                size="sm"
-                                                startDecorator={<CheckRoundedIcon/>}
-                                            >
-                                                Paid
-                                            </Chip> :
-                                            <Chip
-                                                variant="soft"
-                                                color="danger"
-                                                size="sm"
-                                                startDecorator={<BlockIcon/>}
-                                            >
-                                                Paid
-                                            </Chip>}
-                                        {item?.is_accepted_by_owner ? <Chip
-                                                variant="soft"
-                                                color="success"
-                                                size="sm"
-                                                startDecorator={<CheckRoundedIcon/>}
-                                            >
-                                                Owner confirmed, go to payment phase
-                                            </Chip> :
-                                            <Chip
-                                                variant="soft"
-                                                color="danger"
-                                                size="sm"
-                                                startDecorator={<BlockIcon/>}
-                                            >
-                                                Wait for accept
-                                            </Chip>}
-                                    </Typography>)}
-                                <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
-                                <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
-                                <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                                    <Button variant="soft" color="primary" onClick={() => toggleReservationModal(index)}>View</Button>
-                                    {item?.status === "Canceled" ?
-                                        (<Button variant="plain" color="danger" onClick={() => DeleteReservation(item?._id)}>Remove</Button>) :
-                                        (<Button variant="plain" color="danger" onClick={() => handleCancelRental(item?._id)}>Cancel</Button>)}
-                                </Box>
-                            </CardContent>
-                            <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
-                                <Divider inset="context"/>
-                                <CardContent orientation="horizontal">
-                                    <Typography level="body-md" fontWeight="md" textColor="text.secondary">
-                                        ${item?.amount}
-                                    </Typography>
-                                    <Divider orientation="vertical"/>
-                                    <Typography level="body-md" fontWeight="md" textColor="text.secondary">
-                                        {formatDate(item?.createdAt)}
-                                    </Typography>
+                                            </Chip>
+                                        </Typography>) :
+                                        (<Typography sx={{display: 'inline-flex', gap: 1}}>
+                                            {item?.isPaid === true ? <Chip
+                                                    variant="soft"
+                                                    color="success"
+                                                    size="sm"
+                                                    startDecorator={<CheckRoundedIcon/>}
+                                                >
+                                                    Paid
+                                                </Chip> :
+                                                <Chip
+                                                    variant="soft"
+                                                    color="danger"
+                                                    size="sm"
+                                                    startDecorator={<BlockIcon/>}
+                                                >
+                                                    Paid
+                                                </Chip>}
+                                            {item?.is_accepted_by_owner ? <Chip
+                                                    variant="soft"
+                                                    color="success"
+                                                    size="sm"
+                                                    startDecorator={<CheckRoundedIcon/>}
+                                                >
+                                                    Owner confirmed, go to payment phase
+                                                </Chip> :
+                                                <Chip
+                                                    variant="soft"
+                                                    color="danger"
+                                                    size="sm"
+                                                    startDecorator={<BlockIcon/>}
+                                                >
+                                                    Wait for accept
+                                                </Chip>}
+                                        </Typography>)}
+                                    <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
+                                    <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
+                                    <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                        <Button variant="soft" color="primary"
+                                                onClick={() => toggleReservationModal(index)}>View</Button>
+                                        {item?.status === "Canceled" ?
+                                            (<Button variant="plain" color="danger"
+                                                     onClick={() => DeleteReservation(item?._id)}>Remove</Button>) :
+                                            (<Button variant="plain" color="danger"
+                                                     onClick={() => handleCancelRental(item?._id)}>Cancel</Button>)}
+                                    </Box>
                                 </CardContent>
-                            </CardOverflow>
-                        </Card>
-                    </Grid>): ('')}
+
+                                <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
+                                    <Divider inset="context"/>
+                                    <CardContent orientation="horizontal" sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                        <Box sx={{display: 'flex', gap: 2}}>
+                                            <Typography level="body-md" fontWeight="md" textColor="text.secondary">
+                                                ${item?.amount}
+                                            </Typography>
+                                            <Divider orientation="vertical"/>
+                                            <Typography level="body-md" fontWeight="md" textColor="text.secondary">
+                                                {formatDate(item?.createdAt)}
+                                            </Typography>
+                                        </Box>
+                                        <Link sx={{float: 'right', mx: '14px'}} level="body-xs" component="button"
+                                              onClick={()=>{
+                                                CreateConversation(item?.timeshareId?.current_owner?._id, item?._id)
+                                                  navigate('/me/my-messages')
+                                              }}>
+                                            Contact
+                                        </Link>
+                                    </CardContent>
+                                </CardOverflow>
+                            </Card>
+                        </Grid>) : ('')}
                 </>)
             })}
-            
+
         </Grid>
     )
 }

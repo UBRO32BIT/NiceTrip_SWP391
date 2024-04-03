@@ -7,11 +7,20 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { styled, Grid, TabPanel, Button } from '@mui/joy';
 import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import PaymentList from './PaymentList';
+import TimeshareList from './TimeshareList';
 
-export default function PaymentDashboard() {
-    return (
-        <>
+interface RootState {
+  auth: {
+    isAuthenticated: boolean;
+    user: any;
+  };
+}
+export default function RequestManagement() {
+  // const [imageFiles, setImageFiles] = React.useState([]);
+  // const [imagePreview, setImagePreview] = React.useState([]);
+  const navigate = useNavigate();
+
+  return (<>
     <Box sx={{ flex: 1, width: '100%', padding: '10px' }}>
       <Box
         sx={{
@@ -66,7 +75,7 @@ export default function PaymentDashboard() {
                   Dashboard
                 </Link>
                 <Typography color="primary" fontWeight={500} fontSize={12}>
-                  Payments
+                  Timeshares
                 </Typography>
               </Breadcrumbs>
             </Box>
@@ -82,14 +91,21 @@ export default function PaymentDashboard() {
               }}
             >
               <Typography level="h2" component="h1">
-                Payments
+                Timeshares
               </Typography>
+              <Button
+                color="primary"
+                startDecorator={<DownloadRoundedIcon />}
+                size="sm"
+              >
+                Download PDF
+              </Button>
             </Box>
-            <PaymentList />
+            <TimeshareList />
           </Box>
         </Box>
       </Box>
     </Box>
   </>
-    )
+  );
 }

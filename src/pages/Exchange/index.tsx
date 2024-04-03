@@ -257,7 +257,7 @@ export default function Exchange() {
                                         justifyContent="center">
                                         <React.Fragment>
                                             <Button variant="outlined" color="neutral" onClick={handleButtonClick}>
-                                                {myPosts[selectedResortIndex]?.resortId.name || 'Select Resort'}
+                                                {myPosts[selectedResortIndex]?.resortId.name || 'Select Timeshare'}
                                             </Button>
                                             <Modal open={open} onClose={() => setOpen(false)}>
                                                 <ModalDialog
@@ -661,7 +661,7 @@ export default function Exchange() {
                                                 Cancel
                                             </Button>
                                             <Button loading={uploading} size="sm" variant="solid" type='submit'>
-                                                Save
+                                                Submit
                                             </Button>
                                         </CardActions>
                                     </CardOverflow>

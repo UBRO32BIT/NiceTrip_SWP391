@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Sort from "../../components/Sort";
 import TableComponent from "../../components/Table"; // Import the new component
+import { api } from "../../api";
 
 function TimeshareList() {
   const [obj, setObj] = useState({});
@@ -11,11 +12,12 @@ function TimeshareList() {
   const [myPosts, setMyPosts] = useState([]); // Initialize myPosts as an empty array
   const [loading, setLoading] = useState(true); // State to track loading state
 
+
   useEffect(() => {
     const getAllTimeshares = async () => {
       try {
-        const url = `http://localhost:8080/api/v2/timeshare/current-owner/${user?._id}?sort=${sort.sort},${sort.order}`;
-        const { data } = await axios.get(url);
+        const url = `https://nice-trip.onrender.com/api/v2/timeshare/current-owner/${user?._id}?sort=${sort.sort},${sort.order}`;
+        const { data } = await api.get(url);
         console.log("Data from API:", data); // Log the entire data object
         console.log(url); // Log the entire data object
 

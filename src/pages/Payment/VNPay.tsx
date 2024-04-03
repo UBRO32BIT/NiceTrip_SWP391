@@ -83,7 +83,7 @@ export default function VNPayReturn() {
             try {
                 // If payment is successful, send data to backend
                     const queryString = `/payment/:userId/vnpay_return${window.location.search}`;
-                    const response = await axios.get(`http://localhost:8080/api/v2${queryString}`);
+                    const response = await axios.get(`https://nice-trip.onrender.com/api/v2${queryString}`);
                     console.log('Payment status updated:', response.data);
                 
             } catch (error) {

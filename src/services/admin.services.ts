@@ -10,6 +10,17 @@ const GetAllAccount = async (search: any, pageNumber: any, role: any) => {
             throw error; // Re-throw the error to let the caller handle it if needed
         })
 }
+
+const GetAllPaymentUpgrade = async () => {
+    return api.get(`/payment/all-payment-upgrade`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error('Error fetching accounts: ', error);
+            throw error; 
+        })
+}
 const GetAllRequest = () => {
     return api.get('/admin/request-list')
     .then((res) => {
@@ -174,6 +185,47 @@ const ReportBalance = () => {
         throw error; // Re-throw the error to let the caller handle it if needed
     })
 }
+const GetAllTimeshare = async (search: string, page: any, sortField: any, sortOrder: any) => {
+    return api.get(`/timeshare/all?search=${search}&page=${page}&sort=${sortField},${sortOrder}`)
+    .then((res) => {
+        return res.data.data
+    })
+    .catch((error) => {
+        // Handle errors here, you might want to log or show a user-friendly message
+        console.error('Error fetching posts: ', error);
+        throw error; // Re-throw the error to let the caller handle it if needed
+    })
+}
+const VerifyTimeshare = async (timeshareId: string) => {
+    return api.patch(`/timeshare/verify/${timeshareId}`)
+    .then((res) => {
+        return res.data.data
+    })
+    .catch((error) => {
+        console.error(error);
+        throw Error(error.response.data.message);
+    })
+}
+const DeleteTimeshare = async (timeshareId: any) => {
+    return api.delete(`/timeshare/${timeshareId}`)
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+            console.error(error);
+            throw Error(error.response.data.message);
+        })
+}
+const GetAllPayment = async () => {
+    return api.get('/payment/rental-transaction')
+    .then((res) => {
+        return res.data.data
+    })
+    .catch((error) => {
+        console.error(error);
+        throw error;
+    })
+}
 export{
     GetAllAccount,
     GetAllRequest,
@@ -190,5 +242,10 @@ export{
     AcceptRequest,
     ShowPendingRequest,
     CancelRequest,
-    ReportBalance
+    ReportBalance,
+    GetAllPayment,
+    GetAllTimeshare,
+    VerifyTimeshare,
+    DeleteTimeshare,
+    GetAllPaymentUpgrade,
 }

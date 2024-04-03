@@ -34,7 +34,7 @@ const TimeshareList = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-				const url = `http://localhost:8080/api/v2/timeshare/query?page=${page}&sort=${sort.sort},${
+				const url = `https://nice-trip.onrender.com/api/v2/timeshare/query?page=${page}&sort=${sort.sort},${
 					sort.order
 				}&type=${filterType}&search=${search}&start_date=${startDate}&end_date=${endDate}`;
                 console.log(url);

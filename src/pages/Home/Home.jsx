@@ -19,9 +19,14 @@ import {GetPost} from '../../services/post.service';
 import { Typography } from '@mui/joy';
 import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
+import axios from "axios";
+import  { useState, useEffect } from 'react';
 const Home = () => {
     const [posts, setPosts] = React.useState([]);
+    const [countTimeshareSuccess, setCountTimeshareSuccess] = useState([]);
+    const [countUser, setCountUser] = useState([]);
+    const [countResort, setCountResort] = useState([]);
+
     React.useEffect(() => {
         GetPost()
             .then((data) => {
@@ -34,6 +39,47 @@ const Home = () => {
                 } else console.error("Cannot get data from server!")
             });
     }, []);
+
+    useEffect(() => {
+
+    })
+        
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/timeshare/count-timeshare-success');
+                const newCount = response.data; 
+                setCountTimeshareSuccess(newCount);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+        fetchData();
+
+        const fetchDataUser = async () => {
+            try {
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/payment/count-users');
+                const newCount = response.data; 
+                setCountUser(newCount);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+        fetchDataUser();
+
+        const fetchDataResort = async () => {
+            try {
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/resort/count/all-resort');
+                const newCount = response.data; 
+                setCountResort(newCount);
+            } catch (error) {
+                console.error('Error fetching countTimeshare:', error);
+            }
+        };
+        fetchDataResort();
+    }, [])   
+    
     return (
         <>
             <Header/>
@@ -92,7 +138,9 @@ const Home = () => {
                             <Subtitle subtitle={'Explore'}/>
                             <h2 className='featured__tour-title'> Our featured timeshares</h2>
                         </Col>
-                        {<FeaturedTourList posts={posts}/>}
+                        <Col lg='12'>
+                            {<FeaturedTourList posts={posts}/>}
+                        </Col>
                     </Row>
                     <div className="d-flex justify-content-center">
                         <Link to="/timeshare" className="btn btn-primary bg-white " style={{ color: 'orange', borderColor: 'orange', marginTop: ' 30px' }}>View more timeshares...</Link>
@@ -116,16 +164,16 @@ const Home = () => {
                             </div>
                             <div className="counter__wrapper d-flex align-items-center gap-5">
                                 <div className="counter__box">
-                                    <span>10k+</span>
+                                    <span className="circle">{countTimeshareSuccess}</span>
                                     <h6>Successfull Timeshare</h6>
                                 </div>
                                 <div className="counter__box">
-                                    <span>2k+</span>
-                                    <h6>Regular clients</h6>
+                                    <span className="circle">{countUser}</span>
+                                    <h6>Users Active</h6>
                                 </div>
                                 <div className="counter__box">
-                                    <span>2</span>
-                                    <h6>Years experience</h6>
+                                    <span className="circle">{countResort}</span>
+                                    <h6>Resort Partner</h6>
                                 </div>
                             </div>
                         </Col>

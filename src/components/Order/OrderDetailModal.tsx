@@ -463,10 +463,6 @@ export default function OrderDetailModal(props: any) {
                                     }} sx={{width: 1, mb: 1}}><img width={'20px'}
                                                                    src={"https://cdn-icons-png.flaticon.com/512/174/174861.png"}/>Pay
                                         with PayPal</Button>
-                                    <Button variant="outlined" sx={{width: 1, boxShadow: 1}}><img
-                                        width={'20px'}
-                                        src={"https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png"}/>Pay
-                                        with VNpay</Button>
                                     <Divider sx={{mt: 1, mb: 1}}/>
                                     <Typography>
                                         Or pay with credit card

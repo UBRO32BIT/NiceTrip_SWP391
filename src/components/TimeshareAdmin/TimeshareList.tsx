@@ -23,10 +23,12 @@ import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
 import MenuItem from '@mui/joy/MenuItem';
 import Dropdown from '@mui/joy/Dropdown';
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
-import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
@@ -34,10 +36,11 @@ import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import { GetAllResort } from '../../services/admin.services';
+import { DeleteTimeshare, GetAllAccount, GetAllTimeshare, VerifyTimeshare } from '../../services/admin.services';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
+import { convertDate, convertDateTime } from '../../utils/date';
 import { DialogActions, DialogContent, DialogTitle } from '@mui/joy';
+import { useSnackbar } from 'notistack';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -79,7 +82,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-function RowMenu({resort, setOpenDelete, navigate, setResortModal}: any) {
+function RowMenu({timeshare, setTimeshareModal, setOpenVerify, setOpenDelete, navigate}: any) {
   return (
     <Dropdown>
       <MenuButton
@@ -89,39 +92,52 @@ function RowMenu({resort, setOpenDelete, navigate, setResortModal}: any) {
         <MoreHorizRoundedIcon />
       </MenuButton>
       <Menu size="sm" sx={{ minWidth: 140 }}>
-        <MenuItem onClick={() => navigate(`/admin/resort-list/edit/${resort._id}`)}>Edit</MenuItem>
+        {!timeshare.is_verified && (
+          <MenuItem color='success' onClick={() => {
+            setTimeshareModal(timeshare);
+            setOpenVerify(true)
+          }}>Verify</MenuItem>
+        )}
+        <MenuItem onClick={() => {
+          navigate(`/admin/timeshare-list/${timeshare._id}`);
+        }}>View Details</MenuItem>
+        <MenuItem>Edit</MenuItem>
         <Divider />
-        <MenuItem color="danger" onClick={() => {
-          setResortModal(resort);
-          setOpenDelete(true);
+        <MenuItem color="danger"  onClick={() => {
+          setTimeshareModal(timeshare);
+          setOpenDelete(true)
         }}>Delete</MenuItem>
       </Menu>
     </Dropdown>
   );
 }
 
-export default function ResortList() {
+export default function TimeshareList() {
   const [page, setPage] = React.useState(1);
+  const [role, setRole] = React.useState('');
   const [search, setSearch] = React.useState('');
   const [searchTemp, setSearchTemp] = React.useState('');
   const [totalPage, setTotalPage] = React.useState(1);
-  const [resorts, setResorts] = React.useState([]);
+  const [timeshares, setTimeshares] = React.useState([]);
   const [order, setOrder] = React.useState<Order>('desc');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
+  const [openVerify, setOpenVerify] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [resortModal, setResortModal] = React.useState<any>(null);
+  const [timeshareModal, setTimeshareModal] = React.useState<any>(null);
   const { pageString } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  async function getAllResorts() {
-    const data = await GetAllResort(search, page);
-    if (data && data.results) {
-        console.log(data);
-        setResorts(data.results);
-        if (data.totalPages > 0) {
-          setTotalPage(data.totalPages);
-        }
+  
+  async function getAllTimeshares() {
+    const data = await GetAllTimeshare(search, page, 'timestamp', order);
+    console.log(data);
+    if (data) {
+        setTimeshares(data);
+        console.log(timeshares)
+        //if (data.totalPages > 0) {
+        //  setTotalPage(data.totalPages);
+        //}
     }
   }
   const handleSearch = (e: any) => {
@@ -129,13 +145,31 @@ export default function ResortList() {
     console.log(searchTemp);
     setSearch(searchTemp);
   }
-  const deleteResort = async (resortId: string) => {
-    console.log("hello world");
-    setOpenDelete(false);
+  const deleteTimeshare = async (timeshareId: string) => {
+    try {
+      await DeleteTimeshare(timeshareId);
+      enqueueSnackbar("Delete successully", { variant: "success" });
+      setOpenDelete(false);
+    }
+    catch (error: any) {
+      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
+    }
+  }
+  const verifyTimeshare = async (timeshareId: string) => {
+    try {
+      await VerifyTimeshare(timeshareId);
+      enqueueSnackbar("Verify successully", { variant: "success" });
+      getAllTimeshares();
+      setOpenVerify(false);
+    }
+    catch (error: any) {
+      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
+    }
   }
   React.useEffect(() => {
-    getAllResorts();
-  }, [page, search])
+    getAllTimeshares();
+    console.log("hello world")
+  }, [page, role, search])
   React.useEffect(() => {
     if (pageString && parseInt(pageString) > 0) {
       setPage(parseInt(pageString));
@@ -151,15 +185,22 @@ export default function ResortList() {
           slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
         >
           <Option value="paid">Active</Option>
+          <Option value="pending">Banned</Option>
           <Option value="refunded">Deleted</Option>
+        </Select>
+      </FormControl>
+      <FormControl size="sm">
+        <FormLabel>Role</FormLabel>
+        <Select size="sm" placeholder="All">
+          <Option value="admin" onClick={() => setRole("admin")}>Admin</Option>
+          <Option value="user" onClick={() => setRole("user")}>User</Option>
         </Select>
       </FormControl>
       <FormControl size="sm">
         <FormLabel>Sort by</FormLabel>
         <Select size="sm" placeholder="All">
-          <Option value="all">Name</Option>
-          <Option value="olivia">Location</Option>
-          <Option value="dateCreated">Date created</Option>
+          <Option value="all">Username</Option>
+          <Option value="olivia">Date created</Option>
         </Select>
       </FormControl>
     </React.Fragment>
@@ -219,7 +260,7 @@ export default function ResortList() {
       >
         <form onSubmit={handleSearch}>
           <FormControl sx={{ flex: 1 }} size="sm">
-            <FormLabel>Search for resort</FormLabel>
+            <FormLabel>Search for timeshare</FormLabel>
             <Input size="sm" 
             placeholder="Search" 
             startDecorator={<SearchIcon />} 
@@ -257,98 +298,105 @@ export default function ResortList() {
         >
           <thead>
             <tr>
-              <th style={{ width: 48, textAlign: 'center', padding: '12px 6px' }}>
-                <Checkbox
-                  size="sm"
-                  indeterminate={
-                    selected.length > 0 && selected.length !== resorts.length
-                  }
-                  checked={selected.length === resorts.length}
-                  onChange={(event) => {
-                    setSelected(
-                      event.target.checked ? resorts.map((row: any) => row._id) : [],
-                    );
-                  }}
-                  color={
-                    selected.length > 0 || selected.length === resorts.length
-                      ? 'primary'
-                      : undefined
-                  }
-                  sx={{ verticalAlign: 'text-bottom' }}
-                />
-              </th>
-              <th style={{ width: 140, padding: '12px 12px' }}> </th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Name</th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Location</th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Date Created</th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Status</th>
-              <th style={{ width: 140, padding: '12px 6px' }}> </th>
+              <th style={{ width: 220, padding: '12px 12px' }}>Timeshare</th>
+              <th style={{ width: 70, padding: '12px 6px' }}>Type</th>
+              <th style={{ width: 80, padding: '12px 6px' }}>Date</th>
+              <th style={{ width: 70, padding: '12px 6px' }}>Price</th>
+              <th style={{ width: 140, padding: '12px 6px' }}>Uploader</th>
+              <th style={{ width: 100, padding: '12px 6px' }}>Verified</th>
+              <th style={{ width: 100, padding: '12px 6px' }}>Status</th>
+              <th style={{ width: 50}}></th>
             </tr>
           </thead>
           <tbody>
-            {stableSort(resorts, getComparator(order, '_id')).map((resort: any) => (
-              <tr key={resort._id}>
-                <td style={{ textAlign: 'center', width: 120 }}>
-                  <Checkbox
-                    size="sm"
-                    checked={selected.includes(resort._id)}
-                    color={selected.includes(resort._id) ? 'primary' : undefined}
-                    onChange={(event) => {
-                      setSelected((ids) =>
-                        event.target.checked
-                          ? ids.concat(resort._id)
-                          : ids.filter((itemId) => itemId !== resort._id),
-                      );
-                    }}
-                    slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
-                    sx={{ verticalAlign: 'text-bottom' }}
-                  />
+            {stableSort(timeshares, getComparator(order, '_id')).map((timeshare: any) => (
+              <tr key={timeshare._id}>
+                <td style={{ width: 120 }}>
+                  <Box sx={{display: "flex", gap: 2, alignItems: "center"}}>
+                    <img alt={timeshare.resortId.name} src={timeshare.images[0]} width={120}/>
+                    <Box>
+                      <Typography level="body-sm">{timeshare.resortId.name}</Typography>
+                      <Typography level="body-xs">{timeshare.unitId.name}</Typography>
+                    </Box>
+                  </Box>
                 </td>
                 <td>
-                  <img alt={resort.name} src={resort.image_urls[0]} width={120}/>
+                  <Typography level="body-xs">{timeshare.type}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{resort.name}</Typography>
+                  <Typography level="body-xs">{`${convertDate(timeshare.start_date)} - ${convertDate(timeshare.end_date)}`}</Typography>
+                </td>
+                <td>{timeshare.price}</td>
+                <td>
+                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <Avatar size="sm" src={timeshare.current_owner.profileImage} alt={timeshare.current_owner.username}/>
+                    <div>
+                      <Typography level="body-xs">{timeshare.current_owner.username}</Typography>
+                      {/* <Typography level="body-xs">{timeshare.current_owner.email}</Typography> */}
+                    </div>
+                  </Box>
                 </td>
                 <td>
-                  <Typography level="body-xs">{resort.location}</Typography>
+                {timeshare.is_verified ? (
+                            <VerifiedOutlinedIcon color='success' />
+                        ) : (
+                            <HighlightOffIcon style={{ color: 'red' }} />
+                        )}
                 </td>
                 <td>
-                  <Typography level="body-xs">{resort.timestamp}</Typography>
-                </td>
-                <td>
-                  {resort.isDeleted ? (
+                  {timeshare.isDeleted ? (
                     <Chip
                       variant="soft"
                       size="sm"
-                      startDecorator={<CheckRoundedIcon />}
+                      startDecorator={<BlockIcon />}
                       color="danger"
-                      >
+                    >
                       Deleted
                     </Chip>
                   ) : (
                     <Chip
-                    variant="soft"
-                    size="sm"
-                    startDecorator={<CheckRoundedIcon />}
-                    color="success"
-                  >
-                    Active
-                  </Chip>
+                      variant="soft"
+                      size="sm"
+                      startDecorator={<CheckRoundedIcon />}
+                      color="success"
+                    >
+                      Active
+                    </Chip>
                   )}
                 </td>
                 <td>
-                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Link level="body-xs" component="button">
-                      View details
-                    </Link>
-                    <RowMenu resort={resort} navigate={navigate} setOpenDelete={setOpenDelete} setResortModal={setResortModal}/>
-                  </Box>
+                  <RowMenu
+                  timeshare={timeshare}
+                  setOpenVerify={setOpenVerify}
+                  setOpenDelete={setOpenDelete}
+                  setTimeshareModal={setTimeshareModal}
+                  navigate={navigate}
+                  />
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
+        <Modal open={openVerify} onClose={() => setOpenVerify(false)}>
+          <ModalDialog variant="outlined" role="alertdialog">
+            <DialogTitle>
+              <WarningRoundedIcon />
+              Confirmation
+            </DialogTitle>
+            <Divider />
+            <DialogContent>
+              Are you sure you want to verify {timeshareModal?.resortId?.name}?
+            </DialogContent>
+            <DialogActions>
+              <Button variant="solid" color="warning" onClick={() => verifyTimeshare(timeshareModal?._id)}>
+                Yes
+              </Button>
+              <Button variant="plain" color="neutral" onClick={() => setOpenVerify(false)}>
+                No
+              </Button>
+            </DialogActions>
+          </ModalDialog>
+        </Modal>
         <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
           <ModalDialog variant="outlined" role="alertdialog">
             <DialogTitle>
@@ -357,10 +405,10 @@ export default function ResortList() {
             </DialogTitle>
             <Divider />
             <DialogContent>
-              Are you sure you want to delete {resortModal?.name}?
+              Are you sure you want to delete {timeshareModal?.resortId?.name}?
             </DialogContent>
             <DialogActions>
-              <Button variant="solid" color="warning" onClick={() => deleteResort(resortModal?._id)}>
+              <Button variant="solid" color="warning" onClick={() => deleteTimeshare(timeshareModal?._id)}>
                 Yes
               </Button>
               <Button variant="plain" color="neutral" onClick={() => setOpenDelete(false)}>
