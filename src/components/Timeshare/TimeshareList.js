@@ -38,7 +38,7 @@ function TimeshareList() {
       <div className="container">
         <div className="head"></div>
         <div className="body">
-		<div className="filter_container">
+          <div className="filter_container">
             {/* Pass sort state and setSort function to Sort component */}
             <Sort sort={sort} setSort={(sort) => setSort(sort)} />
           </div>
@@ -49,9 +49,9 @@ function TimeshareList() {
               <p>No posts found</p>
             ) : (
               <TableComponent myPosts={myPosts} />
-			  
+              
             )}
-			
+
           </div>
 
         </div>

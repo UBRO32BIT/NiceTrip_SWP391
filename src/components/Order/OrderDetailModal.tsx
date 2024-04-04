@@ -240,7 +240,7 @@ export default function OrderDetailModal(props: any) {
                                     <strong>Phone:</strong> {item?.phone}
                                 </div>
                                 <div>
-                                    <strong>Reservation Date:</strong> {formatDate(item?.reservationDate)}
+                                    <strong>Reservation Date:</strong> {formatDate(item?.createdAt)}
                                 </div>
                                 <div>
                                     <strong>Status:</strong> {item?.status}

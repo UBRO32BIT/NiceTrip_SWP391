@@ -117,7 +117,7 @@ export default function ResortList() {
   async function getAllResorts() {
     const data = await GetAllResort(search, page);
     if (data && data.results) {
-        console.log(data);
+      console.log(data);
         setResorts(data.results);
         if (data.totalPages > 0) {
           setTotalPage(data.totalPages);
@@ -317,11 +317,11 @@ export default function ResortList() {
                   <Typography level="body-xs">{resort.timestamp}</Typography>
                 </td>
                 <td>
-                  {resort.isDeleted ? (
+                  {resort.deleted ? (
                     <Chip
                       variant="soft"
                       size="sm"
-                      startDecorator={<CheckRoundedIcon />}
+                      startDecorator={<BlockIcon />}
                       color="danger"
                       >
                       Deleted

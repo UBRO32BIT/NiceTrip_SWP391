@@ -33,7 +33,7 @@ const GetAllRequest = () => {
     })
 }
 const GetAllResort = async (search: string, page: any) => {
-    return api.get(`/resort?search=${search}&page=${page}`)
+    return api.get(`/resort/all?name=${search}&page=${page}`)
     .then((res) => {
         return res.data.data
     })

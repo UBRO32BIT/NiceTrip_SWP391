@@ -14,7 +14,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { GetResortById, UploadResort } from '../../services/resort.service';
+
+import { GetResortById, UpdateResort, UploadResort } from '../../services/resort.service';
 
 interface Unit {
     name: string,
@@ -202,7 +203,9 @@ export default function EditResort() {
                 formData.append('facilities', facility);
             });
             attractions.forEach(function (attraction) {
+
                 formData.append('attractions', attraction);
+
             });
             policies.forEach(function (policy) {
                 formData.append('policies', policy);
@@ -519,6 +522,7 @@ export default function EditResort() {
                                                             <Box sx={{ display: 'flex', width: 1, flexWrap: 'wrap', mt: 2 }}>
                                                                 {images.map(function (url, imageIndex) {
                                                                     return (<div style={{ position: "relative" }}>
+
                                                                         <img src={URL.createObjectURL(url)} alt="Pasted Image" height={90} style={{ borderRadius: "5px", margin: '2px' }} />
                                                                         <button
                                                                             onClick={(e) => {
