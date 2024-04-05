@@ -216,16 +216,6 @@ const DeleteTimeshare = async (timeshareId: any) => {
             throw Error(error.response.data.message);
         })
 }
-const RestoreTimeshare = async (timeshareId: any) => {
-    return api.patch(`/timeshare/${timeshareId}/restore`)
-        .then((res) => {
-            return res.data.data
-        })
-        .catch((error) => {
-            console.error(error);
-            throw Error(error.response.data.message);
-        })
-}
 const GetAllPayment = async () => {
     return api.get('/payment/rental-transaction')
     .then((res) => {
@@ -257,6 +247,5 @@ export{
     GetAllTimeshare,
     VerifyTimeshare,
     DeleteTimeshare,
-    RestoreTimeshare,
     GetAllPaymentUpgrade,
 }

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import './header.css';
 import { Container, Row, Button } from 'reactstrap';
@@ -187,7 +186,7 @@ const Header = () => {
                     <Dropdown>
                       <MenuButton
                         slots={{ root: IconButton }}
-                        slotProps={{ root: { variant: 'plain', color: 'neutral' } }}
+slotProps={{ root: { variant: 'plain', color: 'neutral' } }}
                       >
                         <Avatar
                           variant="outlined"

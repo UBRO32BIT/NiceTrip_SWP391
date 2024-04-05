@@ -48,7 +48,7 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/timeshare/count-timeshare-success');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/timeshare/count-timeshare-success');
                 const newCount = response.data; 
                 setCountTimeshareSuccess(newCount);
             } catch (error) {
@@ -59,7 +59,7 @@ const Home = () => {
 
         const fetchDataUser = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/payment/count-users');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/payment/count-users');
                 const newCount = response.data; 
                 setCountUser(newCount);
             } catch (error) {
@@ -70,7 +70,7 @@ const Home = () => {
 
         const fetchDataResort = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/resort/count/all-resort');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/resort/count/all-resort');
                 const newCount = response.data; 
                 setCountResort(newCount);
             } catch (error) {

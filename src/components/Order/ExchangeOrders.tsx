@@ -44,7 +44,7 @@ import {InfoOutlined} from "@mui/icons-material";
 import Checkbox from "@mui/joy/Checkbox";
 import OrderDetailModal from "./OrderDetailModal";
 import {useSnackbar} from 'notistack';
-import {CreateConversation} from "../../services/chat.service";
+import {CreateConversationExchange} from "../../services/chat.service";
 
 interface RootState {
     auth: {
@@ -201,6 +201,8 @@ export default function OrderList() {
                                         loading="lazy"
                                         alt=""
                                     />
+                                <input type='hidden' name='exchangeId' value={item?._id}></input>
+                                <input type='hidden' name='ownerId' value={item?.timeshareId?.current_owner?._id}></input>
                                 </AspectRatio>
                             </CardOverflow>
                             <CardContent>
@@ -256,7 +258,7 @@ export default function OrderList() {
                                     </Box>
                                     <Link sx={{float: 'right', mx: '14px'}} level="body-xs" component="button"
                                           onClick={()=>{
-                                              CreateConversation(user?._id, item?._id)
+                                            CreateConversationExchange(item?.timeshareId?.current_owner?._id, item?._id)
                                               navigate('/me/my-messages')
                                           }}>
                                         Contact

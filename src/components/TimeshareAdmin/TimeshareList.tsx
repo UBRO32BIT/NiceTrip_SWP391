@@ -36,7 +36,7 @@ import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import { DeleteTimeshare, GetAllAccount, GetAllTimeshare, RestoreTimeshare, VerifyTimeshare } from '../../services/admin.services';
+import { DeleteTimeshare, GetAllAccount, GetAllTimeshare, VerifyTimeshare } from '../../services/admin.services';
 import { useNavigate, useParams } from 'react-router-dom';
 import { convertDate, convertDateTime } from '../../utils/date';
 import { DialogActions, DialogContent, DialogTitle } from '@mui/joy';
@@ -82,7 +82,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-function RowMenu({timeshare, setTimeshareModal, setOpenVerify, setOpenDelete, setOpenRestore, navigate}: any) {
+function RowMenu({timeshare, setTimeshareModal, setOpenVerify, setOpenDelete, navigate}: any) {
   return (
     <Dropdown>
       <MenuButton
@@ -103,17 +103,10 @@ function RowMenu({timeshare, setTimeshareModal, setOpenVerify, setOpenDelete, se
         }}>View Details</MenuItem>
         <MenuItem>Edit</MenuItem>
         <Divider />
-        {timeshare.deleted ? (
-          <MenuItem color="warning" onClick={() => {
-          setTimeshareModal(timeshare);
-          setOpenRestore(true)
-        }}>Restore</MenuItem>
-        ) : (
-          <MenuItem color="danger"  onClick={() => {
+        <MenuItem color="danger"  onClick={() => {
           setTimeshareModal(timeshare);
           setOpenDelete(true)
         }}>Delete</MenuItem>
-        )}
       </Menu>
     </Dropdown>
   );
@@ -131,7 +124,6 @@ export default function TimeshareList() {
   const [open, setOpen] = React.useState(false);
   const [openVerify, setOpenVerify] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [openRestore, setOpenRestore] = React.useState(false);
   const [timeshareModal, setTimeshareModal] = React.useState<any>(null);
   const { pageString } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -157,19 +149,7 @@ export default function TimeshareList() {
     try {
       await DeleteTimeshare(timeshareId);
       enqueueSnackbar("Delete successully", { variant: "success" });
-      getAllTimeshares()
       setOpenDelete(false);
-    }
-    catch (error: any) {
-      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
-    }
-  }
-  const restoreTimeshare = async (timeshareId: string) => {
-    try {
-      await RestoreTimeshare(timeshareId);
-      enqueueSnackbar("Restore successully", { variant: "success" });
-      getAllTimeshares()
-      setOpenRestore(false);
     }
     catch (error: any) {
       enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
@@ -349,7 +329,7 @@ export default function TimeshareList() {
                 <td>{timeshare.price}</td>
                 <td>
                   <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Avatar size="sm" src={timeshare.current_owner.profilePicture} alt={timeshare.current_owner.username}/>
+                    <Avatar size="sm" src={timeshare.current_owner.profileImage} alt={timeshare.current_owner.username}/>
                     <div>
                       <Typography level="body-xs">{timeshare.current_owner.username}</Typography>
                       {/* <Typography level="body-xs">{timeshare.current_owner.email}</Typography> */}
@@ -364,7 +344,7 @@ export default function TimeshareList() {
                         )}
                 </td>
                 <td>
-                  {timeshare.deleted ? (
+                  {timeshare.isDeleted ? (
                     <Chip
                       variant="soft"
                       size="sm"
@@ -389,7 +369,6 @@ export default function TimeshareList() {
                   timeshare={timeshare}
                   setOpenVerify={setOpenVerify}
                   setOpenDelete={setOpenDelete}
-                  setOpenRestore={setOpenRestore}
                   setTimeshareModal={setTimeshareModal}
                   navigate={navigate}
                   />
@@ -429,30 +408,10 @@ export default function TimeshareList() {
               Are you sure you want to delete {timeshareModal?.resortId?.name}?
             </DialogContent>
             <DialogActions>
-              <Button variant="solid" color="danger" onClick={() => deleteTimeshare(timeshareModal?._id)}>
+              <Button variant="solid" color="warning" onClick={() => deleteTimeshare(timeshareModal?._id)}>
                 Yes
               </Button>
               <Button variant="plain" color="neutral" onClick={() => setOpenDelete(false)}>
-                No
-              </Button>
-            </DialogActions>
-          </ModalDialog>
-        </Modal>
-        <Modal open={openRestore} onClose={() => setOpenRestore(false)}>
-          <ModalDialog variant="outlined" role="alertdialog">
-            <DialogTitle>
-              <WarningRoundedIcon />
-              Confirmation
-            </DialogTitle>
-            <Divider />
-            <DialogContent>
-              Are you sure you want to restore {timeshareModal?.resortId?.name}?
-            </DialogContent>
-            <DialogActions>
-              <Button variant="solid" color="warning" onClick={() => restoreTimeshare(timeshareModal?._id)}>
-                Yes
-              </Button>
-              <Button variant="plain" color="neutral" onClick={() => setOpenRestore(false)}>
                 No
               </Button>
             </DialogActions>

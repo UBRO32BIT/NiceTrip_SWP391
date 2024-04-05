@@ -184,14 +184,13 @@ function RowMenu(props: any) {
                                     : {}),
                             }}
                         ><Box sx={{
-                            maxWidth: 600,
+                            maxWidth: 450,
                             maxHeight: 'fixed',
                             borderRadius: 'md',
                             p: 1,
                         }}>
                             
-                            <ImageGallery items={convertImageArray([...reservationData?.myTimeshareId?.images, ...reservationData?.myTimeshareId?.resortId.image_urls])}/>
-                                
+                            <ImageGallery items={convertImageArray([...reservationData?.myTimeshareId?.images, ...reservationData?.myTimeshareId?.resortId.image_urls])} />
                                 <h2>{reservationData?.myTimeshareId?.resortId.name}</h2>
                                 <span>
                                     <h5>Unit: {reservationData?.myTimeshareId?.unitId?.name}</h5>
@@ -211,9 +210,9 @@ function RowMenu(props: any) {
                                     </span>
                                 </div>
                                 <td> 
-                                <Typography level="body-xs" sx={{ marginLeft:'400px' }}>
+                                <Typography level="body-xs" >
                                 {reservationData?.myTimeshareId?.is_bookable === false || reservationData?.timeshareId?.is_bookable === false || reservationData?.status === 'Canceled' || reservationData?.status === 'Expired'? (
-                                    <Box sx={{ textAlign:'center' ,width: 'fit-content', fontSize: '15px', border: '1px', backgroundColor: 'gray', color: 'white', padding: '8px', borderRadius: '5px' }}>
+                                    <Box sx={{ textAlign:'center' ,width: 'fit-content', fontSize: '15px', border: '1px', backgroundColor: 'gray', color: 'white', borderRadius: '5px' }}>
                                         {reservationData?.status}
                                     </Box>
                                 ) : (
@@ -231,7 +230,7 @@ function RowMenu(props: any) {
                                                     setOpen(false);
                                                 }
                                             }}>
-                                                Denied
+                                                Deny
                                             </Button>
 
                                         
@@ -300,7 +299,7 @@ export default function RentRequestList(props: any) {
             try {
                 const timesharePromises = requestList.map(async (row) => {
 
-                    const response = await axios.get<Timeshare[]>(`http://localhost:8080/api/v2/timeshare/${row?.myTimeshareId}`);
+                    const response = await axios.get<Timeshare[]>(`https://nice-trip.onrender.com/api/v2/timeshare/${row?.myTimeshareId}`);
 
                     const timeshareData = await Promise.all(timesharePromises);
                     return response.data;

@@ -93,15 +93,81 @@ const VerificationCard = () => {
     return (
         <>
             <Header/>
+            <Typography fontWeight={700} fontSize={26} marginLeft={11}>
+                            Request Exchange
+                        </Typography>
             <CssVarsProvider disableTransitionOnChange>
                 <CssBaseline/>
+                
                 {/*<NavBar />*/}
                 <Grid container spacing={0}
                       sx={{flexGrow: 1, width: 1, px: 10, mt: 2, gap: 1, flexWrap: {xs: 'wrap', md: 'nowrap',}}}>
-                    <Grid xs={12} md={8} sx={{p: 1, boxShadow: '0 0 0px gray'}}>
-                        <Typography fontWeight={700} fontSize={26}>
-                            Request Exchange
-                        </Typography>
+                                            <Grid xs={12} md={4} sx={{p: 1, boxShadow: '0 0 4px gray', height: 'fit-content',}}>
+                        <Stack sx={{width: 1, display: 'flex', justifyContent: 'center'}} direction="column" spacing={0}
+                               justifyContent="center">
+                            <img src={post?.resortId?.image_urls}/>
+                            <Typography fontWeight={600} fontSize={28}>
+                                {post?.resortId?.name}
+                            </Typography>
+                            <Typography fontWeight={400} fontSize={18}>
+                                Post: #{post?._id}
+                            </Typography>
+                            <Typography fontWeight={400} fontSize={18}>
+                                Owner: {post?.current_owner?.username}
+                            </Typography>
+                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
+                                <Typography fontWeight={500} fontSize={20}>
+                                    Unit:
+                                </Typography>
+                                <Typography fontWeight={400} fontSize={20}>
+                                    {post?.unitId?.name}
+                                </Typography>
+                            </Box>
+                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                <Typography fontWeight={500} fontSize={20}>
+                                    Stay:
+                                </Typography>
+                                <Typography fontWeight={400} fontSize={20}>
+                                    {post?.numberOfNights} night
+                                </Typography>
+                            </Box>
+                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
+                                <Typography fontWeight={500} fontSize={20}>
+                                    Check-in:
+                                </Typography>
+                                <Typography fontWeight={400} fontSize={20}>
+                                    {formatDate(post?.start_date)}
+                                </Typography>
+                            </Box>
+                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                <Typography fontWeight={500} fontSize={20}>
+                                    Check-out:
+                                </Typography>
+                                <Typography fontWeight={400} fontSize={20}>
+                                    {formatDate(post?.end_date)}
+                                </Typography>
+                            </Box>
+                            <Divider sx={{mt: 1, mb: 1}}/>
+                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                <Typography fontWeight={500} fontSize={20}>
+                                    Price/night:
+                                </Typography>
+                                <Typography fontWeight={400} fontSize={20}>
+                                    ${post?.pricePerNight}
+                                </Typography>
+                            </Box>
+                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
+                                <Typography fontWeight={500} fontSize={20}>
+                                    Total:
+                                </Typography>
+                                <Typography fontWeight={600} fontSize={20}>
+                                    ${post?.price}
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </Grid>
+                    <Grid xs={12} md={3} sx={{p: 1, boxShadow: '0 0 0px gray'}}>
+
                         <Box sx={{width: 1}}>
                             <Card
                                 size="lg"
@@ -110,7 +176,6 @@ const VerificationCard = () => {
                                 sx={{
                                     textAlign: 'center',
                                     maxWidth: '100%',
-                                    width: 1,
                                     mx: 'auto',
                                     mb: 20,
                                     // to make the demo resizable
@@ -213,121 +278,21 @@ const VerificationCard = () => {
                                         <Typography fontWeight={400} fontSize={16}>
                                             {exchange?.address?.zipCode}
                                         </Typography>
+
                                     </Box>
+                                    <Button sx={{marginTop: 5 }}>
+                                        <a style={{color:"white",  textDecoration: "none"}} href="https://nicetrip-vn.vercel.app/me/my-orders/exchange">View My Orders</a>
+                                        </Button>
+
                                 </CardOverflow>
-                                <CardContent sx={{gap: 1.5, minWidth: 200}}>
-                                    <AspectRatio ratio="19/8" objectFit="contain" variant="plain"
-                                                 sx={{display: 'flex', justifyContent: 'center'}}>
-                                        <img src={'https://www.modify.in.th/wp-content/uploads/Gmail_icon.png'}
-                                             width={2}/>
-                                    </AspectRatio>
-                                    <CardContent>
-                                        <Typography level="title-lg">Confirm reservation</Typography>
-                                        <Typography fontSize="sm" sx={{mt: 0.5}}>
-                                            To finish, go to mail application to confirm your reservation
-                                        </Typography>
-                                    </CardContent>
-
-
-                                    {(exchange?.is_confirmed === true) ?
-                                        <Typography color={'success'} fontWeight={500} fontSize={20}>Confirm
-                                            successfully</Typography> :
-                                        <CardContent>
-                                            <Button
-                                                variant="solid"
-                                                color="primary"
-                                                loading={sendingEmail}
-                                                disabled={sendButtonDisabled}
-                                                sx={{
-                                                    '--variant-borderWidth': '2px',
-                                                    borderRadius: 40,
-                                                    borderColor: 'primary.500',
-                                                    mx: 'auto',
-                                                }}
-                                                onClick={SendEmail}
-                                            >
-                                                Send mail
-                                            </Button>
-                                            <Typography>Haven't received email yet !</Typography>
-                                            <a href={''}
-                                               onClick={(e) => {
-                                                   e.preventDefault();
-                                                   setSendButtonDisabled(false);
-                                               }
-                                               }>
-                                                Resend email</a>
-                                        </CardContent>}
-
-                                </CardContent>
 
                             </Card>
+
                         </Box>
                     </Grid>
-                    <Grid xs={12} md={4} sx={{p: 1, boxShadow: '0 0 4px gray', height: 'fit-content',}}>
-                        <Stack sx={{width: 1, display: 'flex', justifyContent: 'center'}} direction="column" spacing={0}
-                               justifyContent="center">
-                            <img src={post?.resortId?.image_urls}/>
-                            <Typography fontWeight={600} fontSize={28}>
-                                {post?.resortId?.name}
-                            </Typography>
-                            <Typography fontWeight={400} fontSize={18}>
-                                Post: #{post?._id}
-                            </Typography>
-                            <Typography fontWeight={400} fontSize={18}>
-                                Owner: {post?.current_owner?.username}
-                            </Typography>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between', mt: 2}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Unit:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {post?.unitId?.name}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Stay:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {post?.numberOfNights} night
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between',}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Check-in:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {formatDate(post?.start_date)}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Check-out:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    {formatDate(post?.end_date)}
-                                </Typography>
-                            </Box>
-                            <Divider sx={{mt: 1, mb: 1}}/>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Price/night:
-                                </Typography>
-                                <Typography fontWeight={400} fontSize={20}>
-                                    ${post?.pricePerNight}
-                                </Typography>
-                            </Box>
-                            <Box sx={{width: 1, display: 'flex', justifyContent: 'space-between'}}>
-                                <Typography fontWeight={500} fontSize={20}>
-                                    Total:
-                                </Typography>
-                                <Typography fontWeight={600} fontSize={20}>
-                                    ${post?.price}
-                                </Typography>
-                            </Box>
-                        </Stack>
-                    </Grid>
+
                 </Grid>
+
             </CssVarsProvider>
 
 

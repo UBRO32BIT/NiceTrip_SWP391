@@ -130,7 +130,7 @@ export default function MyBilling(props: any) {
     useEffect(() => {
       const fetchServicePacks = async () => {
           try {
-              const response = await axios.get<ServicePack[]>('http://localhost:8080/api/v2/servicePack/getAllServicePack');
+              const response = await axios.get<ServicePack[]>('https://nice-trip.onrender.com/api/v2/servicePack/getAllServicePack');
               setServicePacks(response.data);
           } catch (error) {
               console.error('Error fetching service packs:', error);

@@ -27,7 +27,7 @@ export default function RequestList() {
     useEffect(() => {
       const getAllTransactions = async () => {
         try {
-          const url = `http://localhost:8080/api/v2/exchange/get-all/exchange`;
+          const url = `https://nice-trip.onrender.com/api/v2/exchange/get-all/exchange`;
           const { data } = await axios.get(url);
           console.log("Data from API:", data);
           console.log(url); 

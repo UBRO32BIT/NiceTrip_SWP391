@@ -10,6 +10,16 @@ const CreateConversation = (ownerId: string, reservationId: string) => {
         })
 }
 
+const CreateConversationExchange = (ownerId: string, exchangeId: string) => {
+    return api.post('/chat/create/exchange',{ownerId, exchangeId})
+        .then((res) => {
+            return res.data.data
+        })
+        .catch((error) => {
+
+        })
+}
+
 const GetConversationOfUser = (userId: string) => {
     return api.get(`/chat/conversation-of-user/${userId}`)
         .then((res) => {
@@ -31,5 +41,6 @@ const GetConversationById = (id: string) => {
 export {
     CreateConversation,
     GetConversationOfUser,
-    GetConversationById
+    GetConversationById,
+    CreateConversationExchange
 }

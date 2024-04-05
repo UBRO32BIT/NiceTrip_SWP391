@@ -85,6 +85,10 @@ const publicRoutes: Route[] = [
         page: Home,
     },
     {
+        path: '/',
+        page: Home,
+    },
+    {
         path: '/timeshare',
         page: TimeShareList
     },

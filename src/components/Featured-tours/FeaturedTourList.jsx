@@ -26,7 +26,7 @@ const TimeshareList = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-				const url = `http://localhost:8080/api/v2/timeshare?page=${page}&sort=${sort.sort},${
+				const url = `https://nice-trip.onrender.com/api/v2/timeshare?page=${page}&sort=${sort.sort},${
 					sort.order
 				}`;
                 const { data } = await axios.get(url);

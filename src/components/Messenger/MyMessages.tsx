@@ -10,7 +10,7 @@ import {RootState} from "../../features/auth/auth.slice";
 import {useSelector} from "react-redux";
 import {CreateConversation, GetConversationOfUser} from '../../services/chat.service';
 
-const socket = io('http://localhost:8080/');
+const socket = io('https://nice-trip.onrender.com/');
 
 export default function MyProfile() {
     const user = useSelector((state: RootState) => state?.auth?.user);

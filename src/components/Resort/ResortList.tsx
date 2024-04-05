@@ -38,7 +38,6 @@ import { GetAllResort } from '../../services/admin.services';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { DialogActions, DialogContent, DialogTitle } from '@mui/joy';
-import { DeleteResort, RestoreResort } from '../../services/resort.service';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -80,7 +79,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-function RowMenu({resort, setOpenDelete, setOpenRestore, navigate, setResortModal}: any) {
+function RowMenu({resort, setOpenDelete, navigate, setResortModal}: any) {
   return (
     <Dropdown>
       <MenuButton
@@ -92,17 +91,10 @@ function RowMenu({resort, setOpenDelete, setOpenRestore, navigate, setResortModa
       <Menu size="sm" sx={{ minWidth: 140 }}>
         <MenuItem onClick={() => navigate(`/admin/resort-list/edit/${resort._id}`)}>Edit</MenuItem>
         <Divider />
-        {resort.deleted ? (
-          <MenuItem color="warning" onClick={() => {
-          setResortModal(resort);
-          setOpenRestore(true);
-        }}>Restore</MenuItem>
-        ) : (
-          <MenuItem color="danger" onClick={() => {
+        <MenuItem color="danger" onClick={() => {
           setResortModal(resort);
           setOpenDelete(true);
         }}>Delete</MenuItem>
-        )}
       </Menu>
     </Dropdown>
   );
@@ -118,7 +110,6 @@ export default function ResortList() {
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [openRestore, setOpenRestore] = React.useState(false);
   const [resortModal, setResortModal] = React.useState<any>(null);
   const { pageString } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -139,28 +130,8 @@ export default function ResortList() {
     setSearch(searchTemp);
   }
   const deleteResort = async (resortId: string) => {
-    try {
-      await DeleteResort(resortId);
-      enqueueSnackbar("Delete successully", { variant: "success" });
-      getAllResorts();
-      setOpenDelete(false);
-    }
-    catch (error: any) {
-      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
-      setOpenDelete(false);
-    }
-  }
-  const restoreResort = async (resortId: string) => {
-    try {
-      await RestoreResort(resortId);
-      enqueueSnackbar("Restore successully", { variant: "success" });
-      getAllResorts();
-      setOpenRestore(false);
-    }
-    catch (error: any) {
-      enqueueSnackbar(`Error: ${error?.message}`, { variant: "error" });
-      setOpenRestore(false);
-    }
+    console.log("hello world");
+    setOpenDelete(false);
   }
   React.useEffect(() => {
     getAllResorts();
@@ -371,7 +342,7 @@ export default function ResortList() {
                     <Link level="body-xs" component="button">
                       View details
                     </Link>
-                    <RowMenu resort={resort} navigate={navigate} setOpenDelete={setOpenDelete} setOpenRestore={setOpenRestore} setResortModal={setResortModal}/>
+                    <RowMenu resort={resort} navigate={navigate} setOpenDelete={setOpenDelete} setResortModal={setResortModal}/>
                   </Box>
                 </td>
               </tr>
@@ -389,30 +360,10 @@ export default function ResortList() {
               Are you sure you want to delete {resortModal?.name}?
             </DialogContent>
             <DialogActions>
-              <Button variant="solid" color="danger" onClick={() => deleteResort(resortModal?._id)}>
+              <Button variant="solid" color="warning" onClick={() => deleteResort(resortModal?._id)}>
                 Yes
               </Button>
               <Button variant="plain" color="neutral" onClick={() => setOpenDelete(false)}>
-                No
-              </Button>
-            </DialogActions>
-          </ModalDialog>
-        </Modal>
-        <Modal open={openRestore} onClose={() => setOpenRestore(false)}>
-          <ModalDialog variant="outlined" role="alertdialog">
-            <DialogTitle>
-              <WarningRoundedIcon />
-              Confirmation
-            </DialogTitle>
-            <Divider />
-            <DialogContent>
-              Are you sure you want to restore {resortModal?.name}?
-            </DialogContent>
-            <DialogActions>
-              <Button variant="solid" color="warning" onClick={() => restoreResort(resortModal?._id)}>
-                Yes
-              </Button>
-              <Button variant="plain" color="neutral" onClick={() => setOpenRestore(false)}>
                 No
               </Button>
             </DialogActions>

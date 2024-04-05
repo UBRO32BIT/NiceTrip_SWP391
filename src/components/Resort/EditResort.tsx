@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
+
 import { GetResortById, UpdateResort, UploadResort } from '../../services/resort.service';
 
 interface Unit {
@@ -61,15 +62,26 @@ export default function EditResort() {
     const [facilities, setFacilities] = React.useState<string[]>([]);
     const [attractions, setAttractions] = React.useState<string[]>([]);
     const [policies, setPolicies] = React.useState<string[]>([]);
-    const [images, setImages] = React.useState<any[]>([]);
+    const [images, setImages] = React.useState<File[]>([]);
+    const [units, setUnits] = React.useState<Unit[]>([]);
     const [unitImage, setUnitImage] = React.useState<File>();
     const [newFacility, setNewFacility] = React.useState<string>('');
     const [newAttraction, setNewAttraction] = React.useState<string>('');
     const [newPolicy, setNewPolicy] = React.useState<string>('');
     const [newImage, setNewImage] = React.useState<string>('')
+    // States for add unit form
+    const [features, setFeatures] = React.useState<string[]>([]);
+    const [newFeature, setNewFeature] = React.useState<string>('')
     const [uploading, setUploading] = React.useState<boolean>();
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
+    const {
+        register: registerUnit,
+        handleSubmit: handleUnitSubmit,
+        formState: { errors: unitErrors }
+    } = useForm({
+        resolver: yupResolver(unitSchema),
+    })
     const {
         register: registerResort,
         handleSubmit: handleResortSubmit,
@@ -89,7 +101,6 @@ export default function EditResort() {
             setFacilities(data.facilities);
             setPolicies(data.policies);
             setAttractions(data.nearby_attractions);
-            setImages(data.image_urls)
             setIsLoaded(true);
         }
         else {
@@ -133,6 +144,44 @@ export default function EditResort() {
         updatedFacilities.splice(index, 1);
         setFacilities(updatedFacilities);
     }
+    const addFeature = () => {
+        if (newFeature.trim() !== '') {
+            setFeatures([...features, newFeature]);
+            setNewFeature('');
+        }
+    }
+    const deleteFeature = (index: number) => {
+        const updatedFeatures = [...features];
+        updatedFeatures.splice(index, 1);
+        setFeatures(updatedFeatures);
+    }
+    async function addUnit(e: any) {
+        try {
+            if (!unitImage) {
+                throw Error("Unit image is required!")
+            }
+            if (!(features && features.length > 0)) {
+                throw Error("At least one feature is required!");
+            }
+            const unit: Unit = {
+                name: e.name,
+                sleeps: e.sleeps,
+                roomType: e.roomType,
+                bathrooms: e.bathrooms,
+                kitchenType: e.kitchenType,
+                image: unitImage,
+                features: features,
+            }
+            console.log(unit);
+            setUnits([...units, unit]);
+        }
+        catch (error: any) {
+            if (error.response) {
+                enqueueSnackbar(`${error.response.data.message}`, { variant: "error" });
+            }
+            else enqueueSnackbar(`${error}`, { variant: "error" });
+        }
+    }
     async function uploadResort(e: any) {
         try {
             setUploading(true);
@@ -154,7 +203,9 @@ export default function EditResort() {
                 formData.append('facilities', facility);
             });
             attractions.forEach(function (attraction) {
-                formData.append('nearby_attractions', attraction);
+
+                formData.append('attractions', attraction);
+
             });
             policies.forEach(function (policy) {
                 formData.append('policies', policy);
@@ -162,7 +213,14 @@ export default function EditResort() {
             images.forEach(function (image) {
                 formData.append('images', image);
             });
-            const data = await UpdateResort(id, formData);
+            console.log(JSON.stringify(units))
+            // Serialize the object to JSON
+            formData.append('units', JSON.stringify(units));
+            // Append unit images
+            units.forEach((unit, index) => {
+                formData.append(`unitImages`, unit.image);
+            });
+            const data = await UploadResort(formData);
             setUploading(false);
             enqueueSnackbar("Upload successully", { variant: "success" });
             navigate('/admin/resort-list');
@@ -464,7 +522,8 @@ export default function EditResort() {
                                                             <Box sx={{ display: 'flex', width: 1, flexWrap: 'wrap', mt: 2 }}>
                                                                 {images.map(function (url, imageIndex) {
                                                                     return (<div style={{ position: "relative" }}>
-                                                                        <img src={typeof url === 'string' ? url : URL.createObjectURL(url)} alt="Pasted Image" height={90} style={{ borderRadius: "5px", margin: '2px' }} />
+
+                                                                        <img src={URL.createObjectURL(url)} alt="Pasted Image" height={90} style={{ borderRadius: "5px", margin: '2px' }} />
                                                                         <button
                                                                             onClick={(e) => {
                                                                                 e.preventDefault()
@@ -491,7 +550,7 @@ export default function EditResort() {
                                                         <div>
                                                             <Typography level="body-xs">Total units:</Typography>
                                                             <Typography fontSize="lg" fontWeight="lg">
-                                                                {'units.length'}
+                                                                {units.length}
                                                             </Typography>
                                                         </div>
                                                     </CardContent>

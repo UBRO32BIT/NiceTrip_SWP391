@@ -11,7 +11,7 @@ export default function PaymentList() {
   useEffect(() => {
     const getAllPayments = async () => {
       try {
-        const url = `http://localhost:8080/api/v2/payment/all-payment-upgrade`;
+        const url = `https://nice-trip.onrender.com/api/v2/payment/all-payment-upgrade`;
         const { data } = await axios.get(url);
         console.log("Data from API:", data); // Log the entire data object
         console.log(url); // Log the entire data object

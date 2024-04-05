@@ -5,16 +5,16 @@ import CardActions from '@mui/joy/CardActions';
 import CardOverflow from '@mui/joy/CardOverflow';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import { styled, Grid, Button } from '@mui/joy';
-import { useSelector } from 'react-redux';
-import { UpdateUser } from '../../services/auth.service';
-import { GetReservationOfUser } from '../../services/booking.service';
-import { GetExchangeOfUser } from '../../services/booking.service';
-import { CancelMyExchangeRequest } from '../../services/booking.service';
-import { CancelMyRentalRequest } from '../../services/booking.service';
-import { DeleteMyRentalRequest } from '../../services/booking.service';
+import {styled, Grid, Button} from '@mui/joy';
+import {useSelector} from 'react-redux';
+import {UpdateUser} from '../../services/auth.service';
+import {GetReservationOfUser} from '../../services/booking.service';
+import {GetExchangeOfUser} from '../../services/booking.service';
+import {CancelMyExchangeRequest} from '../../services/booking.service';
+import {CancelMyRentalRequest} from '../../services/booking.service';
+import {DeleteMyRentalRequest} from '../../services/booking.service';
 import Link from '@mui/joy/Link';
-import { Routes, Route, Navigate, useNavigate, NavLink } from "react-router-dom";
+import {Routes, Route, Navigate, useNavigate, NavLink} from "react-router-dom";
 import AspectRatio from '@mui/joy/AspectRatio';
 import CardContent from '@mui/joy/CardContent';
 import Divider from '@mui/joy/Divider';
@@ -49,6 +49,7 @@ import Search from './Search';
 import Filters from './Filters';
 import SwitchView from './SwitchView';
 import OrderTable from './OrderTable';
+
 
 interface RootState {
     auth: {
@@ -89,13 +90,13 @@ export default function OrderList() {
             if (confirmed) {
                 const success = await CancelMyRentalRequest(reservationId);
                 if (success) {
-                    enqueueSnackbar("Cancel success", { variant: "success" });
+                    enqueueSnackbar("Cancel success", {variant: "success"});
                 } else {
-                    enqueueSnackbar("ERROR: Cancel failed", { variant: "error" });
+                    enqueueSnackbar("ERROR: Cancel failed", {variant: "error"});
                 }
             }
         } catch (error) {
-            enqueueSnackbar("! ERROR: Cancel failed", { variant: "error" });
+            enqueueSnackbar("! ERROR: Cancel failed", {variant: "error"});
         }
     };
 
@@ -186,7 +187,7 @@ export default function OrderList() {
              {tableView ? (<OrderTable orderList={myReservations}/>): (<>{myReservations.map((item: any, index: number) => {
                 return (<>
                     <OrderDetailModal item={item} open={reservationModalStates[index]}
-                        setOpen={() => toggleReservationModal(index)} />
+                                      setOpen={() => toggleReservationModal(index)}/>
                     {item?.deleted !== true ? (
                         <Grid xs={12} md={6} lg={4}>
                             <Card key={index} variant="outlined" sx={{}}>
@@ -203,85 +204,88 @@ export default function OrderList() {
                                     </AspectRatio>
                                 </CardOverflow>
                                 <CardContent>
-                                    {item?.status === "Canceled" ? (<Typography sx={{ display: 'inline-flex', gap: 1 }}>
-                                        <Chip
-                                            variant="soft"
-                                            color="danger"
-                                            size="sm"
-                                            startDecorator={<BlockIcon />}
-                                        >
-                                            {(item?.is_canceled_by_renter === false ? (
-                                                `Canceled by Owner`
-
-                                            ) : (
-                                                'You are canceled'
-                                            ))}
-                                        </Chip>
-                                    </Typography>) :
-                                        (<Typography sx={{ display: 'inline-flex', gap: 1 }}>
-                                            {item?.isPaid === true ? <Chip
+                                    {item?.status === "Canceled" ? (<Typography sx={{display: 'inline-flex', gap: 1}}>
+                                            <Chip
                                                 variant="soft"
-                                                color="success"
+                                                color="danger"
                                                 size="sm"
-                                                startDecorator={<CheckRoundedIcon />}
+                                                startDecorator={<BlockIcon/>}
                                             >
-                                                Paid
-                                            </Chip> :
+                                                {(item?.is_canceled_by_renter === false ? (
+                                                    `Canceled by Owner`
+
+                                                ) : (
+                                                    'You are canceled'
+                                                ))}
+                                            </Chip>
+                                        </Typography>) :
+                                        (<Typography sx={{display: 'inline-flex', gap: 1}}>
+                                            {item?.isPaid === true ? <Chip
+                                                    variant="soft"
+                                                    color="success"
+                                                    size="sm"
+                                                    startDecorator={<CheckRoundedIcon/>}
+                                                >
+                                                    Paid
+                                                </Chip> :
                                                 <Chip
                                                     variant="soft"
                                                     color="danger"
                                                     size="sm"
-                                                    startDecorator={<BlockIcon />}
+                                                    startDecorator={<BlockIcon/>}
                                                 >
                                                     Paid
                                                 </Chip>}
                                             {item?.is_accepted_by_owner ? <Chip
-                                                variant="soft"
-                                                color="success"
-                                                size="sm"
-                                                startDecorator={<CheckRoundedIcon />}
-                                            >
-                                                Owner confirmed, go to payment phase
-                                            </Chip> :
+                                                    variant="soft"
+                                                    color="success"
+                                                    size="sm"
+                                                    startDecorator={<CheckRoundedIcon/>}
+                                                >
+                                                    Owner confirmed, go to payment phase
+                                                </Chip> :
                                                 <Chip
                                                     variant="soft"
                                                     color="danger"
                                                     size="sm"
-                                                    startDecorator={<BlockIcon />}
+                                                    startDecorator={<BlockIcon/>}
                                                 >
                                                     Wait for accept
                                                 </Chip>}
                                         </Typography>)}
                                     <Typography level="title-md" noWrap>{item?.timeshareId?.resortId?.name}</Typography>
                                     <Typography level="body-sm">{item?.timeshareId?.resortId?.location}</Typography>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+                                    <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
                                         <Button variant="soft" color="primary"
-                                            onClick={() => toggleReservationModal(index)}>View</Button>
+                                                onClick={() => toggleReservationModal(index)}>View</Button>
                                         {item?.status === "Canceled" ?
                                             (<Button variant="plain" color="danger"
-                                                onClick={() => DeleteReservation(item?._id)}>Remove</Button>) :
+                                                     onClick={() => DeleteReservation(item?._id)}>Remove</Button>) :
                                             (<Button variant="plain" color="danger"
-                                                onClick={() => handleCancelRental(item?._id)}>Cancel</Button>)}
+                                                     onClick={() => handleCancelRental(item?._id)}>Cancel</Button>)}
                                     </Box>
                                 </CardContent>
 
-                                <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1' }}>
-                                    <Divider inset="context" />
-                                    <CardContent orientation="horizontal" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Box sx={{ display: 'flex', gap: 2 }}>
+                                <CardOverflow variant="soft" sx={{bgcolor: 'background.level1'}}>
+                                    <Divider inset="context"/>
+                                    <CardContent orientation="horizontal" sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                        <Box sx={{display: 'flex', gap: 2}}>
                                             <Typography level="body-md" fontWeight="md" textColor="text.secondary">
                                                 ${item?.amount}
                                             </Typography>
-                                            <Divider orientation="vertical" />
+                                            <Divider orientation="vertical"/>
+
                                             <Typography level="body-md" fontWeight="md" textColor="text.secondary">
                                                 {formatDate(item?.createdAt)}
                                             </Typography>
                                         </Box>
-                                        <Link sx={{ float: 'right', mx: '14px' }} level="body-xs" component="button"
-                                            onClick={() => {
-                                                CreateConversation(user?._id, item?._id)
-                                                navigate('/me/my-messages')
-                                            }}>
+                                        <Link sx={{float: 'right', mx: '14px'}} level="body-xs" component="button"
+                                              onClick={()=>{
+                                                CreateConversation(item?.timeshareId?.current_owner?._id, item?._id)
+                                                  navigate('/me/my-messages')
+                                              }}>
+
                                             Contact
                                         </Link>
                                     </CardContent>
@@ -289,9 +293,7 @@ export default function OrderList() {
                             </Card>
                         </Grid>) : ('')}
                 </>)
-            })}</>)}   
-            
-            
+            })}
 
         </Grid>
     )

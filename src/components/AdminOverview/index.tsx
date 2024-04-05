@@ -23,7 +23,7 @@ const LatestTimeshare = () => {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-				const url = `http://localhost:8080/api/v2/timeshare?page=1&sort=timestamp,desc`;
+				const url = `https://nice-trip.onrender.com/api/v2/timeshare?page=1&sort=timestamp,desc`;
                 const { data } = await axios.get(url);
                 console.log(url)
                 console.log("Data from API:", data); // Log the entire data object
@@ -173,7 +173,7 @@ export default function AdminOverview() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/timeshare/countTimeshare');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/timeshare/countTimeshare');
                 const newCount = response.data; 
                 setCountTimeshare(newCount);
             } catch (error) {
@@ -185,7 +185,7 @@ export default function AdminOverview() {
 
         const fetchDataTimeshare = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/timeshare/countAllTimeshare');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/timeshare/countAllTimeshare');
                 const CountAll = response.data; 
                 setCountAllTimeshare(CountAll);
             } catch (error) {
@@ -196,7 +196,7 @@ export default function AdminOverview() {
 
         const fetchDataPayment = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/payment/total-amount');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/payment/total-amount');
                 const CountAll = response.data; 
                 setCountAllPayment(CountAll);
             } catch (error) {
@@ -207,7 +207,7 @@ export default function AdminOverview() {
 
         const fetchDataServicePack = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/payment/total-servicePack');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/payment/total-servicePack');
                 const CountAll = response.data; 
                 setCountServicePack(CountAll);
             } catch (error) {
@@ -218,7 +218,7 @@ export default function AdminOverview() {
 
         const fetchDataUser = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v2/payment/count-users');
+                const response = await axios.get('https://nice-trip.onrender.com/api/v2/payment/count-users');
                 const CountAll = response.data; 
                 setCountUser(CountAll);
             } catch (error) {
