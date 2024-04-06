@@ -1,50 +1,30 @@
-# Getting Started with Create React App
+<h1>NICE TRIP</h1>
+<li>Website: https://nicetripvn.vercel.app/</li>
+<li>*note: Please wait for the Render server to start after sleep. (This process takes 10->15 seconds)  </li>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h2>Informations</h2>
+<li> MERN-Stack web app helps users rent or exchange timeshares in the easiest way, reducing complex procedures while maintaining quality and transparency for customers. Web application built using the Client & Server architecture.</li>
+<li> FPT University </li>
+<li> Start: January 2024 </li>
+<li>  Progress: 100% </li>
 
-## Available Scripts
+<h2> Technologies </h2>
+<li> Server : Render & Vercel</li>
+<li> Database: MongoDB atlas, Redis</li>
+<li> Backend:  Nodejs, Expressjs, AWS S3, SocketIO, JWT </li>
+<li> Frontend: Reactjs, Material UI, Redux, HTML, CSS, Bootstrap, Javascript</li>
 
-In the project directory, you can run:
+<h2> References</h2>
+<li> RedWeek: https://www.redweek.com/</li>
+<li> Koala: https://www.go-koala.com/</li>
 
-### `npm start`
+<h2> Features </h2>
+<li> Waiting</li>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
+<h2> Start server in localhost </h2>
+<li> npm start </li>
+<h2> Preview </h2>
 
 <h1> Login </h1>
 
