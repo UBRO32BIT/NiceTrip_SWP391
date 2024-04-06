@@ -62,6 +62,10 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ![Home Page](https://drive.google.com/uc?export=view&id=1GUukn079vAnMmfY1oOdlNsNf2rVWCu1B)
 
+<h1>Home| Footer</h1>  
+
+![Home| Footer](https://drive.google.com/uc?export=view&id=1oCtQ2JY7jviDtRRG-7Bxo_tF7NIZ6dBF)
+
 <h1> View timeshare details | Exchange </h1>
 
 ![View timeshare details | Exchange](https://drive.google.com/uc?export=view&id=1P2Vt_URoBUbaQdk1JtoZ1a0aXKzxg4iZ)
@@ -101,3 +105,69 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 <h1> View timeshare details | Rentals </h1>
 
 ![View timeshare details | Rentals](https://drive.google.com/uc?export=view&id=1PZcJkEf_kYs5JkJJvxx6KgGBVNLW0Xfz)
+
+
+
+<h1>About</h1>  
+
+![About](https://drive.google.com/uc?export=view&id=16h9T0vWW07VZTRMGM9MlrnEi84YVd5Nc)
+
+
+<h1>Timeshare Rentals</h1>  
+
+![Timeshare Rentals](https://drive.google.com/uc?export=view&id=1G_870RsEb77sAavPHCuGpv7t0gz8KCZR)
+
+<h1>My timeshares</h1>  
+
+![My timeshares](https://drive.google.com/uc?export=view&id=1QOXI5vc8jC7yoS__KUM2ZfU810QtHB79)
+
+<h1>Reservation Details</h1>  
+
+![Reservation Details](https://drive.google.com/uc?export=view&id=1cXpqs-EcIVnJva4OgjyHbT22AWhLSc25)
+
+<h1>My Messagess</h1>  
+
+![My Messagess](https://drive.google.com/uc?export=view&id=1r1vuLNFCCBbKw0fbw5LL5EhpsMUui37N)
+
+
+
+<h1>My Profile</h1>  
+
+![My Profile](https://drive.google.com/uc?export=view&id=1oc0vQVnqlQ5pin2L3rINXwv42fiVLnU2)
+
+<h1>My Timeshares | Upload new timeshare</h1>  
+
+![My Timeshares | Upload new timeshare](https://drive.google.com/uc?export=view&id=1bcDdhestt92D22rbGgwQNQIzcVQ0XzeO)
+
+
+<h1>Admin dashboard</h1>  
+
+![Admin dashboard](https://drive.google.com/uc?export=view&id=1dh3QSDMp7t7XaPJ95lr-779YZnFCcRBU)
+
+<h1>Admin dashboard | Payment</h1>  
+
+![Admin dashboard | Payment](https://drive.google.com/uc?export=view&id=1BvrbELSxf1vW2qToo7sT6MV067uOXcVC)
+
+<h1>Admin Dashboard</h1> 
+
+![Admin Dashboard](https://drive.google.com/uc?export=view&id=1fUGxr3HnUp8K7aZkJ0ZsfEn4oOVeXzjc)
+
+<h1>Admin Dashboard | Resorts</h1>  
+
+![Admin Dashboard | Resorts](https://drive.google.com/uc?export=view&id=18BmvtE8leElYyDlj_weL4GMNewhuna-U)
+
+<h1>Admin Dashboard | Timeshares</h1> 
+
+![Admin Dashboard | Timeshares](https://drive.google.com/uc?export=view&id=1y3mR3TPNZ9K8WlLFOxhMZxHifgXvPIPf)
+
+<h1>Admin Dashboard | Transaction List Exchange</h1>  
+
+![Admin Dashboard | Transaction List Exchange](https://drive.google.com/uc?export=view&id=1noyKZuTYoUHoLNAOWoX94LgEv7nr6jIY)
+
+<h1>Admin Dashboard | Transaction List Rental</h1>  
+
+![Admin Dashboard | Transaction List Rental](https://drive.google.com/uc?export=view&id=1iTebScjCbHVjlcySnujo198aZvxJxmgJ)
+
+<h1>Admin Dashboard | Account</h1>  
+
+![Admin Dashboard | Account](https://drive.google.com/uc?export=view&id=1SSepxYxsmldptnAdTd5cvUaAGKnzUVRI)
