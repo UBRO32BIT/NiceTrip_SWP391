@@ -3,7 +3,8 @@
 <li>*note: Please wait for the Render server to start after sleep. (This process takes 10->15 seconds)  </li>
 
 <h2>Informations</h2>
-<li> MERN-Stack web app helps users rent or exchange timeshares in the easiest way, reducing complex procedures while maintaining quality and transparency for customers. Web application built using the Client & Server architecture.</li>
+<li> MERN-Stack web app helps users rent or exchange timeshares in the easiest way, reducing complex procedures while maintaining quality and transparency for customers. </li>
+<li> Web application built using the Client & Server architecture. </li>
 <li> FPT University </li>
 <li> Start: January 2024 </li>
 <li>  Progress: 100% </li>
