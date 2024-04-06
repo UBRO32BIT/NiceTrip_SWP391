@@ -43,7 +43,7 @@
 
 ![Home Page](https://drive.google.com/uc?export=view&id=1GUukn079vAnMmfY1oOdlNsNf2rVWCu1B)
 
-<h1>Home| Footer</h1>  
+<h1>Home | Footer</h1>  
 
 ![Home| Footer](https://drive.google.com/uc?export=view&id=1oCtQ2JY7jviDtRRG-7Bxo_tF7NIZ6dBF)
 
