@@ -44,3 +44,60 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+
+<h1> Login </h1>
+
+![Login](https://drive.google.com/uc?export=view&id=1rVN5os3OccIn55FghbtooVVMrcFhzz2e)
+
+<h1> Register </h1>
+
+![Register](https://drive.google.com/uc?export=view&id=18mXITJ0gORYavMq_EUrUudxyCAfEssMN)
+
+<h1> Home Page </h1>
+
+![Home Page](https://drive.google.com/uc?export=view&id=1xTIi2dKiqODjqAZWvlFFe59Tc_MdVLhe)
+
+<h1> Home Page </h1>
+
+![Home Page](https://drive.google.com/uc?export=view&id=1GUukn079vAnMmfY1oOdlNsNf2rVWCu1B)
+
+<h1> View timeshare details | Exchange </h1>
+
+![View timeshare details | Exchange](https://drive.google.com/uc?export=view&id=1P2Vt_URoBUbaQdk1JtoZ1a0aXKzxg4iZ)
+
+<h1> Select Timeshare </h1>
+
+![Select Timeshare](https://drive.google.com/uc?export=view&id=1DtjHv2fr1K0Bb_xAmL6M6tlvS-SivBUf)
+
+<h1> View information request exchange </h1>
+
+![View information request exchange](https://drive.google.com/uc?export=view&id=1mMjQNM0j-fGL2qN-c94kR0UUvKmpywGp)
+
+<h1> My Timeshare | Exchange Request </h1>
+
+![My Timeshare | Exchange Request](https://drive.google.com/uc?export=view&id=1yJPqeCn1vseau7FALxraP5ktbU8Y2ExY)
+
+<h1> My Timeshare | Accept Exchange Request </h1>
+
+![My Timeshare | Accept Exchange Request](https://drive.google.com/uc?export=view&id=1BKi2xPI7kL5PzcWNntuk_XooB0-AW0tm)
+
+<h1> My Trip </h1>
+
+![My Trip](https://drive.google.com/uc?export=view&id=1ZfxQW5T46MAcNsBnKJ8KdBZfw_iXBI2C)
+
+<h1> Upgrade Account </h1>
+
+![Upgrade Account](https://drive.google.com/uc?export=view&id=1ydiRVVnHoKQ4WoEsAcbuAPVH6gN0sdnN)
+
+<h1> Upgrade Account | Payment </h1>
+
+![Upgrade Account | Payment](https://drive.google.com/uc?export=view&id=1s7WE1EQH0amSYkfFzH7ITxqrPL39b4Db)
+
+<h1> Upgrade Account | Success </h1>
+
+![Upgrade Account | Success](https://drive.google.com/uc?export=view&id=12pB7A4c1HZd6PyHOgjJmF0NHMfDbfW9Y)
+
+<h1> View timeshare details | Rentals </h1>
+
+![View timeshare details | Rentals](https://drive.google.com/uc?export=view&id=1PZcJkEf_kYs5JkJJvxx6KgGBVNLW0Xfz)
